@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_dir_contacts', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->timestamps();
         });
     }

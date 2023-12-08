@@ -9,9 +9,9 @@ class PhoneBrand extends Model
 {
     use HasFactory;
     // name the table
-protected $table = 'pho_phone_brands';
-// Table Fields
-protected $fillable = [
-'name','active','deleted_at',
-];
+    protected $table = 'pho_phone_brands';
+    // Table Fields
+    protected $fillable = [
+        'name', 'active', 'deleted_at',
+    ];
 }

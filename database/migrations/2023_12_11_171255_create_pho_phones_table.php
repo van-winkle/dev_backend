@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pho_phones', function (Blueprint $table) {
             $table->id();
 
-            $table->string('number', 9);
+            $table->string('number', 9)->unique()->whereNull('deleted_at');
 
             $table->string('type', 50);
             $table->unsignedBigInteger('imei');
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
 
-            $table->unique(['number', 'deleted_at']);
+            
         });
     }
 

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pho_phone_plan_id');
             $table->foreign('pho_phone_plan_id')->references('id')->on('pho_phone_plans');
             $table->unsignedBigInteger('pho_phone_contract_id');
-            $table->foreign('pho_phone_contract_id')->references('id')->on('dir_contracts');
+            $table->foreign('pho_phone_contract_id')->references('id')->on('pho_phone_contracts');
             $table->unsignedBigInteger('pho_phone_model_id');
             $table->foreign('pho_phone_model_id')->references('id')->on('pho_phone_models');
 

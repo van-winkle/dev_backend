@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         ModelsSeeder::class,
         ContractsSeeder::class,
         PlansSeeder::class,
-        PhoneModel::class,
+        PhonesSeeder::class,
         IncidentsSeeder::class
         ]);
 

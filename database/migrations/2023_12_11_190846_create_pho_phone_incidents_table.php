@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('pho_phone_incidents', function (Blueprint $table) {
             $table->id();
-            $table->string('file_name');
-            $table->string('file_name_original');
-            $table->string('file_mimetype');
-            $table->string('file_size');
-            $table->string('file_path');
+            $table->string('file_name')->nullable();
+            $table->string('file_name_original')->nullable();
+            $table->string('file_mimetype')->nullable();
+            $table->string('file_size')->nullable();
+            $table->string('file_path')->nullable();
 
             $table->double('percentage');
 

@@ -16,7 +16,8 @@ class PhoneBrand extends Model
         'name', 'active', 'deleted_at',
     ];
 
-    public function brands (){
+    public function brands()
+    {
         return $this->hasMany(PhoneModel::class, 'id');
     }
 }

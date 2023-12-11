@@ -9,6 +9,8 @@ class PhoneIncident extends Model
 {
     use HasFactory;
     protected $table = 'pho_phone_incidents';
-    protected $fillable = ['file_name','file_name_original','file_mimetype','file_size','file_path','price',
-    'porcentage','pho_phone_id','deleted_at'];
+    protected $fillable = [
+        'file_name', 'file_name_original', 'file_mimetype', 'file_size', 'file_path', 'price',
+        'porcentage', 'pho_phone_id', 'deleted_at'
+    ];
 }

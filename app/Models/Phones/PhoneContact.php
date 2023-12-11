@@ -9,9 +9,10 @@ class PhoneContact extends Model
 {
     use HasFactory;
     protected $table = 'dir_contacts';
-    protected $fillable = ['name','deleted_at'];
+    protected $fillable = ['name', 'deleted_at'];
 
-    public function contracts (){
+    public function contracts()
+    {
         return $this->hasMany(PhoneContract::class, 'id');
     }
 }

@@ -11,4 +11,7 @@ class PhoneContract extends Model
     protected $table = 'pho_phone_contracts';
     protected $fillable = ['code','start_date','expiry_date','active','dir_contact_id','deleted_at'];
 
+    public function contacts (){
+        return $this->belongsTo(PhoneContact::class, 'id');
+    }
 }

@@ -2,8 +2,9 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Phones\PhoneModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneBrand extends Model
 {
@@ -14,4 +15,8 @@ class PhoneBrand extends Model
     protected $fillable = [
         'name', 'active', 'deleted_at',
     ];
+
+    public function brands (){
+        return $this->hasMany(PhoneModel::class, 'id');
+    }
 }

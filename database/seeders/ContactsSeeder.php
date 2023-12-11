@@ -13,20 +13,12 @@ class ContactsSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('dir_contacts')->insert([
-            'name' => 'Kevin Perez',
-        ]);
-        DB::table('dir_contacts')->insert([
-            'name' => 'Cristian Castro',
-        ]);
-        DB::table('dir_contacts')->insert([
-            'name' => 'Leon Laguirre',
-        ]);
-        DB::table('dir_contacts')->insert([
-            'name' => 'Mon Laferte',
-        ]);
-        DB::table('dir_contacts')->insert([
-            'name' => 'Til Linderman',
-        ]);
+        DB::table('dir_contacts')->insert(
+            [['name' => 'Kevin Perez',],
+             ['name' => 'Juan Carlos',],
+             ['name' => 'Sebastian Yatra',],
+             ['name' => 'Luis Ernesto',],
+             ['name' => 'Sofia Jose',]]
+        );
     }
 }

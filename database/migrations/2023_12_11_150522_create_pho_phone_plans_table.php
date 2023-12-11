@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('minutes');
             $table->integer('roaming_minutes');
             $table->boolean('active')->default(true);
+            $table->string('type');
             $table->timestamps();
         });
     }

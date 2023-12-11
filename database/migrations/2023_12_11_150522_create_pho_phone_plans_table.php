@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('pho_phone_plans', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('mobile_data');
+            $table->integer('roaming_data');
+            $table->integer('minutes');
+            $table->integer('roaming_minutes');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

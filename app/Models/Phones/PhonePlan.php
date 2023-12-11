@@ -4,6 +4,7 @@ namespace App\Models\Phones;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Phones\PhoneContract;
 
 class PhonePlan extends Model
 {
@@ -35,5 +36,15 @@ class PhonePlan extends Model
     ];
 
     protected $casts = [];
+
+    protected static $recordEvents= [
+        'created',
+        'updated',
+        'deleted'
+    ];
+
+    public function contract(){
+        return $this->hasMany(PhoneContract::class, 'pho_phone_contract_id');
+    }
 
 }

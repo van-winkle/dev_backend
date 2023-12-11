@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pho_phone_dir_contacts', function (Blueprint $table) {
+        Schema::create('pho_phone_contracts', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
             $table->timestamps();
         });
     }
@@ -23,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pho_phone_dir_contacts');
+        Schema::dropIfExists('pho_phone_contracts');
     }
 };

@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('pho_phone_contracts', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('code');
+            $table->date('start_date');
+            $table->date('expiry_date');
+            $table->boolean('active')->default(true);
+
+            $table->unsignedBigInteger('dir_contact_id')->nullable();
+            $table->foreign('dir_contact_id')->references('id')->on('pho_phone_contracts');
+
+            $table->timestamp('created_at', 0)->useCurrent();
+            $table->timestamp('updated_at', 0)->useCurrent();
+            $table->softDeletes();
         });
     }
 

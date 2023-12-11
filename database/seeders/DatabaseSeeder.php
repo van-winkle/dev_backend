@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Phones\PhoneModel;
 use Illuminate\Database\Seeder;
 use Database\Seeders\EmployeesSeeder;
 
@@ -13,8 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([EmployeesSeeder::class,
-        ContactsSeeder::class, BrandsSeeder::class]);
+        $this->call([
+        EmployeesSeeder::class,
+        ContactsSeeder::class,
+        BrandsSeeder::class,
+        ModelsSeeder::class,
+        ContractsSeeder::class,
+        PlansSeeder::class,
+        PhoneModel::class,
+        IncidentsSeeder::class
+        ]);
 
         // \App\Models\User::factory(10)->create();
 

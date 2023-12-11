@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('pho_phones', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('number')->WhereNull();
+            $table->string('number', 9);
 
             $table->string('type', 50);
-            $table->bigInteger('imei');
+            $table->unsignedBigInteger('imei');
             $table->double('price');
             $table->boolean('active')->default(true);
 

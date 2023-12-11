@@ -20,7 +20,13 @@ return new class extends Migration
             $table->integer('roaming_minutes');
             $table->boolean('active')->default(true);
             $table->string('type');
-            $table->timestamps();
+
+            $table->unsignedBigInteger('pho_phone_contract_id')->nullable();
+            $table->foreign('pho_phone_contract_id')->references('id')->on('pho_phone_contracts');
+
+            $table->timestamp('created_at', 0)->useCurrent();
+            $table->timestamp('updated_at', 0)->useCurrent();
+            $table->softDeletes();
         });
     }
 

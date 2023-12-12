@@ -16,7 +16,21 @@ class PhoneContact extends Model
 
     protected $fillable = ['name'];
 
+    public $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    protected $casts = [];
+
+    protected static $recordEvents = [
+        'created',
+        'updated',
+        'deleted'
+    ];
+
     public function contracts (){
-        return $this->hasMany(PhoneContract::class, 'id');
+        return $this->hasMany(PhoneContract::class, 'dir_contacts_id');
     }
 }

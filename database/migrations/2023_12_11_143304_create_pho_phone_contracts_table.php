@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('active')->default(true);
 
             $table->unsignedBigInteger('dir_contact_id')->nullable();
-            $table->foreign('dir_contact_id')->references('id')->on('pho_phone_contracts');
+            $table->foreign('dir_contact_id')->references('id')->on('dir_contacts');
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

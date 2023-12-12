@@ -10,7 +10,11 @@ class PhoneContact extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'dir_contacts';
-    protected $fillable = ['name','deleted_at'];
+    protected $primarykey = 'id';
+    protected $keyType = 'int';
+    public $incrementing = true;
+
+    protected $fillable = ['name'];
 
     public function contracts (){
         return $this->hasMany(PhoneContract::class, 'id');

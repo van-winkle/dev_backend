@@ -43,7 +43,7 @@ class PhoneIncident extends Model
 
     public function incident ()
     {
-        return $this->hasMany(PhoneIncident::class,'pho_phone_id');
+        return $this->hasMany(PhoneIncident::class,'id');
     }
 
 

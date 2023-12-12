@@ -36,7 +36,7 @@ class PhoneContact extends Model
         'deleted'
     ];
 
-    public function contracts (){
+    public function contract (){
         return $this->hasMany(PhoneContract::class, 'dir_contacts_id');
     }
 }

@@ -41,7 +41,7 @@ class PhoneContract extends Model
     ];
 
 
-    public function contacts (){
+    public function contact (){
         return $this->belongsTo(PhoneContact::class, 'id');
     }
 }

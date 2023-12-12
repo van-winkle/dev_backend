@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Phones;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Phones\PhoneBrand;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -19,7 +21,7 @@ class BrandController extends Controller
     {
         //
         $phoneBrands = PhoneBrand::all();
-        return $phoneBrands;
+        return response()->json($phoneBrands);
     }
 
     /**
@@ -35,9 +37,22 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:pho_phone_brands|max:50',
+            'active' => 'required|boolean',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $phoneBrand = new PhoneBrand;
+        $phoneBrand->name = $request->input('name');
+        $phoneBrand->active = $request->input('active', true);
+        $phoneBrand->save();
+
+        return response()->json($phoneBrand, 201);
+    }
     /**
      * Display the specified resource.
      */
@@ -48,7 +63,7 @@ class BrandController extends Controller
         if ($phoneBrand) {
             return response()->json($phoneBrand);
         } else {
-            return response()->json(['message' => 'PhoneBrand not found'], 404);
+            return response()->json(['message' => 'Not found'], 404);
         }
     }
 
@@ -65,8 +80,37 @@ class BrandController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:50',
+            'active' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $phoneBrand = PhoneBrand::find($id);
+
+        if (!$phoneBrand) {
+            return response()->json(['message' => 'Phone brand not found'], 404);
+        }
+
+        $existingBrand = PhoneBrand::where('name', $request->input('name'))
+            ->where('id', '!=', $id)
+            ->where('active', true)
+            ->first();
+
+        if ($existingBrand) {
+            return response()->json(['message' => 'Name already exists for an active PhoneBrand'], 400);
+        }
+
+        $phoneBrand->name = $request->input('name');
+        $phoneBrand->active = $request->input('active', true);
+        $phoneBrand->save();
+
+        return response()->json($phoneBrand);
     }
+
 
     /**
      * Remove the specified resource from storage.

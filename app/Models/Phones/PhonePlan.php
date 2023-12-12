@@ -23,8 +23,8 @@ class PhonePlan extends Model
         'roaming_data',
         'minutes',
         'roaming_minutes',
-        'type',
         'active',
+        'type',
         'pho_phone_contract_id',
         'deleted_at'
     ];

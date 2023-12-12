@@ -18,7 +18,9 @@ class PhoneContact extends Model
 
     public $incrementing = true;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name'
+    ];
 
     public $hidden = [
         'created_at',

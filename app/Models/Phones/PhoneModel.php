@@ -12,7 +12,8 @@ class PhoneModel extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'pho_phone_models';
 
-    protected $fillable = ['name',
+    protected $fillable = [
+    'name',
     'active',
     'pho_phone_brand_id',
     'deleted_at'

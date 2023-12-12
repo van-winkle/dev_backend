@@ -10,7 +10,7 @@ class PhoneContact extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'dir_contacts';
-    protected $primarykey = 'id';
+    protected $primaryKey = 'id';
     protected $keyType = 'int';
     public $incrementing = true;
 

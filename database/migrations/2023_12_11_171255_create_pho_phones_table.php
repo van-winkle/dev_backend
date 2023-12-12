@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('number', 9)->unique()->whereNull('deleted_at');
 
             $table->string('type', 50);
-            $table->unsignedBigInteger('imei');
-            $table->decimal('price', 5, 2);
+            $table->string('imei', 15)->unique()->whereNull('deleted_at');
+            $table->decimal('price', 6, 2);
             $table->boolean('active')->default(true);
 
             $table->unsignedBigInteger('adm_employee_id');

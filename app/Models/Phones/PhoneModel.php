@@ -18,8 +18,13 @@ class PhoneModel extends Model
     'deleted_at'
 ];
 
-    public function brands()
+    public function brand()
     {
-        return $this->belongsTo(PhoneBrand::class, 'id');
+        return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
+    }
+
+    public function phones ()
+    {
+        return $this->hasMany(Phone::class,'id');
     }
 }

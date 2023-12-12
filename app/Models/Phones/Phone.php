@@ -2,6 +2,11 @@
 
 namespace App\Models\Phones;
 
+use App\Models\Phones\PhonePlan;
+use App\Models\Phones\PhoneModel;
+use App\Models\Phones\AdminEmployee;
+use App\Models\Phones\PhoneContract;
+use App\Models\Phones\PhoneIncident;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,16 +17,17 @@ class Phone extends Model
 
     protected $table = 'pho_phones';
 
-    protected $primaryKey= "id";
+    protected $primaryKey = 'id';
 
-    protected $KeyType = "int";
+    protected $keyType = 'int';
 
     public $incrementing = true;
 
-    protected $fillable = [
-        'type',
+    public $fillable = [
         'number',
+        'type',
         'imei',
+        'price',
         'price',
         'active',
         'adm_employee_id',
@@ -62,5 +68,9 @@ class Phone extends Model
     public function model()
     {
         return $this->belongsTo(PhoneModel::class, 'pho_phone_model_id');
+    }
+    public function incidents ()
+    {
+        return $this->hasMany(PhoneIncident::class,'id');
     }
 }

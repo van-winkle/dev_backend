@@ -9,9 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PhoneContract extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $table = 'pho_phone_contracts';
+
     protected $primaryKey = 'id';
+
     protected $keyType = 'int';
+
     public $incrementing = true;
 
     public $fillable = [

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique()->whereNull('deleted_at'); 
             $table->integer('mobile_data');
             $table->integer('roaming_data');
             $table->integer('minutes');

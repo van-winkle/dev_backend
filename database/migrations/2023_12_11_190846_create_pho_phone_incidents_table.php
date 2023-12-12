@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('file_size')->nullable();
             $table->string('file_path')->nullable();
 
-            $table->double('percentage');
+            $table->double('percentage', 5, 2);
 
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');

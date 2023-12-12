@@ -5,10 +5,11 @@ namespace App\Models\Phones;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Phones\PhoneContract;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PhonePlan extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'pho_phone_plans';
 
     protected $primaryKey = 'id';
@@ -23,8 +24,8 @@ class PhonePlan extends Model
         'roaming_data',
         'minutes',
         'roaming_minutes',
-        'type',
         'active',
+        'type',
         'pho_phone_contract_id',
         'deleted_at'
     ];

@@ -9,11 +9,12 @@ class Phone extends Model
 {
     use HasFactory;
     protected $table = 'pho_phones';
-    
+
     protected $fillable = [
-        'type',
         'number',
+        'type',
         'imei',
+        'price',
         'active',
         'adm_employees_id',
         'pho_phone_plan_id',

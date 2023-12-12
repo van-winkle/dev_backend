@@ -24,8 +24,7 @@ class PhoneIncident extends Model
         'file_mimetype',
         'file_size',
         'file_path',
-        'price',
-        'porcentage',
+        'percentage',
         'pho_phone_id'];
 
     public $hidden = [

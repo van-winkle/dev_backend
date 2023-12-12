@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('number', 9)->unique()->whereNull('deleted_at');
 
             $table->string('type', 50);
-            $table->unsignedBigInteger('imei');
-            $table->double('price');
+            $table->unsignedBigInteger('imei', 17);
+            $table->decimal('price', 5, 2);
             $table->boolean('active')->default(true);
 
             $table->unsignedBigInteger('adm_employee_id');
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
 
-            
+
         });
     }
 

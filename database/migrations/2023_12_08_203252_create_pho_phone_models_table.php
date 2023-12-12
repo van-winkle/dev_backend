@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_models', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique()->whereNull('deleted_at'); 
             $table->boolean('active')->default(true);
             $table->unsignedBigInteger('pho_phone_brand_id')->nullable();
             $table->foreign('pho_phone_brand_id')->references('id')->on('pho_phone_brands');

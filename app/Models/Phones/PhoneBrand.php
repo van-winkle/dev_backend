@@ -42,7 +42,7 @@ class PhoneBrand extends Model
 
     public function Brand ()
     {
-        return $this->hasMany(PhoneBrand::class,'pho_phone_model_id');
+        return $this->hasMany(PhoneModel::class,'pho_phone_model_id');
     }
 
 

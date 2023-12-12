@@ -44,7 +44,7 @@ class PhonePlan extends Model
     ];
 
     public function contract(){
-        return $this->hasMany(PhoneContract::class, 'pho_phone_contract_id');
+        return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');
     }
 
 }

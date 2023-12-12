@@ -13,6 +13,6 @@ class PhoneContract extends Model
 
     public function contacts()
     {
-        return $this->belongsTo(PhoneContact::class, 'id');
+        return $this->hasMany(PhoneContact::class, 'id');
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PhonePlan extends Model
 {
     use HasFactory, SoftDeletes;
+    
     protected $table = 'pho_phone_plans';
 
     protected $primaryKey = 'id';

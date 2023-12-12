@@ -9,6 +9,7 @@ class AdminEmployee extends Model
 {
     use HasFactory;
     protected $table = 'adm_employees';
+    
     protected $fillable = [
         'name',
         'deleted_at'

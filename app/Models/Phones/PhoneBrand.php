@@ -5,19 +5,28 @@ namespace App\Models\Phones;
 use App\Models\Phones\PhoneModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PhoneBrand extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     // name the table
     protected $table = 'pho_phone_brands';
+
+    protected $primaryKey= "id";
+
+    protected $KeyType = "int";
+
+    public $incrementing = true;
     // Table Fields
     protected $fillable = [
-        'name', 'active', 'deleted_at',
+        'name',
+        'active',
     ];
 
-    public function brands()
-    {
-        return $this->hasMany(PhoneModel::class, 'id');
-    }
+    public $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 }

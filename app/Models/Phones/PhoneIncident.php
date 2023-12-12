@@ -5,6 +5,7 @@ namespace App\Models\Phones;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class PhoneIncident extends Model
 {
     use HasFactory;

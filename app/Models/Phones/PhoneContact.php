@@ -13,8 +13,20 @@ class PhoneContact extends Model
     protected $primarykey = 'id';
     protected $keyType = 'int';
     public $incrementing = true;
-    
+
     protected $fillable = ['name'];
+
+    public $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    protected static $redcordEvents = [
+        'created',
+        'updated',
+        'deleted'
+    ];
 
     public function contracts (){
         return $this->hasMany(PhoneContract::class, 'dir_contact_id');

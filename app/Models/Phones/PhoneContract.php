@@ -28,8 +28,6 @@ class PhoneContract extends Model
         'deleted_at'
     ];
 
-    protected $cast = [];
-
     protected static $recordEvents = [
         'created',
         'updated',

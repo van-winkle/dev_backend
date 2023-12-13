@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Phones;
 
-use App\Http\Controllers\Controller;
 use App\Models\Phones\Phone;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class PhoneController extends Controller
 {
@@ -49,15 +50,63 @@ class PhoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validation
+        $validation = Validator::make($request->all(), [
+            'number' => 'required|string',
+            'type' => 'required|string',
+            'imei' => 'required|string',
+            'price' => 'required|numeric|min:0|max:9999.99',
+            'active' => 'required|boolean',
+            'adm_employee_id' => 'required|integer',
+            'pho_phone_plan_id' => 'required|integer',
+            'pho_phone_contract_id' => 'required|integer',
+            'pho_phone_model_id' => 'required|integer'
+        ]);
+        if ($validation->fails()) {
+            return response()->json([
+                'code' => 400,
+                //'request' =>$request->all(),
+                'data' => $validation->messages()
+            ], 400);
+        } else {
+            //Store new record
+            Phone::create($request->all());
+            return response()->json([
+                'code' => 200,
+                'data' => 'Record saved'
+            ], 200);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        //Validation
+        $validation = (gettype($id) === "integer") ? true : false;
+
+        if (!$validation) {
+            return response()->json([
+                'code' => 400,
+                'data' => 'Incorrect identifier: ' . gettype($id)
+            ], 400);
+        } else {
+            //Get the phone record
+            $phone = Phone::find($id);
+            if ($phone) {
+
+                return response()->json([
+                    'code' => 200,
+                    'data' => $phone
+                ], 200);
+            } else {
+                return response()->json([
+                    'code' => 404,
+                    'data' => 'Record not found'
+                ], 404);
+            }
+        }
     }
 
     /**
@@ -79,8 +128,31 @@ class PhoneController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+        //Validation
+        $validation = (gettype($id) === "integer") ? true : false;
+
+        if (!$validation) {
+            return response()->json([
+                'code' => 400,
+                'data' => 'Incorrect identifier: ' . gettype($id)
+            ], 400);
+        } else {
+
+            $phone = Phone::find($id);
+            if ($phone) {
+                $phone->delete();
+                return response()->json([
+                    'code' => 200,
+                    'data' => 'Record removed'
+                ], 200);
+            } else {
+                return response()->json([
+                    'code' => 404,
+                    'data' => 'Record not found'
+                ], 404);
+            }
+        }
     }
 }

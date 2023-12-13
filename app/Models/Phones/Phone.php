@@ -28,7 +28,6 @@ class Phone extends Model
         'type',
         'imei',
         'price',
-        'price',
         'active',
         'adm_employee_id',
         'pho_phone_plan_id',

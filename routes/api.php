@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Phones\PhoneController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+/* Start Phone routes */
+Route::resource('/phones', PhoneController::class)->only([
+    'index', 'create', 'store', 'update', 'destroy', 'show'
+]);;
+/* End Phone routes */

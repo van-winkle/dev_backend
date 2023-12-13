@@ -95,7 +95,7 @@ class BrandController extends Controller
         $phoneBrand = PhoneBrand::find($id);
 
         if (!$phoneBrand) {
-            //agregar el mensaje de error personalizado
+
             return response()->json(['message' => 'brand notfound '], 404);
         }
 
@@ -106,7 +106,7 @@ class BrandController extends Controller
 
         if ($existingBrand) {
 
-            //agregar el mensaje de error personalizado
+            
             return response()->json(['message' => 'Name already exists'], 400);
         }
 

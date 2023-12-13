@@ -8,6 +8,7 @@ use App\Models\Phones\PhoneModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 
 class ModelController extends Controller
@@ -20,14 +21,13 @@ class ModelController extends Controller
         try {
             $model = PhoneModel::with([
                 'brand'])
+                ->withCount(['brand'])
                 ->get();
             return response()->json($model, 200);
 
         } catch (Exception $e) {
             Log::error($e->getMessage() );
-
-
-
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
             //throw $th;
         }
 
@@ -46,7 +46,29 @@ class ModelController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(),[
+        try {
+            $rules = [
+                "name" => ['required', 'max:50', Rule::unique('name')->whereNull('deleted_at')],
+                'active' => ['nullable', 'bool'],
+                'pho_phone_brand_id' => ['required', 'integer', 'pho_phone_brand_id'],
+
+            ];
+            $messages = [
+                'required' => 'El valor del :attribute es necesario',
+                'bool' => 'El formato de :attribute es diferente al esperado',
+            ];
+
+            $attributes = [
+                'name' => 'Nombre',
+                'active' => 'Activo'
+            ];
+
+            $request->validate($rules, $messages, $attributes);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+      /*  $validation = Validator::make($request->all(),[
             'name' => 'required | string',
             'active' => 'required|boolean',
             'pho_phone_brand_id' => 'required|integer'
@@ -64,7 +86,7 @@ class ModelController extends Controller
                 'code' => 200,
                 'data' => 'data OK'
             ],200);
-        }
+        } */
 
     }
 

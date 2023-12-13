@@ -4,11 +4,11 @@ namespace App\Models\Phones;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class PhoneContact extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'dir_contacts';
 
@@ -22,21 +22,7 @@ class PhoneContact extends Model
         'name'
     ];
 
-    public $hidden = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
-    protected $casts = [];
-
-    protected static $recordEvents = [
-        'created',
-        'updated',
-        'deleted'
-    ];
-
-    public function contracts (){
+    public function contract (){
         return $this->hasMany(PhoneContract::class, 'dir_contacts_id');
     }
 }

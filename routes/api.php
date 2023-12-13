@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Phones\ContractController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
@@ -21,4 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
 Route::resource('/model', ModelController::class);
+
+//CRUD table CONTRACT
+Route::resource('/contract', ContractController::class);
+

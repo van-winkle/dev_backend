@@ -36,6 +36,7 @@ class PhoneModel extends Model
     ];
 
     public function brand()
+
     {
         return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
     }

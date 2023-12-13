@@ -1,9 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Phones;
-use App\Http\Controllers\Controller;
+
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Phones\PhoneModel;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+
 
 class ModelController extends Controller
 {
@@ -12,8 +17,20 @@ class ModelController extends Controller
      */
     public function index()
     {
-        $phoneModel = PhoneModel::all(1);
-        return $phoneModel;
+        try {
+            $model = PhoneModel::with([
+                'brand'])
+                ->get();
+            return response()->json($model, 200);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage() );
+
+
+
+            //throw $th;
+        }
+
     }
 
     /**
@@ -21,7 +38,7 @@ class ModelController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -29,20 +46,26 @@ class ModelController extends Controller
      */
     public function store(Request $request)
     {
-         $request->validate([
-            'name' => 'required',
-            'active' => 'required',
+        $validation = Validator::make($request->all(),[
+            'name' => 'required | string',
+            'active' => 'required|boolean',
+            'pho_phone_brand_id' => 'required|integer'
 
         ]);
 
-        PhoneModel::create([
-            'name' => $request->input('campo1'),
-            'active' => $request->input('campo2'),
+        if($validation->fails()){
+            return response()->json([
+                'code' => 400,
+                'date' => $validation->messages()
+            ], 400);
+        } else {
+           PhoneModel::create($request->all());
+            return response()->json([
+                'code' => 200,
+                'data' => 'data OK'
+            ],200);
+        }
 
-        ]);
-
-
-        return redirect()->route('')->with('', '');
     }
 
     /**
@@ -50,7 +73,9 @@ class ModelController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $model = PhoneModel::find($id);
+        $model->brand;
+         return $model;
     }
 
     /**
@@ -75,6 +100,7 @@ class ModelController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
+
     }
 }

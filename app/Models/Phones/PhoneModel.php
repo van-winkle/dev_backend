@@ -14,7 +14,7 @@ class PhoneModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $keyType = true;
+    protected $keyType = 'int';
 
     public $fillable = [
     'name',
@@ -27,7 +27,6 @@ class PhoneModel extends Model
         'updated_at',
         'deleted_at'
     ];
-    protected $casts = [];
 
     protected static $recordEvents= [
         'created',

@@ -106,7 +106,7 @@ class BrandController extends Controller
 
         if ($existingBrand) {
 
-            
+
             return response()->json(['message' => 'Name already exists'], 400);
         }
 

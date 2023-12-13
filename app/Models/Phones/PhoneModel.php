@@ -12,9 +12,11 @@ class PhoneModel extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'pho_phone_models';
 
-    protected $primaryKey = 'id';
+    public $primaryKey = 'id';
 
-    protected $keyType = true;
+    protected $keyType = "int";
+
+    public $incrementing = true;
 
     public $fillable = [
     'name',

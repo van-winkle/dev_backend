@@ -22,9 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 // Route::get('/brands', [BrandController::class, 'index']);
 // Route::get('/brands/{id}', [BrandController::class, 'show']);
 
 
-Route::resource('/brands', BrandController::class)->except('create');
+Route::resource('/brands', BrandController::class)->except('create, edit');
 

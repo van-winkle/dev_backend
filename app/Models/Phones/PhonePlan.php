@@ -10,16 +10,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PhonePlan extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $table = 'pho_phone_plans';
 
     protected $primaryKey = 'id';
 
     protected $keyType = 'int';
 
-    protected $incrementing = true;
+    public $incrementing = true;
 
-    protected $fillable = [
+    public $fillable = [
         'name',
         'mobile_data',
         'roaming_data',
@@ -28,7 +28,6 @@ class PhonePlan extends Model
         'active',
         'type',
         'pho_phone_contract_id',
-        'deleted_at'
     ];
 
     public $hidden = [
@@ -48,5 +47,4 @@ class PhonePlan extends Model
     public function contract(){
         return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');
     }
-
 }

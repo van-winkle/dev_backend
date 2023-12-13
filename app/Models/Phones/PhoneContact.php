@@ -2,8 +2,9 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Phones\PhoneContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class PhoneContact extends Model
@@ -18,11 +19,11 @@ class PhoneContact extends Model
 
     public $incrementing = true;
 
-    protected $fillable = [
+    public $fillable = [
         'name'
     ];
 
     public function contract (){
-        return $this->hasMany(PhoneContract::class, 'dir_contacts_id');
+        return $this->hasMany(PhoneContract::class, 'dir_contact_id');
     }
 }

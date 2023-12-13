@@ -35,7 +35,7 @@ class PhoneModel extends Model
         'deleted'
     ];
 
-    public function brands()
+    public function brand()
     {
         return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
     }

@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class AdminEmployee extends Model
 {
     use HasFactory,SoftDeletes;
+
     protected $table = 'adm_employees';
+    
     protected $primaryKey = 'id';
 
     protected $keyType = 'int';

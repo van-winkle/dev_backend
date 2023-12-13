@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Phones\ContractController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
-use Illuminate\Database\Eloquent\Model;
+
+use App\Http\Controllers\Phones\BrandController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +26,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
+
 Route::resource('/model', ModelController::class);
 
 //CRUD table CONTRACT
 Route::resource('/contract', ContractController::class);
+
+// Route::get('/brands', [BrandController::class, 'index']);
+// Route::get('/brands/{id}', [BrandController::class, 'show']);
+
+
+Route::resource('/brands', BrandController::class)->except('create');
+
 

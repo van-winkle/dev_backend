@@ -18,7 +18,7 @@ class PhoneIncident extends Model
 
     public $incrementing = true;
 
-    protected $fillable = [
+    public $fillable = [
         'file_name',
         'file_name_original',
         'file_mimetype',

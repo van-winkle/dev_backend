@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers\Phones;
 
+use Exception;
 use App\Models\Phones\Phone;
 use Illuminate\Http\Request;
+use App\Models\Phones\PhoneBrand;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Phones\AdminEmployee;
+use App\Models\Phones\PhoneContact;
+use App\Models\Phones\PhonePlan;
 use Illuminate\Support\Facades\Validator;
 
 class PhoneController extends Controller
@@ -14,27 +20,22 @@ class PhoneController extends Controller
      */
     public function index()
     {
-        //
-        $phones = Phone::all();
-        //$phones->employee;
-        return $phones;
-        if($phones == []){
-            return response()->json([
-                'code'=>404,
-                'data'=>'No data'
-            ], 404);
+        try {
+            //Query
+            $phones = Phone::with([
+                'employee',
+                'plan',
+                'contract',
+                'model',
+                'incidents'
+            ])->withCount(['incidents'])->get();
+            return response()->json($phones, 200);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
-        else if ($phones->count()>0) {
-            return response()->json([
-                'code'=>200,
-                'data'=>$phones
-            ], 200);
-        } else {
-            return response()->json([
-                'code'=>404,
-                'data'=>'No data'
-            ], 404);
-        }
+
     }
 
     /**
@@ -42,7 +43,37 @@ class PhoneController extends Controller
      */
     public function create()
     {
-        //
+        try {
+            //Query
+            //Getting active employees
+            $admEmployees = AdminEmployee::all();
+            /* $admEmployees = AdminEmployee::where('active', true)
+            ->whereHas('requestType', function ($query) {
+                $query->where('active', true);
+            })->get(); */
+
+            //Getting active plans
+            $admEmployees = PhonePlan::all();
+
+            //Getting active contracts
+            $phoneContracts = PhoneContact::all();
+
+            //Getting Brands and its models
+            $phoneBrands = PhoneBrand::with([
+                'models'
+            ])->withCount('models')
+            ->get();
+
+            return response()->json([
+                $admEmployees,
+                $phoneBrands,
+                $phoneContracts,
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -112,7 +143,7 @@ class PhoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $id)
     {
         //
     }

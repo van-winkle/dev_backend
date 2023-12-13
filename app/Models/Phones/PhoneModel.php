@@ -14,7 +14,9 @@ class PhoneModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $keyType = true;
+    protected $keyType = 'int';
+
+    public $incrementing = true;
 
     public $fillable = [
     'name',
@@ -35,8 +37,8 @@ class PhoneModel extends Model
         'deleted'
     ];
 
-    public function brand()
+    public function brand ()
     {
-        return $this->belongsTo(PhoneBrand::class, 'id');
+        return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
     }
 }

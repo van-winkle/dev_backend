@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Phones\BrandController;
-use GuzzleHttp\Promise\Create;
+
 
 /*
 |--------------------------------------------------------------------------

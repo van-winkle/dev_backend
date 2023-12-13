@@ -14,12 +14,15 @@ use Illuminate\Support\Facades\Validator;
 
 class BrandController extends Controller
 {
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        //retornar todos campos de la tabla....
+        // $phoneBrands = PhoneBrand::all();
+        // return $phoneBrands;
+
         $phoneBrands = PhoneBrand::all();
         return response()->json($phoneBrands);
     }
@@ -81,8 +84,8 @@ class BrandController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:50',
-            'active' => 'boolean',
+            'name' => 'required|string|max:50',
+            'active' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -92,7 +95,8 @@ class BrandController extends Controller
         $phoneBrand = PhoneBrand::find($id);
 
         if (!$phoneBrand) {
-            return response()->json(['message' => 'Phone brand not found'], 404);
+            //agregar el mensaje de error personalizado
+            return response()->json(['message' => 'brand notfound '], 404);
         }
 
         $existingBrand = PhoneBrand::where('name', $request->input('name'))
@@ -101,7 +105,9 @@ class BrandController extends Controller
             ->first();
 
         if ($existingBrand) {
-            return response()->json(['message' => 'Name already exists for an active PhoneBrand'], 400);
+
+            //agregar el mensaje de error personalizado
+            return response()->json(['message' => 'Name already exists'], 400);
         }
 
         $phoneBrand->name = $request->input('name');
@@ -117,6 +123,18 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $phoneBrand = PhoneBrand::find($id);
+
+        if (!$phoneBrand) {
+            return response()->json(['message' => 'brand notfound'], 404);
+        }
+
+        //preguntar a rodolfo---
+        $phoneBrand->delete();
+        //O
+        //  $phoneBrand->active = false;
+        // $phoneBrand->save();
+
+        return response()->json(['message' => 'brand deleted']);
     }
 }

@@ -125,20 +125,29 @@ class BrandController extends Controller
     {
         try {
 
-            $this->validate($request, [  //funka
+            $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 'name' => ['required', 'string', 'max:50'],
                 'active' => ['nullable', 'boolean'],
-            ], [
-                'id.in' => 'El ID de la URL no coincide con el ID a editar.',
+            ];
+            $messages = [
+                'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'El campo :attribute es requerido.',
                 'integer' => 'El formato de :attribute es irreconocible.',
                 'exists' => 'Ningún registro actual, coincide con :attribute enviado.',
                 'string' => 'El formato de :attribute es irreconocible.',
                 'max' => 'La longitud de :attribute ha excedido la cantidad máxima.',
                 'boolean' => 'El formato de :attribute es diferente al esperado.',
-            ]);
-            
+            ];
+
+            $attributes = [
+                'id' => 'Identificador',
+                'name' => 'Nombre',
+                'active' => 'Estado',
+            ];
+
+            $request->validate($rules, $messages, $attributes);
+
             // $this->validate($request, [  //funka
             //     'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
             //     'name' => ['required', 'string', 'max:50'],

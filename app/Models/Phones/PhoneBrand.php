@@ -19,7 +19,7 @@ class PhoneBrand extends Model
 
     public $incrementing = true;
     // Table Fields
-    protected $fillable = [
+    public $fillable = [
         'name',
         'active',
     ];
@@ -40,9 +40,9 @@ class PhoneBrand extends Model
         'deleted',
     ];
 
-    public function Brand ()
+    public function models()
     {
-        return $this->hasMany(PhoneModel::class,'id');
+        return $this->hasMany(PhoneModel::class,'pho_phone_brand_id');
     }
 
 

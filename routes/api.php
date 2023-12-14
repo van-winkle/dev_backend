@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
 
 use App\Http\Controllers\Phones\BrandController;
-
+use Illuminate\Database\Eloquent\Model;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,18 +24,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
-
-Route::resource('/model', ModelController::class);
-
-//CRUD table CONTRACT
-Route::resource('/contract', ContractController::class);
-
 // Route::get('/brands', [BrandController::class, 'index']);
 // Route::get('/brands/{id}', [BrandController::class, 'show']);
-
+Route::resource('/models', ModelController::class);
 
 Route::resource('/brands', BrandController::class)->except('create');
-
 

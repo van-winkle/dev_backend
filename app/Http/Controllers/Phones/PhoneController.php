@@ -250,7 +250,7 @@ class PhoneController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phones,id'],
+                'id' => ['required', 'integer', 'exists:pho_phones,id',  Rule::in([$id])],
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
@@ -264,6 +264,7 @@ class PhoneController extends Controller
             ];
 
             $messages = [
+                'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'number.unique' => ':attribute ya existe',
@@ -294,7 +295,7 @@ class PhoneController extends Controller
             ];
 
             $request->validate($rules, $messages, $attributes);
-            
+
             $requestPhone = PhoneContract::findOrFail($request->id);
 
             $requestPhoneData = [

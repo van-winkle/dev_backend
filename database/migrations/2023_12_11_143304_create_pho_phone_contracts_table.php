@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_contracts', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique()->whereNull('deleted_at'); 
+            $table->string('code');
             $table->date('start_date');
             $table->date('expiry_date');
             $table->boolean('active')->default(true);
@@ -24,6 +24,7 @@ return new class extends Migration
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
+            $table->unique(['code','deleted_at']);
         });
     }
 

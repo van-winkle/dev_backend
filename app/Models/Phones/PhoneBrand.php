@@ -19,7 +19,7 @@ class PhoneBrand extends Model
 
     public $incrementing = true;
     // Table Fields
-    protected $fillable = [
+    public $fillable = [
         'name',
         'active',
     ];

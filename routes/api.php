@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //CRUD table CONTRACT
 Route::resource('/contract', ContractController::class);
+Route::get('/contratos-activos/{id?}',[ContractController::class, 'activeContracts']);

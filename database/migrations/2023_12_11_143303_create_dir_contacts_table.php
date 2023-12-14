@@ -15,6 +15,11 @@ return new class extends Migration
         Schema::create('dir_contacts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('active');
+
+            $table->timestamp('created_at', 0)->useCurrent();
+            $table->timestamp('updated_at', 0)->useCurrent();
+            $table->softDeletes();
         });
     }
 

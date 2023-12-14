@@ -4,10 +4,11 @@ namespace App\Models\Phones;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AdminEmployee extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'adm_employees';
 
     protected $primaryKey = 'id';
@@ -16,14 +17,28 @@ class AdminEmployee extends Model
 
     public $incrementing = true;
 
-    protected $fillable = [
+    public $fillable = [
         'name',
+        'active',
     ];
 
+    public $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    protected $casts = [];
+
+    protected static $recordEvents = [
+        'created',
+        'updated',
+        'deleted',
+    ];
 
     public function employees ()
     {
-        return $this->hasMany(Phone::class,'id');
+        return $this->hasMany(Phone::class,'adm_employee_id');
     }
 
 }

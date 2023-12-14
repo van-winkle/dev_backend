@@ -31,9 +31,8 @@ Route::resource('/brands', BrandController::class)->except('create');
 
 
 /* Start Phone routes */
-Route::resource('/phones', PhoneController::class)->only([
-    'index', 'create', 'store', 'update', 'destroy', 'show'
-]);
+Route::resource('/phones', PhoneController::class);
+Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
 
 Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
 /* End Phone routes */

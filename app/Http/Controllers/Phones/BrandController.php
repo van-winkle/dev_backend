@@ -148,7 +148,7 @@ class BrandController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
-            // $this->validate($request, [  //funka
+            // $this->validate($request, [  // VERSION DOCUMENTACION
             //     'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
             //     'name' => ['required', 'string', 'max:50'],
             //     'active' => ['nullable', 'boolean'],
@@ -188,18 +188,46 @@ class BrandController extends Controller
     public function destroy(int $id)
     {
         try {
-            $phoneBrand = PhoneBrand::find($id);
 
-            if (!$phoneBrand) {
-                return response()->json(['message' => 'Brand not found'], 404);
-            }
+            $validatedData = Validator::make(
+                [
+                    'id' => $id
+                ],
+                ['id'=>['required', 'integer', 'exists:pho_phone_brands,id']],
+                [
+                    'id.required'=> 'Falta ingresar el :attribute.',
+                    'id.integer'=> 'El :attribute no es reconocible',
+                    'id.exist'=> 'El :attribute ingresado no coincide',
+                ],
+                [
+                    'id'=> 'Identificador de la Marca',
+                    ]
+
+            )->validate();
+
+            ///////////////////////
+            $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
+
+            // if (!$phoneBrand) {
+            //     return response()->json(['message' => 'Brand not found'], 404);
+            // }
 
             $phoneBrand->delete();
+
             $phoneBrand['status'] = 'deleted';
 
-            return response()->json([$phoneBrand, 'message' => 'Brand deleted'], 200);
+            return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);
+
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+
         } catch (Exception $e) {
-            return response()->json(['message' => 'Error deleting phone brand', 'error' => $e->getMessage()], 500);
+
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => 'Error al borrar marca.', 'error' => $e->getMessage()], 500);
         }
     }
 

@@ -14,7 +14,9 @@ class PhoneModel extends Model
 
     protected $primaryKey = 'id';
 
-    protected $keyType = true;
+    protected $keyType = 'int';
+
+    public $incrementing = true;
 
     public $fillable = [
     'name',

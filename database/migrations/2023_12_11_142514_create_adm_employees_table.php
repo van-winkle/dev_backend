@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('adm_employees', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('active')->default(true);
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();
+            $table->softDeletes();
         });
     }
 

@@ -40,9 +40,9 @@ class PhoneBrand extends Model
         'deleted',
     ];
 
-    public function Brand ()
+    public function models ()
     {
-        return $this->hasMany(PhoneModel::class,'pho_phone_model_id');
+        return $this->hasMany(PhoneModel::class,'id');
     }
 
 

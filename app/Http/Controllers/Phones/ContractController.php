@@ -25,11 +25,11 @@ class ContractController extends Controller
                 'contact',
                 'plans',
                 //'phones'
-            ])->withCount(['contact', 'plans'/*,'plans'*/])
-                ->get();
+            ])->withCount(['contact', 'plans'/*,'plans'*/])->get();
             return response()->json($requestContract, 200);
+
         } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -40,15 +40,13 @@ class ContractController extends Controller
     public function create()
     {
         try {
-
-            //Getting active contracts
             $phoneContacts = PhoneContact::where('active', true)->get();
-
             return response()->json([
                 $phoneContacts,
             ], 200);
+
         } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -61,7 +59,7 @@ class ContractController extends Controller
 
         try {
             $rules = [
-                'code' => ['required', 'string', Rule::unique('pho_phone_contracts','code')->whereNull('deleted_at')],
+                'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],'max:250',
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -71,17 +69,17 @@ class ContractController extends Controller
             $messages = [
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
-                'date' => 'El formato d:attribute es irreconocible.',
-                'integer' => 'El formato d:attribute es irreconocible.',
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-                'after_or_equal' => 'd :attribute /////////',
+                'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
+                'integer' => 'El formato d:attribute es diferente al que se espera',
+                'boolean' => 'El formato d:attribute es diferente al esperado',
+                'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe'
             ];
 
             $attributes = [
                 'code' => 'el Codigo del Contrato',
-                'start_date' => 'e la Fecha de Inicio del Contrato',
-                'expiry_date' => 'e la Fecha de Expiracion del Contrato',
+                'start_date' => 'la Fecha de Inicio del Contrato',
+                'expiry_date' => 'la Fecha de Expiracion del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];
@@ -98,15 +96,14 @@ class ContractController extends Controller
             ];
 
             PhoneContract::create($requestContractData);
-
             return response()->json($requestContractData, 200);
+
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
-
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
-
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -121,9 +118,9 @@ class ContractController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                 [
-                    'id.required' => 'Falta :attribute.',
-                    'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                 'id.required' => 'Falta :attribute.',
+                 'id.integer' => ':attribute irreconocible.',
+                 'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
                 ['id' => 'Identificador de Categoría de Solicitud.'],
             )->validate();
@@ -134,10 +131,12 @@ class ContractController extends Controller
                 //'phones'
             ])->withCount(['plans'])->findOrFail($validatedData['id']);
 
+
+
             return response()->json($contract, 200);
+
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -147,7 +146,30 @@ class ContractController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try {
+            $validatedData = Validator::make(
+                ['id' => $id],
+                ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
+                [
+                 'id.required' => 'Falta :attribute.',
+                 'id.integer' => ':attribute irreconocible.',
+                 'id.exists' => ':attribute solicitado sin coincidencia.',
+                ],
+                ['id' => 'Identificador de Categoría de Solicitud.'],
+            )->validate();
+
+            $contract = PhoneContract::with([
+                'plans',
+                'contact',
+                //'phones'
+            ])->withCount(['plans'])->findOrFail($validatedData['id']);
+            $phoneContacts = PhoneContact::where('active', true)->get();
+            return response()->json([$contract, $phoneContacts], 200);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -155,10 +177,11 @@ class ContractController extends Controller
      */
     public function update(Request $request, int $id)
     {
+
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
-                'code' => ['required', 'string'],
+                'id' => ['required', 'integer', 'exists:pho_phone_contracts,id', Rule::in([$id])],
+                'code' => ['required', 'string',Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -166,24 +189,29 @@ class ContractController extends Controller
             ];
 
             $messages = [
+                'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
-                'date' => 'El formato d:attribute es irreconocible.',
-                'integer' => 'El formato d:attribute es irreconocible.',
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-                'after_or_equal' => 'd:attribute /////////',
-                'code.unique' => ':attribute ya existe'
+                'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
+                'integer' => 'El formato d:attribute es diferente al que se espera',
+                'boolean' => 'El formato d:attribute es diferente al esperado',
+                'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
+                'code.unique' => ':attribute ya existe',
+                'exists'=> ':attribute no existe'
             ];
 
             $attributes = [
+                'id' => 'Identificador',
                 'code' => 'el Codigo del Contrato',
-                'start_date' => 'e la Fecha de Inicio del Contrato',
-                'expiry_date' => 'e la Fecha de Expiracion del Contrato',
+                'start_date' => 'la Fecha de Inicio del Contrato',
+                'expiry_date' => 'la Fecha de Expiracion del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];
 
             $request->validate($rules, $messages, $attributes);
+
+
 
             $requestContract = PhoneContract::findOrFail($request->id);
             $requestContractData = [
@@ -195,15 +223,14 @@ class ContractController extends Controller
             ];
 
             $requestContract->update($requestContractData);
-
             return response()->json($requestContract, 200);
+
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
-
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
-
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -218,16 +245,13 @@ class ContractController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                 [
-                    'id.required' => 'Falta el :attribute.',
-                    'id.integer' => 'El :attribute es irreconocible.',
-                    'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                 'id.required' => 'Falta el :attribute.',
+                 'id.integer' => 'El :attribute es irreconocible.',
+                 'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
-                [
-                    'id' => 'Identificador del Contrato de Solicitud',
-                ]
-            )->validate();
+                ['id' => 'Identificador del Contrato de Solicitud',])->validate();
 
-            $contract = NULL;
+                $contract = NULL;
 
             DB::transaction(function () use ($validatedData, &$contract) {
                 $contract = PhoneContract::findOrFail($validatedData['id']);
@@ -251,31 +275,26 @@ class ContractController extends Controller
     {
         try {
             $commonQuery = PhoneContract::where('active', true);
-
-
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],
                     ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                     [
-                        'id.required' => 'Falta el :attribute.',
-                        'id.integer' => 'El :attribute es irreconocible.',
-                        'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                     'id.required' => 'Falta el :attribute.',
+                     'id.integer' => 'El :attribute es irreconocible.',
+                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
                     ],
-                    [
-                        'id' => 'Identificador de Contrato de Solicitud',
-                    ]
-                )->validate();
+                    ['id' => 'Identificador de Contrato de Solicitud',])->validate();
 
                 $requestContracts = $commonQuery->with(['contact', 'plans'])->findOrFail($validatedData['id']);
+
             } else {
                 $requestContracts = $commonQuery->with(['contact', 'plans'])->get();
             }
-
             return response()->json($requestContracts, 200);
+
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }

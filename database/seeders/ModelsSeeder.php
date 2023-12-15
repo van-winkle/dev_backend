@@ -14,11 +14,14 @@ class ModelsSeeder extends Seeder
     public function run(): void
     {
         DB::table('pho_phone_models')->insert(
-            [['name' => 'iPhone 15 Pro Max', 'active'=> true,'pho_phone_brand_id'=>1],
+            [
+             ['name' => 'iPhone 15 Pro Max', 'active'=> true,'pho_phone_brand_id'=>1],
+             ['name' => 'iPhone 14 Pro Max', 'active'=> true,'pho_phone_brand_id'=>1],
              ['name' => 'Galaxy A03', 'active'=> true,'pho_phone_brand_id'=>2],
              ['name' => 'Xiaomi Redmi Note 12 Pro+' , 'active'=> true,'pho_phone_brand_id'=>3],
              ['name' => 'moto g84 5g', 'active'=> true,'pho_phone_brand_id'=>4],
-             ['name' => 'P Series. HUAWEI P60 Pro','active'=> true,'pho_phone_brand_id'=>5]]
+             ['name' => 'P Series. HUAWEI P60 Pro','active'=> true,'pho_phone_brand_id'=>5]
+             ]
         );
     }
 }

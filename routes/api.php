@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::get('/brands', [BrandController::class, 'index']);
 // Route::get('/brands/{id}', [BrandController::class, 'show']);
 
-
+/* BRANDS ROUTES->K*/
 Route::resource('/brands', BrandController::class)->except('create, edit');
+Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
 

@@ -27,8 +27,11 @@ class BrandController extends Controller
                 ->get();
 
             return response()->json($phoneBrands, 200);
+
         } catch (Exception $e) {
+
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+
             return response()->json([
                 'message' => 'Ha ocurrido un error al procesar la solicitud.',
                 'error' => $e->getMessage()
@@ -50,7 +53,10 @@ class BrandController extends Controller
                     'max:50',
                     Rule::unique('pho_phone_brands', 'name')->whereNull('deleted_at')
                 ],
-                'active' => ['nullable', 'boolean'],
+                'active' => [
+                    'nullable',
+                    'boolean'
+                ],
             ];
 
             $messages = [
@@ -64,22 +70,31 @@ class BrandController extends Controller
                 'active' => 'Estado',
             ];
 
-            $request->validate($rules, $messages, $attributes);
+            $request->validate(
+                $rules,
+                $messages,
+                $attributes
+            );
 
             $requestBrandData = [
                 'name' => $request->name,
                 'active' => $request->active == 'true' ? true : false
             ];
 
-
             $newBrand = PhoneBrand::create($requestBrandData);
 
             return response()->json($newBrand, 200);
+
         } catch (ValidationException $e) {
+
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['errors' => $e->errors()], 400);
+
         } catch (Exception $e) {
+
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);
@@ -93,24 +108,39 @@ class BrandController extends Controller
     {
         try {
             $validatedData = Validator::make(
-                ['id' => $id],
                 [
-                    'id' => ['required', 'integer', Rule::exists('pho_phone_brands', 'id')->whereNull('deleted_at')],
+                    'id' => $id
                 ],
+
+                [
+                    'id' => [
+                        'required',
+                        'integer',
+                        Rule::exists('pho_phone_brands', 'id')
+                        ->whereNull('deleted_at')],
+                ],
+
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Marca de Teléfono.']
-            )->validate();
+
+                [
+                    'id' => 'Identificador de Marca de Teléfono.'
+                ]
+                )->validate();
 
             $phoneBrand = PhoneBrand::with(['models'])->findOrFail($validatedData['id']);
 
             return response()->json($phoneBrand, 200);
+
         } catch (ValidationException $e) {
+
             return response()->json(['errors' => $e->errors()], 400);
+
         } catch (Exception $e) {
+
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -124,12 +154,12 @@ class BrandController extends Controller
     public function update(Request $request, int $id)
     {
         try {
-
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 'name' => ['required', 'string', 'max:50'],
                 'active' => ['nullable', 'boolean'],
             ];
+
             $messages = [
                 'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'El campo :attribute es requerido.',
@@ -172,11 +202,17 @@ class BrandController extends Controller
             $updateBrand->update($data);
 
             return response()->json($updateBrand, 200);
+
         } catch (ValidationException $e) {
+
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['errors' => $e->errors()], 400);
+
         } catch (Exception $e) {
+
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -188,23 +224,26 @@ class BrandController extends Controller
     public function destroy(int $id)
     {
         try {
-
             $validatedData = Validator::make(
                 [
                     'id' => $id
                 ],
-                ['id'=>['required', 'integer', 'exists:pho_phone_brands,id']],
+
+                [
+                    'id'=>['required', 'integer', 'exists:pho_phone_brands,id']
+                ],
+
                 [
                     'id.required'=> 'Falta ingresar el :attribute.',
                     'id.integer'=> 'El :attribute no es reconocible',
                     'id.exist'=> 'El :attribute ingresado no coincide',
                 ],
+
                 [
                     'id'=> 'Identificador de la Marca',
-                    ]
+                ]
 
             )->validate();
-
             ///////////////////////
             $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
 
@@ -219,6 +258,7 @@ class BrandController extends Controller
             return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);
 
         } catch (ValidationException $e) {
+
             Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
@@ -231,14 +271,51 @@ class BrandController extends Controller
         }
     }
 
-    public function phoneBrandsActive($id = null)
+    public function BrandsActive($id = null)
     {
         try {
-            $brands = PhoneBrand::where('active', true)->get();
-            $phoneBrands = PhoneBrand::where('active', true)->where('id', $id)->first();
-            // Aquí deberías hacer algo con $brands y $phoneBrands
+            $commonQuery = PhoneBrand::where('active', true);
+
+            if ($id != null) {
+                $validatedData = validator::make(
+                    [
+                        'id' => $id
+                    ],
+
+                    [
+                        'id' => [
+                            'required',
+                            'integer',
+                            'exist:pho_phone_brands,id'
+                        ]
+                    ],
+
+                    [
+                        'id.required'=> 'Falta el :attribute',
+                        'id.integer'=> 'El :attribute es irreconocible.',
+                        'id.exist'=> 'El :attribute no coincide con los registros'
+                    ],
+
+                    [
+                        'id' => 'Identificador de la marca',
+                    ]
+                )
+                ->validate();
+
+                $requestBrands = $commonQuery->with(['models'])->findOrFail($validatedData['id']);
+
+            } else {
+                $requestBrands = $commonQuery->with(['models'])->get();
+            }
+
+            return response()->json($requestBrands, 200);
+
         } catch (Exception $e) {
-            return response()->json(['message' => 'Error fetching phone brands', 'error' => $e->getMessage()], 500);
+
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() .'. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
 }

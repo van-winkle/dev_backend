@@ -88,8 +88,8 @@ class PhoneController extends Controller
                 'price' => ['required', 'numeric','between:0,9999.99'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => ['required', 'integer', 'exists:adm_employees,id'],
-                'pho_phone_plan_id' => ['required', 'integer', 'exists:pho_phone_plans,id'],
+                'adm_employee_id' => ['integer', 'exists:adm_employees,id'],
+                'pho_phone_plan_id' => ['integer', 'exists:pho_phone_plans,id'],
                 'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
                 'pho_phone_model_id' => ['required', 'integer', 'exists:pho_phone_models,id']
             ];
@@ -169,7 +169,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Télefono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([
@@ -204,7 +204,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Télefono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([

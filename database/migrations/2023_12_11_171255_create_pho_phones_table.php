@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('type', 50);
             $table->string('imei', 15);
             $table->decimal('price', 6, 2);
+
             $table->boolean('active')->default(true);
 
             $table->unsignedBigInteger('adm_employee_id');

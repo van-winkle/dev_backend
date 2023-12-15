@@ -21,7 +21,6 @@ class BrandController extends Controller
         try {
             $phoneBrands = PhoneBrand::with([
                 'models'
-                // 'models:name,active,pho_phone_brand_id'
             ])
                 ->withCount('models')
                 ->get();
@@ -114,7 +113,7 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                            ->whereNull('deleted_at')
+                        ->whereNull('deleted_at')
                     ],
                 ],
 
@@ -151,13 +150,24 @@ class BrandController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
-                'name' => ['required', 'string', 'max:50'],
-                'active' => ['nullable', 'boolean'],
+                'id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_brands,id',
+                    Rule::in([$id])],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:50'
+                ],
+                'active' => [
+                    'nullable',
+                    'boolean'
+                ],
             ];
 
             $messages = [
-                'id.in' => 'El ID no coincide con el registro a modificar.',
+                'id.in' => 'El :attribute no coincide con el registro a modificar.',
                 'required' => 'El campo :attribute es requerido.',
                 'integer' => 'El formato de :attribute es irreconocible.',
                 'exists' => 'Ningún registro actual, coincide con :attribute enviado.',
@@ -173,20 +183,6 @@ class BrandController extends Controller
             ];
 
             $request->validate($rules, $messages, $attributes);
-
-            // $this->validate($request, [  // VERSION DOCUMENTACION
-            //     'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
-            //     'name' => ['required', 'string', 'max:50'],
-            //     'active' => ['nullable', 'boolean'],
-            // ], [
-            //     'id.in' => 'El ID de la URL no coincide con el ID a editar.',
-            //     'required' => 'El campo :attribute es requerido.',
-            //     'integer' => 'El formato de :attribute es irreconocible.',
-            //     'exists' => 'Ningún registro actual, coincide con :attribute enviado.',
-            //     'string' => 'El formato de :attribute es irreconocible.',
-            //     'max' => 'La longitud de :attribute ha excedido la cantidad máxima.',
-            //     'boolean' => 'El formato de :attribute es diferente al esperado.',
-            // ]);
 
             $updateBrand = PhoneBrand::findOrFail($request->id);
 
@@ -209,30 +205,6 @@ class BrandController extends Controller
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
-
-        $phoneBrand = PhoneBrand::find($id);
-
-        if (!$phoneBrand) {
-
-            return response()->json(['message' => 'brand notfound '], 404);
-        }
-
-        $existingBrand = PhoneBrand::where('name', $request->input('name'))
-            ->where('id', '!=', $id)
-            ->where('active', true)
-            ->first();
-
-        if ($existingBrand) {
-
-
-            return response()->json(['message' => 'Name already exists'], 400);
-        }
-
-        $phoneBrand->name = $request->input('name');
-        $phoneBrand->active = $request->input('active', true);
-        $phoneBrand->save();
-
-        return response()->json($phoneBrand);
     }
 
 
@@ -262,12 +234,8 @@ class BrandController extends Controller
                 ]
 
             )->validate();
-            ///////////////////////
-            $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
 
-            // if (!$phoneBrand) {
-            //     return response()->json(['message' => 'Brand not found'], 404);
-            // }
+            $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
 
             $phoneBrand->delete();
 

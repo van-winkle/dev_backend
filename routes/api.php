@@ -43,8 +43,8 @@ Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsAc
 
 //ROUTES table CONTRACT
 Route::resource('/contract', ContractController::class);
-Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
+Route::get('/phone-contract-active/{id?}',[ContractController::class, 'activeContracts']);
 
 //ROUTES table PLANS
 Route::resource('/plans', PhonePlanController::class);
-Route::get('planes-activos/{id?}',[PhonePlanController::class, 'activePlans']);
+Route::get('/phone-plan-active/{id?}',[PhonePlanController::class, 'activePlans']);

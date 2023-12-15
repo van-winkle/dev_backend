@@ -29,9 +29,8 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() );
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-            //throw $th;
-        }
 
+        }
     }
 
     /**
@@ -123,10 +122,31 @@ class ModelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $id)
     {
+        try {
+            $validatedData = Validator::make(
+                ['id' => $id],
+                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
+                [
+                 'id.required' => 'Falta :attribute.',
+                 'id.integer' => ':attribute irreconocible.',
+                 'id.exists' => ':attribute solicitado sin coincidencia.',
+                ],
+                ['id' => 'Identificador de Categoría de Solicitud.'],
+            )->validate();
 
+            $model = PhoneModel::with([
+                'brand',
+                //'phones'
+            ])->withCount(['plans'])->findOrFail($validatedData['id']);
+            $phoneModels = PhoneModel::where('active', true)->get();
+            return response()->json([$model, $phoneModels], 200);
 
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
 
     }
 
@@ -231,7 +251,7 @@ class ModelController extends Controller
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],
-                    ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                    ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
                     [
                         'id.required' => 'Falta el :attribute.',
                         'id.integer' => 'El :attribute es irreconocible.',
@@ -245,11 +265,11 @@ class ModelController extends Controller
                 $requestPhoneModel = $commonQuery->with([
                     'brand',
 
-                ])->withCount(['incidents'])->findOrFail($validatedData['id']);
+                ])->withCount(['brand'])->findOrFail($validatedData['id']);
             } else {
                 $requestPhoneModel = $commonQuery->with([
                     'brand',
-                ])->withCount(['incidents'])->get();
+                ])->withCount(['brand'])->get();
             }
 
             return response()->json($requestPhoneModel, 200);

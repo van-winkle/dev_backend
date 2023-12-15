@@ -14,7 +14,7 @@ class PhoneModel extends Model
 
     public $primaryKey = 'id';
 
-    protected $keyType = "int";
+    protected $keyType = 'int';
 
     public $incrementing = true;
 

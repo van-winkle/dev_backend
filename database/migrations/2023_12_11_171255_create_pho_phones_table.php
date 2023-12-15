@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('pho_phones', function (Blueprint $table) {
             $table->id();
 
-            $table->string('number', 9)->unique()->whereNull('deleted_at');
+            $table->string('number', 9);
 
             $table->string('type', 50);
-
-            $table->string('imei', 15)->unique()->whereNull('deleted_at');
+            $table->string('imei', 15);
             $table->decimal('price', 6, 2);
 
             $table->boolean('active')->default(true);
@@ -36,6 +35,8 @@ return new class extends Migration
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
 
+            $table->unique(['number','deleted_at']);
+            $table->unique(['imei','deleted_at']);
 
         });
     }

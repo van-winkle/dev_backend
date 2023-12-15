@@ -14,11 +14,11 @@ class EmployeesSeeder extends Seeder
     public function run(): void
     {
         DB::table('adm_employees')->insert([
-            ['name' => 'Alejandro Argueta',],
-            ['name' => 'Hazel Paola',],
-            ['name' => 'Carlos Eduardo',],
-            ['name' => 'David Mendez',],
-            ['name' => 'Sarai Buendia',],
+            ['name' => 'Alejandro Argueta', 'active' => true],
+            ['name' => 'Hazel Paola', 'active' => true],
+            ['name' => 'Carlos Eduardo', 'active' => true],
+            ['name' => 'David Mendez', 'active' => true],
+            ['name' => 'Sarai Buendia', 'active' => true],
         ]);
 
     }

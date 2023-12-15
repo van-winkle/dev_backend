@@ -1,13 +1,16 @@
 <?php
 
-use App\Http\Controllers\Phones\ContractController;
 
+
+use App\Http\Controllers\Phones\PhoneController;
+use App\Http\Controllers\Phones\ContractController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
 
 use App\Http\Controllers\Phones\BrandController;
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Phones\PhoneBrand;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,4 +32,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('/models', ModelController::class);
 
 Route::resource('/brands', BrandController::class)->except('create');
+
+
+
+/* Start Phone routes */
+Route::resource('/phones', PhoneController::class);
+Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
+
+Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
+/* End Phone routes */
+
+//CRUD table CONTRACT
+Route::resource('/contract', ContractController::class);
+Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
 

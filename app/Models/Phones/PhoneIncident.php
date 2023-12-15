@@ -18,7 +18,7 @@ class PhoneIncident extends Model
 
     public $incrementing = true;
 
-    protected $fillable = [
+    public $fillable = [
         'file_name',
         'file_name_original',
         'file_mimetype',
@@ -43,15 +43,8 @@ class PhoneIncident extends Model
 
     public function incident ()
     {
-        return $this->hasMany(PhoneIncident::class,'id');
+        return $this->belongsTo(Phone::class,'pho_phone_id');
     }
-
-
-
-
-
-
-
 
 
 }

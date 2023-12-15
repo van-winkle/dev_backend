@@ -5,7 +5,6 @@
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use Illuminate\Http\Request;
-use App\Models\Phones\PhoneBrand;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\BrandController;
@@ -44,5 +43,4 @@ Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsAc
 Route::resource('/contract', ContractController::class);
 Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
 
-Route::resource('/plans', PhonePlanController::class);
-Route::get('planes-activos/{id?}',[PhonePlanController::class, 'activePlans']);
+

@@ -31,6 +31,7 @@ class ModelController extends Controller
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
 
         }
+
     }
 
     /**
@@ -158,21 +159,24 @@ class ModelController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_brands,id'],
+                'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean'],
                 'pho_phone_brand_id' => ['required', 'integer','exists:pho_phone_brands,id'],
 
             ];
             $messages = [
+                'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'El valor del :attribute es necesario',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
-                'integer' => 'El formato de:attribute es irreconocible.'
+                'integer' => 'El formato de:attribute es irreconocible.',
+                'exists'=> ':attribute no existe'
             ];
 
             $attributes = [
+                'id' => 'Identificador',
                 'name' => 'Nombre',
                 'active' => 'Activo',
                 'pho_phone_brand_id' => 'Identificador marca',

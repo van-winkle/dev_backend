@@ -41,9 +41,10 @@ Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
 Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
 /* End Phone routes */
 
-//CRUD table CONTRACT
+//ROUTES table CONTRACT
 Route::resource('/contract', ContractController::class);
 Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
 
+//ROUTES table PLANS
 Route::resource('/plans', PhonePlanController::class);
 Route::get('planes-activos/{id?}',[PhonePlanController::class, 'activePlans']);

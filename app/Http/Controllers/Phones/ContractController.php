@@ -122,7 +122,7 @@ class ContractController extends Controller
                  'id.integer' => ':attribute irreconocible.',
                  'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Contrato'],
             )->validate();
 
             $contract = PhoneContract::with([

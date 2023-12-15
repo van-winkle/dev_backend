@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Phones\BrandController;
+use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Models\Phones\PhoneBrand;
 
 /*
@@ -33,6 +34,12 @@ Route::resource('/brands', BrandController::class)->except('create');
 /* Start Phone routes */
 Route::resource('/phones', PhoneController::class);
 Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
+/* End Phone routes */
+
+/* Start Incidents routes */
+Route::resource('/incidents', PhoneIncidentController::class);
+Route::get('/incidents-active/{id?}', [PhoneController::class, 'activeIncidents']);
+/* End Phone routes */
 
 Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
-/* End Phone routes */
+

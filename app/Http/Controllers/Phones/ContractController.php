@@ -24,8 +24,8 @@ class ContractController extends Controller
             $requestContract = PhoneContract::with([
                 'contact',
                 'plans',
-                //'phones'
-            ])->withCount(['contact', 'plans'/*,'plans'*/])->get();
+                'phones'
+            ])->withCount(['plans','phones'])->get();
             return response()->json($requestContract, 200);
 
         } catch (Exception $e) {
@@ -128,8 +128,8 @@ class ContractController extends Controller
             $contract = PhoneContract::with([
                 'plans',
                 'contact',
-                //'phones'
-            ])->withCount(['plans'])->findOrFail($validatedData['id']);
+                'phones'
+            ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
 
 
 
@@ -161,8 +161,8 @@ class ContractController extends Controller
             $contract = PhoneContract::with([
                 'plans',
                 'contact',
-                //'phones'
-            ])->withCount(['plans'])->findOrFail($validatedData['id']);
+                'phones'
+            ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
             $phoneContacts = PhoneContact::where('active', true)->get();
             return response()->json([$contract, $phoneContacts], 200);
 

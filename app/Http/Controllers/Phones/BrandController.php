@@ -215,6 +215,30 @@ class BrandController extends Controller
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
+
+        $phoneBrand = PhoneBrand::find($id);
+
+        if (!$phoneBrand) {
+
+            return response()->json(['message' => 'brand notfound '], 404);
+        }
+
+        $existingBrand = PhoneBrand::where('name', $request->input('name'))
+            ->where('id', '!=', $id)
+            ->where('active', true)
+            ->first();
+
+        if ($existingBrand) {
+
+
+            return response()->json(['message' => 'Name already exists'], 400);
+        }
+
+        $phoneBrand->name = $request->input('name');
+        $phoneBrand->active = $request->input('active', true);
+        $phoneBrand->save();
+
+        return response()->json($phoneBrand);
     }
 
 

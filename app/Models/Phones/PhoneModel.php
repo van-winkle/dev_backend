@@ -18,6 +18,8 @@ class PhoneModel extends Model
 
     public $incrementing = true;
 
+
+
     public $fillable = [
     'name',
     'active',
@@ -29,7 +31,6 @@ class PhoneModel extends Model
         'updated_at',
         'deleted_at'
     ];
-    protected $casts = [];
 
     protected static $recordEvents= [
         'created',
@@ -37,7 +38,8 @@ class PhoneModel extends Model
         'deleted'
     ];
 
-    public function brand ()
+    public function brand()
+
     {
         return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
     }

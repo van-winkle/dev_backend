@@ -25,13 +25,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 // Route::get('/brands', [BrandController::class, 'index']);
 // Route::get('/brands/{id}', [BrandController::class, 'show']);
+Route::resource('/models', ModelController::class);
+Route::get('/models_active/{id?}', [ModelController::class, 'phoneModelsActive']);
 
 /* BRANDS ROUTES->K*/
 Route::resource('/brands', BrandController::class)->except('create, edit');
 Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
+Route::resource('/brands', BrandController::class)->except('create');
+
 
 
 /* Start Phone routes */

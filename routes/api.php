@@ -1,13 +1,14 @@
 <?php
 
 
+use Illuminate\Http\Request;
+use App\Models\Phones\PhoneBrand;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Phones\BrandController;
+
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Phones\BrandController;
-use App\Models\Phones\PhoneBrand;
+use App\Http\Controllers\Phones\PhonePlanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,6 @@ Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsAc
 //CRUD table CONTRACT
 Route::resource('/contract', ContractController::class);
 Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
+
+Route::resource('/plans', PhonePlanController::class);
+Route::get('planes-activos/{id?}',[PhonePlanController::class, 'activePlans']);

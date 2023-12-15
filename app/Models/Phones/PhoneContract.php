@@ -52,8 +52,8 @@ class PhoneContract extends Model
         return $this->hasMany(PhonePlan::class, 'pho_phone_contract_id');
     }
 
-    /*public function phones (){
-        return $this->hasMany(Phone::class, 'id');
-    }*/
+    public function phones (){
+        return $this->hasMany(Phone::class, 'pho_phone_contract_id');
+    }
 
 }

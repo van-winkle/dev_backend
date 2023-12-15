@@ -7,10 +7,7 @@ use App\Http\Controllers\Phones\ContractController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\ModelController;
-
 use App\Http\Controllers\Phones\BrandController;
-
-use App\Models\Phones\PhoneBrand;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route::get('/brands', [BrandController::class, 'index']);
 // Route::get('/brands/{id}', [BrandController::class, 'show']);
+
 Route::resource('/models', ModelController::class);
 Route::get('/models_active/{id?}', [ModelController::class, 'phoneModelsActive']);
 

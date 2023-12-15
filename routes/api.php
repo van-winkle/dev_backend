@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 /* Start Models routes */
 Route::resource('/models', ModelController::class);
-Route::get('/models_active/{id?}', [ModelController::class, 'phoneModelsActive']);
+Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
 /* End Models route */
 
 /* BRANDS ROUTES->K*/

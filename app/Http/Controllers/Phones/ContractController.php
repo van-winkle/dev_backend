@@ -59,7 +59,7 @@ class ContractController extends Controller
 
         try {
             $rules = [
-                'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],'max:250',
+                'code' => ['required', 'string','max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -68,12 +68,14 @@ class ContractController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
+                'max' => ':attribute excede los caracteres maximos',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
-                'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
-                'code.unique' => ':attribute ya existe'
+                'after_or_equal' => 'La Fecha ingresada en :attribute tiene que ser manyor a la Fecha de Inicio',
+                'code.unique' => ':attribute ya existe',
+                'exists'=> ':attribute no esxiste'
             ];
 
             $attributes = [

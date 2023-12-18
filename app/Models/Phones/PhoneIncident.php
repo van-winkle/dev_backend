@@ -41,7 +41,7 @@ class PhoneIncident extends Model
         'deleted',
     ];
 
-    public function incident ()
+    public function phone ()
     {
         return $this->belongsTo(Phone::class,'pho_phone_id');
     }

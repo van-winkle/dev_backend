@@ -80,7 +80,7 @@ class PhoneIncidentController extends Controller
 
                 'boolean' => 'El formato de :attribute es diferente al esperado',
 
-                'numeric' => 'El formato d:attribute debe ser númerico.',
+                'numeric' => 'El formato d:attribute debe ser numérico.',
                 'between' => 'El formato d:attribute debe ser entre 0 y 100.',
                 'integer' => 'El formato d:attribute es irreconocible.',
             ];
@@ -94,7 +94,7 @@ class PhoneIncidentController extends Controller
                 'percentage' => 'el Porcentaje del Incidente',
                 'active' => 'el Estado del Incidente',
 
-                'pho_phone_id' => 'el Identificador del Télefono',
+                'pho_phone_id' => 'el Identificador del Teléfono',
             ];
 
             $request->validate($rules, $messages, $attributes);
@@ -143,7 +143,7 @@ class PhoneIncidentController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Incidencia de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
             $phoneIncident =PhoneIncident::with([
@@ -174,7 +174,7 @@ class PhoneIncidentController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             //Getting the phone incident to edit

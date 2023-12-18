@@ -101,7 +101,7 @@ class PhoneController extends Controller
                 'number.min' => ':attribute debe ser de 8 caracteres. ',
                 'number.max' => ':attribute debe ser de 8 caracteres. ',
 
-                'min' => ':attribute ser de mínimo 9 carácteres.  ',
+                'min' => ':attribute ser de mínimo 9 caracteres.  ',
                 'imei.max' => ':attribute ser de máximo 15 caracteres. ',
                 'imei.unique' => ':attribute ya existe',
 
@@ -173,7 +173,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([
@@ -208,7 +208,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([

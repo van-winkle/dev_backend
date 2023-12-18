@@ -14,11 +14,11 @@ class ContactsSeeder extends Seeder
     public function run(): void
     {
         DB::table('dir_contacts')->insert(
-            [['name' => 'Kevin Perez', 'active' => true],
-             ['name' => 'Juan Carlos', 'active' => true],
-             ['name' => 'Sebastian Yatra', 'active' => true],
-             ['name' => 'Luis Ernesto', 'active' => true],
-             ['name' => 'Sofia Jose', 'active' => true]]
+            [['name' => 'Kevin Perez','active' => true],
+             ['name' => 'Juan Carlos','active' => true],
+             ['name' => 'Sebastian Yatra','active' => true],
+             ['name' => 'Luis Ernesto','active' => true],
+             ['name' => 'Sofia Jose','active' => true]]
         );
     }
 }

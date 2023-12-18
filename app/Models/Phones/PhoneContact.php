@@ -2,13 +2,14 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Phones\PhoneContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PhoneContact extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,SoftDeletes;
 
     protected $table = 'dir_contacts';
 
@@ -34,10 +35,10 @@ class PhoneContact extends Model
     protected static $recordEvents = [
         'created',
         'updated',
-        'deleted'
+        'deleted',
     ];
 
     public function contract (){
-        return $this->hasMany(PhoneContract::class, 'dir_contacts_id');
+        return $this->hasMany(PhoneContract::class, 'dir_contact_id');
     }
 }

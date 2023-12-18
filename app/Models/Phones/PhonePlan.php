@@ -2,10 +2,11 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Phones\Phone;
 use App\Models\Phones\PhoneContract;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhonePlan extends Model
 {
@@ -48,4 +49,7 @@ class PhonePlan extends Model
         return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');
     }
 
+    public function phones (){
+        return $this->hasMany(Phone::class, 'pho_phone_plan_id');
+    }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Phones\Phone;
+use App\Models\Phones\PhonePlan;
+use App\Models\Phones\PhoneContact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneContract extends Model
 {
@@ -41,7 +44,16 @@ class PhoneContract extends Model
     ];
 
 
-    public function contacts (){
-        return $this->belongsTo(PhoneContact::class, 'id');
+    public function contact (){
+        return $this->belongsTo(PhoneContact::class, 'dir_contact_id');
     }
+
+    public function plans (){
+        return $this->hasMany(PhonePlan::class, 'pho_phone_contract_id');
+    }
+
+    public function phones (){
+        return $this->hasMany(Phone::class, 'pho_phone_contract_id');
+    }
+
 }

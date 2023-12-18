@@ -12,11 +12,13 @@ class PhoneModel extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'pho_phone_models';
 
-    protected $primaryKey = 'id';
+    public $primaryKey = 'id';
 
-    protected $keyType = 'int';
+    protected $keyType = "int";
 
     public $incrementing = true;
+
+
 
     public $fillable = [
     'name',
@@ -29,7 +31,6 @@ class PhoneModel extends Model
         'updated_at',
         'deleted_at'
     ];
-    protected $casts = [];
 
     protected static $recordEvents= [
         'created',
@@ -37,7 +38,8 @@ class PhoneModel extends Model
         'deleted'
     ];
 
-    public function brand ()
+    public function brand()
+
     {
         return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
     }

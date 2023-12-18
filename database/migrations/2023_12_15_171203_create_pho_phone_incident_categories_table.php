@@ -11,22 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pho_phone_brands', function (Blueprint $table) {
+        Schema::create('pho_phone_incident_categories', function (Blueprint $table) {
             $table->id();
-            // $table->string('name')->unique()->whereNull('deleted_at'); //Unicidad+deleted_at
             $table->string('name');
             $table->boolean('active')->default(true);
+
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
-            $table->unique(['name', 'deleted_at']);
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('pho_phone_brands');
+        Schema::dropIfExists('pho_phone_incident_categories');
     }
 };

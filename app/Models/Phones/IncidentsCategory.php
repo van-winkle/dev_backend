@@ -2,23 +2,21 @@
 
 namespace App\Models\Phones;
 
-use App\Models\Phones\PhoneModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PhoneBrand extends Model
+class IncidentsCategory extends Model
 {
     use HasFactory, SoftDeletes;
-    // name the table
-    protected $table = 'pho_phone_brands';
+    protected $table = 'pho_phone_incident_categories';
 
-    protected $primaryKey= "id";
+    protected $primaryKey = 'id';
 
-    protected $KeyType = "int";
+    protected $keyType = 'int';
 
     public $incrementing = true;
-    // Table Fields
+
     public $fillable = [
         'name',
         'active',
@@ -32,18 +30,10 @@ class PhoneBrand extends Model
 
     protected $casts = [];
 
-
-
     protected static $recordEvents = [
         'created',
         'updated',
         'deleted',
     ];
 
-    public function models ()
-    {
-        return $this->hasMany(PhoneModel::class,'pho_phone_brand_id');
-    }
-
-
-}
+ }

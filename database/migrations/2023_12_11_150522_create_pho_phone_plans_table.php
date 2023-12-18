@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique()->whereNull('deleted_at'); 
+            $table->string('name');
             $table->integer('mobile_data');
             $table->integer('roaming_data');
             $table->integer('minutes');
@@ -27,6 +27,8 @@ return new class extends Migration
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
+
+            $table->unique(['name','deleted_at']);
         });
     }
 

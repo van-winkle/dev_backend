@@ -80,10 +80,17 @@ class BrandController extends Controller
                 $attributes
             );
 
+            // $requestBrandData = [
+            //     'name' => $request->name,
+            //     'active' => $request->active == 'true' ? true : false
+            // ];
+
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' ? true : false
+                'active' => $request->active == 'true' && $request->active   != null? true : false,
+                // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
+
 
             $newBrand = PhoneBrand::create($requestBrandData);
 
@@ -201,7 +208,8 @@ class BrandController extends Controller
 
             $data = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' ? true : false
+                // 'active' => $request->active == 'true' ? true : false
+                'active' => $request->active == 'true' && $request->active   != null? true : false,
             ];
 
             $updateBrand->update($data);

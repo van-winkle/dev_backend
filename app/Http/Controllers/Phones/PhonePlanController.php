@@ -70,6 +70,7 @@ class PhonePlanController extends Controller
             $messages = [
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
+                'min' => ':attributes ingresado debe ser mayor o igual a 0',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
@@ -97,7 +98,7 @@ class PhonePlanController extends Controller
                 'roaming_data' => $request->roaming_data,
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
-                'active' => $request->active == 'true' && $request->active   != null? true : false,
+                'active' => $request->active == 'true' ? true : false,
                 'type' =>$request->type,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
@@ -185,7 +186,7 @@ class PhonePlanController extends Controller
             try {
                 $rules = [
                     'id' => ['required', 'integer', 'exists:pho_phone_plans,id', Rule::in([$id])],
-                    'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],'max:250',
+                    'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->ignore($request->id)->whereNull('deleted_at')],'max:250',
                     'mobile_data' => ['nullable', 'integer', 'min:0'],
                     'roaming_data' => ['nullable', 'integer', 'min:0'],
                     'minutes' => ['nullable', 'integer', 'min:0'],
@@ -196,12 +197,14 @@ class PhonePlanController extends Controller
                 ];
 
                 $messages = [
-                    'required' => 'Falta :attribute.',
-                    'string' => 'El formato d:attribute es irreconocible.',
-                    'integer' => 'El formato d:attribute es diferente al que se espera',
-                    'boolean' => 'El formato d:attribute es diferente al esperado',
-                    'name.unique' => ':attribute ya existe',
-                    'exists' => ':attribute no existe'
+                'required' => 'Falta :attribute.',
+                'string' => 'El formato d:attribute es irreconocible.',
+                'min' => ':attributes ingresado debe ser mayor o igual a 0',
+                'integer' => 'El formato d:attribute es diferente al que se espera',
+                'boolean' => 'El formato d:attribute es diferente al esperado',
+                'name.unique' => ':attribute ya existe',
+                'exists' => ':attribute no existe',
+                'max' => ':attribute excede los caracteres maximos',
                 ];
 
                 $attributes = [
@@ -226,7 +229,7 @@ class PhonePlanController extends Controller
                 'roaming_data' => $request->roaming_data,
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
-                'active' => $request->active,
+                'active' => $request->active == 'true' ? true : false,
                 'type' => $request->type,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];

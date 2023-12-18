@@ -57,14 +57,14 @@ class PhonePlanController extends Controller
     {
         try {
             $rules = [
-                'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],'max:250',
+                'name' => ['required', 'string','max:250', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],
                 'mobile_data' => ['nullable', 'integer', 'min:0'],
                 'roaming_data' => ['nullable', 'integer', 'min:0'],
                 'minutes' => ['nullable', 'integer', 'min:0'],
                 'roaming_minutes' => ['nullable', 'integer', 'min:0'],
                 'active' => ['nullable', 'boolean'],
                 'type' => ['required', 'string', 'max:250'],
-                'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->whereNull('deleted_at')],
             ];
 
             $messages = [
@@ -73,7 +73,8 @@ class PhonePlanController extends Controller
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe'
+                'exists' => ':attribute no existe',
+                'max' => ':attribute excede los caracteres maximos',
             ];
 
             $attributes = [
@@ -96,8 +97,8 @@ class PhonePlanController extends Controller
                 'roaming_data' => $request->roaming_data,
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
-                'active' => $request->active,
-                'type' => $request->type,
+                'active' => $request->active == 'true' && $request->active   != null? true : false,
+                'type' =>$request->type,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
 

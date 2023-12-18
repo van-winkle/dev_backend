@@ -85,7 +85,7 @@ class PhoneController extends Controller
                 'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
-                'price' => ['required', 'numeric','between:0,9999.99'],
+                'price' => ['required','numeric', 'between:1,9999.99' ],
                 'active' => ['nullable','boolean'],
 
                 'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->whereNull('deleted_at') ],
@@ -100,6 +100,9 @@ class PhoneController extends Controller
                 'number.unique' => ':attribute ya existe',
                 'number.min' => ':attribute debe ser de 8 caracteres. ',
                 'number.max' => ':attribute debe ser de 8 caracteres. ',
+
+                'price.min' => ':attribute debe ser de 0 caracteres. ',
+                'price.max' => ':attribute debe ser de 9999.99 caracteres. ',
 
                 'min' => ':attribute ser de mínimo 9 carácteres.  ',
                 'imei.max' => ':attribute ser de máximo 15 caracteres. ',
@@ -258,13 +261,13 @@ class PhoneController extends Controller
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
-                'price' => ['required', 'numeric','between:0,9999.99'],
+                'price' => ['required', 'float','between:0,9999.99'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => ['required', 'integer', 'exists:adm_employees,id'],
-                'pho_phone_plan_id' => ['required', 'integer', 'exists:pho_phone_plans,id'],
-                'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
-                'pho_phone_model_id' => ['required', 'integer', 'exists:pho_phone_models,id']
+                'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->whereNull('deleted_at') ],
+                'pho_phone_plan_id' => [ $request->pho_phone_plan_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_plans','id')->whereNull('deleted_at') ],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->whereNull('deleted_at')],
+                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->whereNull('deleted_at') ]
             ];
 
             $messages = [

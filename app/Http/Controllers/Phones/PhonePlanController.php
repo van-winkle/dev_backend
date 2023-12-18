@@ -290,7 +290,7 @@ class PhonePlanController extends Controller
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],
-                    ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
+                    ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
                     [
                      'id.required' => 'Falta el :attribute.',
                      'id.integer' => 'El :attribute es irreconocible.',

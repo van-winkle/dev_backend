@@ -126,11 +126,11 @@ class BrandController extends Controller
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.exists' => ':attribute no coincide con los registros.',
                 ],
 
                 [
-                    'id' => 'Identificador de Marca de Teléfono.'
+                    'id' => 'Identificador de Marca de Teléfono'
                 ]
             )->validate();
 
@@ -300,7 +300,9 @@ class BrandController extends Controller
 
                 $requestBrands = $commonQuery->with(
                     [
-                        'models'
+                        'models' => function($query){
+                            $query ->where('active', true);
+                        }
                     ]
                 )->findOrFail(
                     $validatedData['id']
@@ -308,7 +310,9 @@ class BrandController extends Controller
             } else {
                 $requestBrands = $commonQuery->with(
                     [
-                        'models'
+                        'models' => function($query){
+                            $query->where('active', true);
+                        }
                     ]
                 )->get();
             }

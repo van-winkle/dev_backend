@@ -78,12 +78,12 @@ class PhonePlanController extends Controller
 
             $attributes = [
                 'name' => 'el Nombre del Plan',
-                'mobile_data' => ' Datos Moviles',
+                'mobile_data' => ' Datos Móviles',
                 'roaming_data' => ' Datos Roaming',
                 'minutes' => ' Minutos de LLamada',
                 'roaming_minutes' => ' Minutos de LLamada Roaming',
                 'active' => 'el Estado del Plan',
-                'type' => 'el Tipo del Telefono',
+                'type' => 'el Tipo del Teléfono',
                 'pho_phone_contract_id' => 'el Identificador del Contrato'
             ];
 
@@ -205,12 +205,12 @@ class PhonePlanController extends Controller
 
                 $attributes = [
                     'name' => 'el Nombre del Plan',
-                    'mobile_data' => ' Datos Moviles',
+                    'mobile_data' => ' Datos Móviles',
                     'roaming_data' => ' Datos Roaming',
                     'minutes' => ' Minutos de LLamada',
                     'roaming_minutes' => ' Minutos de LLamada Roaming',
                     'active' => 'el Estado del Plan',
-                    'type' => 'el Tipo del Telefono',
+                    'type' => 'el Tipo del Teléfono',
                     'pho_phone_contract_id' => 'el Identificador del Contrato'
                 ];
 

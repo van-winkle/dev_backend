@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Models\Phones\PhoneBrand;
 use App\Models\Phones\PhoneModel;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ModelController extends Controller
@@ -61,7 +62,14 @@ class ModelController extends Controller
             $rules = [
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean'],
-                'pho_phone_brand_id' => ['required', 'integer','exists:pho_phone_brands,id'],
+                'pho_phone_brand_id' => ['required', 'integer', 'exists:pho_phone_brands,id', function ($attribute, $value, $fail) {
+                    // Validación personalizada para verificar si la marca está activa o eliminada
+                    $brand = PhoneBrand::find($value);
+
+                    if (!$brand || !$brand->active || $brand->deleted_at !== null) {
+                        $fail('No se puede agregar un modelo a una marca inactiva o eliminada.');
+                    }
+                }],
 
             ];
             $messages = [
@@ -173,7 +181,18 @@ class ModelController extends Controller
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean',],
-                'pho_phone_brand_id' => ['required', 'integer','exists:pho_phone_brands,id'],
+                'pho_phone_brand_id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_brands,id',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $brand = PhoneBrand::find($value);
+
+                        if (!$brand || !$brand->active) {
+                            $fail("La marca asociada no existe o está inactiva.");
+                        }
+                    },
+                ],
 
             ];
             $messages = [

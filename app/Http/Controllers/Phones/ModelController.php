@@ -159,7 +159,7 @@ class ModelController extends Controller
             $model = PhoneModel::with([
                 'brand',
                 //'phones'
-            ])->withCount(['plans'])->findOrFail($validatedData['id']);
+            ])->withCount(['brand'])->findOrFail($validatedData['id']);
             $phoneModels = PhoneModel::where('active', true)->get();
             return response()->json([$model, $phoneModels], 200);
 

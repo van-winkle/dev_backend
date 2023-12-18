@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('type', 50);
             $table->string('imei', 15);
-            $table->decimal('price', 6, 2);
+            $table->decimal('price', 6, 2, true);
 
             $table->boolean('active')->default(true);
 

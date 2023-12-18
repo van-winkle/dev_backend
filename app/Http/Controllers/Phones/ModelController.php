@@ -98,13 +98,13 @@ class ModelController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Modelo de Solicitud.'],
             )->validate();
 
             $phoneModel = PhoneModel::with([

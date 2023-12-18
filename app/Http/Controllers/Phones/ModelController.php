@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Models\Phones\PhoneBrand;
 use App\Models\Phones\PhoneModel;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ModelController extends Controller
@@ -39,6 +40,16 @@ class ModelController extends Controller
      */
     public function create()
     {
+        try {
+            $phoneModels = PhoneModel::where('active', true)->get();
+            return response()->json([
+                $phoneModels,
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
 
     }
 
@@ -51,7 +62,14 @@ class ModelController extends Controller
             $rules = [
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean'],
-                'pho_phone_brand_id' => ['required', 'integer','exists:pho_phone_brands,id'],
+                'pho_phone_brand_id' => ['required', 'integer', 'exists:pho_phone_brands,id', function ($attribute, $value, $fail) {
+                    // Validación personalizada para verificar si la marca está activa o eliminada
+                    $brand = PhoneBrand::find($value);
+
+                    if (!$brand || !$brand->active || $brand->deleted_at !== null) {
+                        $fail('No se puede agregar un modelo a una marca inactiva o eliminada.');
+                    }
+                }],
 
             ];
             $messages = [
@@ -59,7 +77,8 @@ class ModelController extends Controller
                 'boolean' => 'El formato de :attribute es diferente al esperado',
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
-                'integer' => 'El formato de:attribute es irreconocible.'
+                'integer' => 'El formato de:attribute es irreconocible.',
+                'exists' => 'No existe el identificador'
             ];
 
             $attributes = [
@@ -98,13 +117,13 @@ class ModelController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.exists' => ':attribute no se ha encontrado.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de modelo de Solicitud.'],
             )->validate();
 
             $phoneModel = PhoneModel::with([
@@ -132,9 +151,9 @@ class ModelController extends Controller
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute solicitado sin coincidencia.',
+                 'id.exists' => ':attribute no se ha encontrado.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de modelo de Solicitud.'],
             )->validate();
 
             $model = PhoneModel::with([
@@ -160,9 +179,20 @@ class ModelController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
-                "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
-                'active' => ['nullable', 'boolean'],
-                'pho_phone_brand_id' => ['required', 'integer','exists:pho_phone_brands,id'],
+                "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
+                'active' => ['nullable', 'boolean',],
+                'pho_phone_brand_id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_brands,id',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $brand = PhoneBrand::find($value);
+
+                        if (!$brand || !$brand->active) {
+                            $fail("La marca asociada no existe o está inactiva.");
+                        }
+                    },
+                ],
 
             ];
             $messages = [
@@ -223,7 +253,7 @@ class ModelController extends Controller
                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
                 [
-                    'id' => 'Identificador del Teléfono de Solicitud',
+                    'id' => 'Identificador del modelo de Solicitud',
                 ]
             )->validate();
 

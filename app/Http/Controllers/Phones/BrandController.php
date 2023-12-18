@@ -37,6 +37,12 @@ class BrandController extends Controller
         }
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -74,10 +80,17 @@ class BrandController extends Controller
                 $attributes
             );
 
+            // $requestBrandData = [
+            //     'name' => $request->name,
+            //     'active' => $request->active == 'true' ? true : false
+            // ];
+
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' ? true : false
+                'active' => $request->active == 'true' && $request->active   != null? true : false,
+                // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
+
 
             $newBrand = PhoneBrand::create($requestBrandData);
 
@@ -113,18 +126,18 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                        ->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
                     ],
                 ],
 
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.exists' => ':attribute no coincide con los registros.',
                 ],
 
                 [
-                    'id' => 'Identificador de Marca de Teléfono.'
+                    'id' => 'Identificador de Marca de Teléfono'
                 ]
             )->validate();
 
@@ -142,6 +155,12 @@ class BrandController extends Controller
         }
     }
 
+        /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(int $id)
+    {
+    }
 
     /**
      * Update the specified resource in storage.
@@ -154,7 +173,8 @@ class BrandController extends Controller
                     'required',
                     'integer',
                     'exists:pho_phone_brands,id',
-                    Rule::in([$id])],
+                    Rule::in([$id])
+                ],
                 'name' => [
                     'required',
                     'string',
@@ -188,7 +208,8 @@ class BrandController extends Controller
 
             $data = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' ? true : false
+                // 'active' => $request->active == 'true' ? true : false
+                'active' => $request->active == 'true' && $request->active   != null? true : false,
             ];
 
             $updateBrand->update($data);
@@ -287,7 +308,9 @@ class BrandController extends Controller
 
                 $requestBrands = $commonQuery->with(
                     [
-                        'models'
+                        'models' => function($query){
+                            $query ->where('active', true);
+                        }
                     ]
                 )->findOrFail(
                     $validatedData['id']
@@ -295,7 +318,9 @@ class BrandController extends Controller
             } else {
                 $requestBrands = $commonQuery->with(
                     [
-                        'models'
+                        'models' => function($query){
+                            $query->where('active', true);
+                        }
                     ]
                 )->get();
             }

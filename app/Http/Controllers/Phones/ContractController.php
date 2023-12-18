@@ -79,9 +79,9 @@ class ContractController extends Controller
             ];
 
             $attributes = [
-                'code' => 'el Codigo del Contrato',
+                'code' => 'el Código del Contrato',
                 'start_date' => 'la Fecha de Inicio del Contrato',
-                'expiry_date' => 'la Fecha de Expiracion del Contrato',
+                'expiry_date' => 'la Fecha de Expiración del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];
@@ -204,9 +204,9 @@ class ContractController extends Controller
 
             $attributes = [
                 'id' => 'Identificador',
-                'code' => 'el Codigo del Contrato',
+                'code' => 'el Código del Contrato',
                 'start_date' => 'la Fecha de Inicio del Contrato',
-                'expiry_date' => 'la Fecha de Expiracion del Contrato',
+                'expiry_date' => 'la Fecha de Expiración del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];

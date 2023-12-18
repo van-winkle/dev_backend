@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Phones;
 use Exception;
 
 use App\Models\Phones\Phone;
-
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Phones\PhonePlan;

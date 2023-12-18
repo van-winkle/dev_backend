@@ -85,7 +85,7 @@ class PhoneController extends Controller
                 'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
-                'price' => ['required','numeric', 'between:1,9999.99' ],
+                'price' => ['required','numeric', 'between:0,9999.99' ],
                 'active' => ['nullable','boolean'],
 
                 'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->whereNull('deleted_at') ],

@@ -117,7 +117,7 @@ class ModelController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',

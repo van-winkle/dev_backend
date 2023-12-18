@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Phones;
 
 use Exception;
-
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Phones\PhoneBrand;

@@ -37,6 +37,12 @@ class BrandController extends Controller
         }
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -113,7 +119,7 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                        ->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
                     ],
                 ],
 
@@ -142,6 +148,12 @@ class BrandController extends Controller
         }
     }
 
+        /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(int $id)
+    {
+    }
 
     /**
      * Update the specified resource in storage.
@@ -154,7 +166,8 @@ class BrandController extends Controller
                     'required',
                     'integer',
                     'exists:pho_phone_brands,id',
-                    Rule::in([$id])],
+                    Rule::in([$id])
+                ],
                 'name' => [
                     'required',
                     'string',

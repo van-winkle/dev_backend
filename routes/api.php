@@ -32,8 +32,6 @@ Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']
 /* BRANDS ROUTES->K*/
 Route::resource('/brands', BrandController::class)->except('create, edit');
 Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
-Route::resource('/brands', BrandController::class)->except('create');
-
 /* Start Phone routes */
 Route::resource('/phones', PhoneController::class);
 Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);

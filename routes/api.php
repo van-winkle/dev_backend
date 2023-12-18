@@ -25,10 +25,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /* Start Models routes */
+//mover group... a prefix
 Route::group(['prefix' => 'models'], function () {
-    Route::resource('/', ModelController::class);
+    Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
 });
-Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
+Route::resource('/models', ModelController::class);
+
 /* End Models route */
 
 /* Start Brands routes */

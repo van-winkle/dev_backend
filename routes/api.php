@@ -9,7 +9,6 @@ use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
-use App\Models\Phones\PhoneBrand;
 
 /*
 |--------------------------------------------------------------------------

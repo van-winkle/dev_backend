@@ -25,23 +25,34 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-/* Start Models routes */
-Route::resource('/models', ModelController::class);
-Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
-/* End Models route */
 
-/* BRANDS ROUTES->K*/
+/* Start Brand routes */
 Route::resource('/brands', BrandController::class)->except('create, edit');
 Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
+/* End Brand routes */
+
+/* Start Model routes */
+Route::resource('/models', ModelController::class);
+Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
+/* End Model routes */
+
+/* Start Contract routes */
+Route::resource('/contracts', ContractController::class);
+Route::get('/phone-contract-active/{id?}',[ContractController::class, 'activeContracts']);
+/* End Contract */
+
+//Start Plan routes
+Route::resource('/plans', PhonePlanController::class);
+Route::get('/phone-plan-active/{id?}',[PhonePlanController::class, 'activePlans']);
+/* End Plan routes */
+
 /* Start Phone routes */
 Route::resource('/phones', PhoneController::class);
 Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
 /* End Phone routes */
 
-/* Start Incidents routes */
+/* Start Incident routes */
 Route::resource('/incidents', PhoneIncidentController::class);
 Route::get('/incidents-active/{id?}', [PhoneController::class, 'activeIncidents']);
-/* End Phone routes */
-
-Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
+/* End Incident routes */
 

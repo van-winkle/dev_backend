@@ -124,19 +124,23 @@ class PhonePlanController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
+                    ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
                  'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Planes'],
+                ['id' => 'Identificador de Plan'],
             )->validate();
 
             $plan = PhonePlan::with([
                 'contract',
                 'phones'
-            ])->withCount(['contract','phones'])->findOrFail($validatedData['id']);
+            ])->withCount(['phones'])->findOrFail($validatedData['id']);
 
 
 
@@ -156,7 +160,12 @@ class PhonePlanController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
+                ['id' => [
+                    'required',
+                     'integer',
+                     //'exists:pho_phone_plans,id',
+                     Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
+                     ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
@@ -185,7 +194,7 @@ class PhonePlanController extends Controller
     {
             try {
                 $rules = [
-                    'id' => ['required', 'integer', 'exists:pho_phone_plans,id', Rule::in([$id])],
+                    'id' => ['required', 'integer', Rule::exists('pho_phone_plans','id')->whereNull('deleted_at'), Rule::in([$id])],
                     'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->ignore($request->id)->whereNull('deleted_at')],'max:250',
                     'mobile_data' => ['nullable', 'integer', 'min:0'],
                     'roaming_data' => ['nullable', 'integer', 'min:0'],
@@ -203,11 +212,13 @@ class PhonePlanController extends Controller
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe o esta inactivo',
+                'exists' => ':attribute no existe o está inactivo.',
+                'id.in' => 'El ID no coincide con el registro a modificar.',
                 'max' => ':attribute excede los caracteres máximos',
                 ];
 
                 $attributes = [
+                    'id' => 'Identificador',
                     'name' => 'el Nombre del Plan',
                     'mobile_data' => ' Datos Móviles',
                     'roaming_data' => ' Datos Roaming',

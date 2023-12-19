@@ -129,8 +129,8 @@ class ContractController extends Controller
             )->validate();
 
             $contract = PhoneContract::with([
-                'plans',
                 'contact',
+                'plans',
                 'phones'
             ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
 
@@ -152,7 +152,12 @@ class ContractController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_contracts', 'id')
+                        ->whereNull('deleted_at')
+                    ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
@@ -162,8 +167,8 @@ class ContractController extends Controller
             )->validate();
 
             $contract = PhoneContract::with([
-                'plans',
                 'contact',
+                'plans',
                 'phones'
             ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
             $phoneContacts = PhoneContact::where('active', true)->get();
@@ -183,8 +188,8 @@ class ContractController extends Controller
 
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_contracts,id', Rule::in([$id])],
-                'code' => ['required', 'string',Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
+                'id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->whereNull('deleted_at') , Rule::in([$id])],
+                'code' => ['required', 'string', Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -200,7 +205,7 @@ class ContractController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe o esta inactivo'
+                'exists' => ':attribute no existe o está inactivo.'
             ];
 
             $attributes = [

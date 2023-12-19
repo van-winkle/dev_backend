@@ -84,7 +84,7 @@ class PhoneController extends Controller
             $rules = [
                 'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
-                'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
+                'imei' => ['required', 'min:10','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
                 'price' => ['required','max:9999.99','decimal:2'],
                 'active' => ['nullable','boolean'],
 
@@ -104,7 +104,7 @@ class PhoneController extends Controller
                 'price.min' => ':attribute debe ser de 0 caracteres. ',
                 'price.max' => ':attribute debe ser de 9999.99 caracteres. ',
 
-                'min' => ':attribute ser de mínimo 9 caracteres.  ',
+                'min' => ':attribute ser de mínimo 10 caracteres.  ',
                 'imei.max' => ':attribute ser de máximo 15 caracteres. ',
                 'imei.unique' => ':attribute ya existe',
 
@@ -170,7 +170,11 @@ class PhoneController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phones','id')->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
@@ -190,7 +194,6 @@ class PhoneController extends Controller
             return response()->json($phone, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -205,11 +208,15 @@ class PhoneController extends Controller
             //Validate id
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phones','id')->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.exists' => ':attribute Sin coincidencia.',
                 ],
                 ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
@@ -257,7 +264,7 @@ class PhoneController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phones,id',  Rule::in([$id])],
+                'id' => ['required', 'integer', Rule::exists('pho_phones','id')->whereNull('deleted_at'),  Rule::in([$id])],
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],

@@ -24,7 +24,7 @@ class PhonePlanController extends Controller
             $requestContract = PhonePlan::with([
                 'contract',
                 'phones'
-            ])->withCount(['contract','phones'])->get();
+            ])->withCount(['phones'])->get();
             return response()->json($requestContract, 200);
 
         } catch (Exception $e) {
@@ -64,7 +64,7 @@ class PhonePlanController extends Controller
                 'roaming_minutes' => ['nullable', 'integer', 'min:0'],
                 'active' => ['nullable', 'boolean'],
                 'type' => ['required', 'string', 'max:250'],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->whereNull('deleted_at')],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active',true)->whereNull('deleted_at')],
             ];
 
             $messages = [
@@ -193,7 +193,7 @@ class PhonePlanController extends Controller
                     'roaming_minutes' => ['nullable', 'integer', 'min:0'],
                     'active' => ['nullable', 'boolean'],
                     'type' => ['required', 'string', 'max:250'],
-                    'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
+                    'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active',true)->whereNull('deleted_at')],
                 ];
 
                 $messages = [

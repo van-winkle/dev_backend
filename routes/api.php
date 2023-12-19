@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\BrandController;
+
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PhonePlanController;
+
 
 /*
 |--------------------------------------------------------------------------

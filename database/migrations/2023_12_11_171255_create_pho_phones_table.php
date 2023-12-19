@@ -18,13 +18,13 @@ return new class extends Migration
 
             $table->string('type', 50);
             $table->string('imei', 15);
-            $table->decimal('price', 6, 2);
+            $table->decimal('price', 6, 2, true);
 
             $table->boolean('active')->default(true);
 
-            $table->unsignedBigInteger('adm_employee_id');
+            $table->unsignedBigInteger('adm_employee_id')->nullable();
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
-            $table->unsignedBigInteger('pho_phone_plan_id');
+            $table->unsignedBigInteger('pho_phone_plan_id')->nullable();
             $table->foreign('pho_phone_plan_id')->references('id')->on('pho_phone_plans');
             $table->unsignedBigInteger('pho_phone_contract_id');
             $table->foreign('pho_phone_contract_id')->references('id')->on('pho_phone_contracts');

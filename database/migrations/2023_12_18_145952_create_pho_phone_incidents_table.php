@@ -24,6 +24,9 @@ return new class extends Migration
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');
 
+            $table->unsignedBigInteger('pho_phone_incident_category_id');
+            $table->foreign('pho_phone_incident_category_id')->references('id')->on('pho_phone_incident_categories');
+
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();

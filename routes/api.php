@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\BrandController;
-
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
@@ -25,25 +24,46 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /* Start Models routes */
+Route::prefix('models')
+->controller(ModelController::class)
+->group(function (){
+    Route::get('/models-active/{id?}', 'modelsActive');
+});
 Route::resource('/models', ModelController::class);
-Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
 /* End Models route */
 
-/* BRANDS ROUTES->K*/
+/* Start Brands routes */
+Route::prefix('brands')
+->controller(BrandController::class)
+->group(function () {
+    Route::get('/brands-active/{id?}', 'brandsActive');
+});
 Route::resource('/brands', BrandController::class)->except('create, edit');
-Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
-Route::resource('/brands', BrandController::class)->except('create');
+/* End Brands route */
 
-/* Start Phone routes */
+/* Start Phones routes */
+Route::prefix('phones')
+->controller(PhoneController::class)
+->group(function () {
+    Route::get('/phones-active/{id?}', 'activePhones');
+});
 Route::resource('/phones', PhoneController::class);
-Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
+/* End Phones routes */
 
-Route::get('/phone-brands-active/{id?}', [BrandController::class, 'phoneBrandsActive']);
-/* End Phone routes */
+/* Start Contracts routes */
+Route::prefix('contracts')
+->controller(ContractController::class)
+->group(function () {
+    Route::get('/contracts-active/{id?}', 'activeContracts');
+});
+Route::resource('/contracts', ContractController::class);
+/* End Contracts route */
 
-//CRUD table CONTRACT
-Route::resource('/contract', ContractController::class);
-Route::get('contratos-activos/{id?}',[ContractController::class, 'activeContracts']);
-
+/* Start Plans routes */
+Route::prefix('plans')
+->controller(PhonePlanController::class)
+->group(function () {
+    Route::get('/plans-active/{id?}', 'activePlans');
+});
 Route::resource('/plans', PhonePlanController::class);
-Route::get('planes-activos/{id?}',[PhonePlanController::class, 'activePlans']);
+/* End Plans route */

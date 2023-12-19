@@ -59,7 +59,7 @@ class ContractController extends Controller
 
         try {
             $rules = [
-                'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],'max:250',
+                'code' => ['required', 'string','max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -68,18 +68,20 @@ class ContractController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
+                'max' => ':attribute excede los caracteres máximos',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
-                'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
-                'code.unique' => ':attribute ya existe'
+                'after_or_equal' => 'La Fecha ingresada en :attribute tiene que ser mayor a la Fecha de Inicio',
+                'code.unique' => ':attribute ya existe',
+                'exists'=> ':attribute no existe'
             ];
 
             $attributes = [
-                'code' => 'el Codigo del Contrato',
+                'code' => 'el Código del Contrato',
                 'start_date' => 'la Fecha de Inicio del Contrato',
-                'expiry_date' => 'la Fecha de Expiracion del Contrato',
+                'expiry_date' => 'la Fecha de Expiración del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];
@@ -122,7 +124,7 @@ class ContractController extends Controller
                  'id.integer' => ':attribute irreconocible.',
                  'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Contrato'],
             )->validate();
 
             $contract = PhoneContract::with([
@@ -202,9 +204,9 @@ class ContractController extends Controller
 
             $attributes = [
                 'id' => 'Identificador',
-                'code' => 'el Codigo del Contrato',
+                'code' => 'el Código del Contrato',
                 'start_date' => 'la Fecha de Inicio del Contrato',
-                'expiry_date' => 'la Fecha de Expiracion del Contrato',
+                'expiry_date' => 'la Fecha de Expiración del Contrato',
                 'active' => 'el Estado del Contrato',
                 'dir_contact_id' => 'el Identificador del Contacto'
             ];

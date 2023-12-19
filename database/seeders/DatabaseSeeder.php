@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
         ContractsSeeder::class,
         PlansSeeder::class,
         PhonesSeeder::class,
-        IncidentsSeeder::class
+        IncidentCategorySeeder::class,
+        //IncidentsSeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();

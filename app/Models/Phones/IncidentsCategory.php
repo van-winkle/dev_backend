@@ -2,15 +2,14 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PhoneIncident extends Model
+class IncidentsCategory extends Model
 {
-    use HasFactory,SoftDeletes;
-
-    protected $table = 'pho_phone_incidents';
+    use HasFactory, SoftDeletes;
+    protected $table = 'pho_phone_incident_categories';
 
     protected $primaryKey = 'id';
 
@@ -19,13 +18,9 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
-        'file_name',
-        'file_name_original',
-        'file_mimetype',
-        'file_size',
-        'file_path',
-        'percentage',
-        'pho_phone_id'];
+        'name',
+        'active',
+    ];
 
     public $hidden = [
         'created_at',
@@ -41,10 +36,4 @@ class PhoneIncident extends Model
         'deleted',
     ];
 
-    public function phone ()
-    {
-        return $this->belongsTo(Phone::class,'pho_phone_id');
-    }
-
-
-}
+ }

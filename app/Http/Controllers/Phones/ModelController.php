@@ -118,12 +118,13 @@ class ModelController extends Controller
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
+                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute no se ha encontrado.',
                 ],
-                ['id' => 'Identificador de modelo de Solicitud.'],
+                ['id' => 'Identificador de Modelo de Solicitud.'],
             )->validate();
 
             $phoneModel = PhoneModel::with([
@@ -274,7 +275,7 @@ class ModelController extends Controller
         }
     }
 
-    public function phoneModelsActive($id = null)
+    public function modelsActive($id = null)
     {
         try {
             $commonQuery = PhoneModel::where('active', true);

@@ -82,45 +82,52 @@ class PhoneController extends Controller
 
         try {
             $rules = [
-                'number' => ['required','string',Rule::unique('pho_phones','number')->whereNull('deleted_at')],
+                'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
-                'price' => ['required', 'numeric','between:0,9999.99'],
+                'price' => ['required','max:9999.99','decimal:2'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => ['required', 'integer', 'exists:adm_employees,id'],
-                'pho_phone_plan_id' => ['required', 'integer', 'exists:pho_phone_plans,id'],
-                'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
-                'pho_phone_model_id' => ['required', 'integer', 'exists:pho_phone_models,id']
+                'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_plan_id' => [ $request->pho_phone_plan_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ]
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'number.unique' => ':attribute ya existe',
+                'number.min' => ':attribute debe ser de 8 caracteres. ',
+                'number.max' => ':attribute debe ser de 8 caracteres. ',
 
-                'min' => ':attribute ser de minimo 9 carácteres.  ',
-                'imei.max' => ':attribute ser de maximo 15 carácteres. ',
+                'price.min' => ':attribute debe ser de 0 caracteres. ',
+                'price.max' => ':attribute debe ser de 9999.99 caracteres. ',
+
+                'min' => ':attribute ser de mínimo 9 caracteres.  ',
+                'imei.max' => ':attribute ser de máximo 15 caracteres. ',
                 'imei.unique' => ':attribute ya existe',
 
-                'type.max' => ':attribute ser de maximo 50 carácteres. ',
+                'type.max' => ':attribute debe ser de máximo 50 caracteres. ',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
 
-                'numeric' => 'El formato d:attribute debe ser númerico.',
+                'decimal' => ':attribute solo puede tener 2 decimales',
                 'between' => 'El formato d:attribute debe ser mayor que 0 y menor que 9999.99.',
                 'integer' => 'El formato d:attribute es irreconocible.',
+
+                'exists' => ':attribute no existe.  ',
             ];
 
             $attributes = [
-                'number' => 'el Número del Télefono',
-                'type' => 'el Tipo del Telefono',
-                'imei' => 'el IMEI del Télefono',
-                'price' => 'el Precio del Télefono',
-                'active' => 'el Estado del Télefono',
+                'number' => 'El Número del Teléfono',
+                'type' => 'El Tipo del Teléfono',
+                'imei' => 'El IMEI del Teléfono',
+                'price' => 'el Precio del Teléfono',
+                'active' => 'El Estado del Teléfono',
 
                 'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_plan_id' => 'el Identificador del Plan',
-                'pho_phone_contract_id' => 'el Identificador del Contracto',
+                'pho_phone_contract_id' => 'el Identificador del Contrato',
                 'pho_phone_model_id' => 'el Identificador del Modelo',
             ];
 
@@ -169,7 +176,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([
@@ -204,7 +211,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([
@@ -254,43 +261,44 @@ class PhoneController extends Controller
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
-                'price' => ['required', 'numeric','between:0,9999.99'],
+                'price' => ['required','max:9999.99','decimal:2'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => ['required', 'integer', 'exists:adm_employees,id'],
-                'pho_phone_plan_id' => ['required', 'integer', 'exists:pho_phone_plans,id'],
-                'pho_phone_contract_id' => ['required', 'integer', 'exists:pho_phone_contracts,id'],
-                'pho_phone_model_id' => ['required', 'integer', 'exists:pho_phone_models,id']
+                'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_plan_id' => [ $request->pho_phone_plan_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ],
+
             ];
 
             $messages = [
                 'id.in' => 'El ID no coincide con el registro a modificar.',
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
-                'number.unique' => ':attribute ya existe',
+                'number.unique' => ':attribute ya existe.',
 
-                'min' => ':attribute ser de minimo 9 carácteres.  ',
-                'imei.max' => ':attribute ser de maximo 15 carácteres. ',
-                'imei.unique' => ':attribute ya existe',
+                'min' => ':attribute ser de mínimo 9 caracteres.  ',
+                'imei.max' => ':attribute ser de máximo 15 caracteres. ',
+                'imei.unique' => ':attribute ya existe.',
 
-                'type.max' => ':attribute ser de maximo 50 carácteres. ',
+                'type.max' => ':attribute ser de máximo 50 caracteres. ',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
 
-                'numeric' => 'El formato d:attribute debe ser númerico.',
+                'decimal' => ':attribute solo puede tener 2 decimales',
                 'between' => 'El formato d:attribute debe ser mayor que 0 y menor que 9999.99.',
                 'integer' => 'El formato d:attribute es irreconocible.',
             ];
 
             $attributes = [
-                'number' => 'el Número del Télefono',
-                'type' => 'el Tipo del Telefono',
-                'imei' => 'el IMEI del Télefono',
-                'price' => 'el Precio del Télefono',
-                'active' => 'el Estado del Télefono',
+                'number' => 'el Número del Teléfono',
+                'type' => 'el Tipo del Teléfono',
+                'imei' => 'el IMEI del Teléfono',
+                'price' => 'el Precio del Teléfono',
+                'active' => 'el Estado del Teléfono',
 
                 'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_plan_id' => 'el Identificador del Plan',
-                'pho_phone_contract_id' => 'el Identificador del Contracto',
+                'pho_phone_contract_id' => 'el Identificador del Contrato',
                 'pho_phone_model_id' => 'el Identificador del Modelo',
             ];
 

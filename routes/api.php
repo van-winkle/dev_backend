@@ -31,7 +31,9 @@ Route::prefix('models')
 ->group(function (){
     Route::get('/models-active/{id?}', 'modelsActive');
 });
-Route::resource('/models', ModelController::class);
+Route::resource('/models', ModelController::class)
+
+;
 /* End Models route */
 
 /* Start Brands routes */

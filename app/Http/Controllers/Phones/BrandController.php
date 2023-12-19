@@ -126,7 +126,7 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                            ->whereNull('deleted_at')
+                        ->whereNull('deleted_at')
                     ],
                 ],
 

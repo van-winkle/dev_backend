@@ -176,7 +176,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([
@@ -211,7 +211,7 @@ class PhoneController extends Controller
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Télefono de Solicitud.'],
+                ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
 
             $phone = Phone::with([

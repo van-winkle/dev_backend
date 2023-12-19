@@ -75,7 +75,7 @@ class PhonePlanController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe',
-                'max' => ':attribute excede los caracteres maximos',
+                'max' => ':attribute excede los caracteres máximos',
             ];
 
             $attributes = [
@@ -204,7 +204,7 @@ class PhonePlanController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe',
-                'max' => ':attribute excede los caracteres maximos',
+                'max' => ':attribute excede los caracteres máximos',
                 ];
 
                 $attributes = [

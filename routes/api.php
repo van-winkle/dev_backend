@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('models')
 ->controller(ModelController::class)
 ->group(function (){
-    Route::get('/models-active/{id?}', 'phoneModelsActive');
+    Route::get('/models-active/{id?}', 'modelsActive');
 });
 Route::resource('/models', ModelController::class);
 /* End Models route */
@@ -36,7 +36,7 @@ Route::resource('/models', ModelController::class);
 Route::prefix('brands')
 ->controller(BrandController::class)
 ->group(function () {
-    Route::get('/brands-active/{id?}', 'BrandsActive');
+    Route::get('/brands-active/{id?}', 'brandsActive');
 });
 Route::resource('/brands', BrandController::class)->except('create, edit');
 /* End Brands route */

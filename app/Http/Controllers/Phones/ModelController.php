@@ -182,12 +182,9 @@ class ModelController extends Controller
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean',],
-                'pho_phone_brand_id' => [
-                    'required',
-                    'integer',
-                    'exists:pho_phone_brands,id',
-                    function ($attribute, $value, $fail) use ($request) {
-                        $brand = PhoneBrand::find($value);
+                'pho_phone_brand_id' => ['required','integer','exists:pho_phone_brands,id',function ($attribute, $value, $fail) use ($request) {
+
+                    $brand = PhoneBrand::find($value);
 
                         if (!$brand || !$brand->active) {
                             $fail("La marca asociada no existe o está inactiva.");

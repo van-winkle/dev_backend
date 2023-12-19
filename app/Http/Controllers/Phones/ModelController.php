@@ -62,14 +62,7 @@ class ModelController extends Controller
             $rules = [
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean'],
-                'pho_phone_brand_id' => ['required', 'integer', 'exists:pho_phone_brands,id', function ($attribute, $value, $fail) {
-                    // Validación personalizada para verificar si la marca está activa o eliminada
-                    $brand = PhoneBrand::find($value);
-
-                    if (!$brand || !$brand->active || $brand->deleted_at !== null) {
-                        $fail('No se puede agregar un modelo a una marca inactiva o eliminada.');
-                    }
-                }],
+                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->where('active', true)->whereNull('deleted_at')],
 
             ];
             $messages = [
@@ -78,7 +71,7 @@ class ModelController extends Controller
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
                 'integer' => 'El formato de:attribute es irreconocible.',
-                'exists' => 'No existe el identificador'
+                'exists' => ':attribute no existe o esta inactivo.',
             ];
 
             $attributes = [
@@ -182,15 +175,7 @@ class ModelController extends Controller
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean',],
-                'pho_phone_brand_id' => ['required','integer','exists:pho_phone_brands,id',function ($attribute, $value, $fail) use ($request) {
-
-                    $brand = PhoneBrand::find($value);
-
-                        if (!$brand || !$brand->active) {
-                            $fail("La marca asociada no existe o está inactiva.");
-                        }
-                    },
-                ],
+                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->where('active', true)->whereNull('deleted_at')],
 
             ];
             $messages = [
@@ -200,7 +185,7 @@ class ModelController extends Controller
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
                 'integer' => 'El formato de:attribute es irreconocible.',
-                'exists'=> ':attribute no existe'
+                'exists'=> ':attribute no existe o esta inactivo.'
             ];
 
             $attributes = [

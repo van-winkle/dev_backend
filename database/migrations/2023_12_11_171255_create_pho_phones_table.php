@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->string('number', 9);
-
             $table->string('type', 50);
             $table->string('imei', 15);
             $table->decimal('price', 6, 2, true);

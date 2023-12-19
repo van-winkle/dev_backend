@@ -98,6 +98,7 @@ class ContractController extends Controller
             ];
 
             PhoneContract::create($requestContractData);
+            $requestContractData['status'] = 'created';
             return response()->json($requestContractData, 200);
 
         } catch (ValidationException $e) {
@@ -157,7 +158,7 @@ class ContractController extends Controller
                  'id.integer' => ':attribute irreconocible.',
                  'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Categoría de Solicitud.'],
+                ['id' => 'Identificador de Contrato'],
             )->validate();
 
             $contract = PhoneContract::with([
@@ -225,6 +226,7 @@ class ContractController extends Controller
             ];
 
             $requestContract->update($requestContractData);
+            $requestContract['status'] = 'updated';
             return response()->json($requestContract, 200);
 
         } catch (ValidationException $e) {
@@ -251,7 +253,7 @@ class ContractController extends Controller
                  'id.integer' => 'El :attribute es irreconocible.',
                  'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
-                ['id' => 'Identificador del Contrato de Solicitud',])->validate();
+                ['id' => 'Identificador de Contrato',])->validate();
 
                 $contract = NULL;
 
@@ -286,7 +288,7 @@ class ContractController extends Controller
                      'id.integer' => 'El :attribute es irreconocible.',
                      'id.exists' => 'El :attribute enviado, sin coincidencia.',
                     ],
-                    ['id' => 'Identificador de Contrato de Solicitud',])->validate();
+                    ['id' => 'Identificador de Contrato',])->validate();
 
                 $requestContracts = $commonQuery->with(['contact', 'plans'])->findOrFail($validatedData['id']);
 

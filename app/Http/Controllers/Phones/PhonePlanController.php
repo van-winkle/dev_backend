@@ -24,7 +24,7 @@ class PhonePlanController extends Controller
             $requestContract = PhonePlan::with([
                 'contract',
                 'phones'
-            ])->withCount(['contract','phones'])->get();
+            ])->withCount(['phones'])->get();
             return response()->json($requestContract, 200);
 
         } catch (Exception $e) {

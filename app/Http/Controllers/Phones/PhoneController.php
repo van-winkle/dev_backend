@@ -115,7 +115,7 @@ class PhoneController extends Controller
                 'between' => 'El formato d:attribute debe ser mayor que 0 y menor que 9999.99.',
                 'integer' => 'El formato d:attribute es irreconocible.',
 
-                'exists' => ':attribute no existe.  ',
+                'exists' => ':attribute no existe  o está inactivo.',
             ];
 
             $attributes = [
@@ -287,6 +287,7 @@ class PhoneController extends Controller
                 'decimal' => ':attribute solo puede tener 2 decimales',
                 'between' => 'El formato d:attribute debe ser mayor que 0 y menor que 9999.99.',
                 'integer' => 'El formato d:attribute es irreconocible.',
+                'exists' => ':attribute no existe o está inactivo.',
             ];
 
             $attributes = [

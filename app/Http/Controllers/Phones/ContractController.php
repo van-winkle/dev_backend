@@ -75,7 +75,7 @@ class ContractController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute tiene que ser mayor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
-                'exists'=> ':attribute no existe'
+                'exists' => ':attribute no existe o esta inactivo'
             ];
 
             $attributes = [
@@ -200,7 +200,7 @@ class ContractController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
-                'exists'=> ':attribute no existe'
+                'exists' => ':attribute no existe o esta inactivo'
             ];
 
             $attributes = [

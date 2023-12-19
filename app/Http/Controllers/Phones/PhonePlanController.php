@@ -74,7 +74,7 @@ class PhonePlanController extends Controller
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe',
+                'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
             ];
 
@@ -203,7 +203,7 @@ class PhonePlanController extends Controller
                 'integer' => 'El formato d:attribute es diferente al que se espera',
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'name.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe',
+                'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
                 ];
 

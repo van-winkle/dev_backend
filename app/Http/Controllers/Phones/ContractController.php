@@ -63,7 +63,7 @@ class ContractController extends Controller
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
-                'dir_contact_id' => ['required', 'integer', 'exists:dir_contacts,id']
+                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 
             $messages = [
@@ -188,7 +188,7 @@ class ContractController extends Controller
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
-                'dir_contact_id' => ['required', 'integer', 'exists:dir_contacts,id']
+                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 
             $messages = [

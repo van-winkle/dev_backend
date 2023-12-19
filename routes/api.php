@@ -67,5 +67,5 @@ Route::prefix('plans')
 ->group(function () {
     Route::get('/plans-active/{id?}', [PhonePlanController::class, 'activePlans']);
 });
-Route::resource('/', PhonePlanController::class);
+Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */

@@ -70,7 +70,7 @@ class PhoneIncidentController extends Controller
 
                 'active' => ['nullable','boolean'],
 
-                'pho_phone_id' => ['integer', 'exists:pho_phones,id'],
+                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
 
             ];
 

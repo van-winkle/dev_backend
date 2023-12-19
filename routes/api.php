@@ -7,7 +7,6 @@ use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PhonePlanController;
-use App\Models\Phones\PhoneModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('models')
 ->controller(ModelController::class)
 ->group(function (){
-    Route::get('/models-active/{id?}', [ModelController::class, 'phoneModelsActive']);
+    Route::get('/models-active/{id?}', 'modelsActive');
 });
 Route::resource('/models', ModelController::class);
 /* End Models route */
@@ -37,7 +36,7 @@ Route::resource('/models', ModelController::class);
 Route::prefix('brands')
 ->controller(BrandController::class)
 ->group(function () {
-    Route::get('/brands-active/{id?}', [BrandController::class, 'BrandsActive']);
+    Route::get('/brands-active/{id?}', 'brandsActive');
 });
 Route::resource('/brands', BrandController::class)->except('create, edit');
 /* End Brands route */
@@ -46,7 +45,7 @@ Route::resource('/brands', BrandController::class)->except('create, edit');
 Route::prefix('phones')
 ->controller(PhoneController::class)
 ->group(function () {
-    Route::get('/phones-active/{id?}', [PhoneController::class, 'activePhones']);
+    Route::get('/phones-active/{id?}', 'activePhones');
 });
 Route::resource('/phones', PhoneController::class);
 /* End Phones routes */
@@ -55,7 +54,7 @@ Route::resource('/phones', PhoneController::class);
 Route::prefix('contracts')
 ->controller(ContractController::class)
 ->group(function () {
-    Route::get('/contracts-active/{id?}', [ContractController::class, 'activeContracts']);
+    Route::get('/contracts-active/{id?}', 'activeContracts');
 });
 Route::resource('/contracts', ContractController::class);
 /* End Contracts route */
@@ -64,7 +63,7 @@ Route::resource('/contracts', ContractController::class);
 Route::prefix('plans')
 ->controller(PhonePlanController::class)
 ->group(function () {
-    Route::get('/plans-active/{id?}', [PhonePlanController::class, 'activePlans']);
+    Route::get('/plans-active/{id?}', 'activePlans');
 });
-Route::resource('/', PhonePlanController::class);
+Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */

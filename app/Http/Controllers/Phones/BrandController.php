@@ -276,7 +276,7 @@ class BrandController extends Controller
         }
     }
 
-    public function BrandsActive($id = null)
+    public function brandsActive($id = null)
     {
         try {
             $commonQuery = PhoneBrand::where('active', true);

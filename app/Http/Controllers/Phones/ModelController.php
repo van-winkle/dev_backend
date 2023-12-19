@@ -278,7 +278,7 @@ class ModelController extends Controller
         }
     }
 
-    public function phoneModelsActive($id = null)
+    public function modelsActive($id = null)
     {
         try {
             $commonQuery = PhoneModel::where('active', true);

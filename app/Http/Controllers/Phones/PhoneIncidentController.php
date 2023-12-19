@@ -83,6 +83,7 @@ class PhoneIncidentController extends Controller
                 'numeric' => 'El formato d:attribute debe ser numérico.',
                 'between' => 'El formato d:attribute debe ser entre 0 y 100.',
                 'integer' => 'El formato d:attribute es irreconocible.',
+                'exists' => ':attribute no existe.  ',
             ];
 
             $attributes = [

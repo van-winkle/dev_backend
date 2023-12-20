@@ -19,13 +19,11 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
-        'file_name',
-        'file_name_original',
-        'file_mimetype',
-        'file_size',
-        'file_path',
+        'paymentDifference',
         'percentage',
-        'pho_phone_id'];
+        'pho_phone_id',
+        'pho_phone_incident_category_id'
+    ];
 
     public $hidden = [
         'created_at',
@@ -45,6 +43,16 @@ class PhoneIncident extends Model
     {
         return $this->belongsTo(Phone::class,'pho_phone_id');
     }
+    public function incidentCat()
+    {
+        return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
+    }
+    public function attaches ()
+    {
+        return $this->hasMany(IncidentAttaches::class, 'pho,phones_incident_attaches_id');
+    }
+
+
 
 
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Phones;
 
+use App\Helpers\FileHelper;
 use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\Phone;
 use App\Models\Phones\PhoneIncident;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +29,6 @@ class PhoneIncidentController extends Controller
                 'phone'
             ])->get();
             return response()->json($phoneIncidents, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -46,7 +47,6 @@ class PhoneIncidentController extends Controller
             return response()->json([
                 $phones
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -61,66 +61,161 @@ class PhoneIncidentController extends Controller
         //
         try {
             $rules = [
-                'file_name' => ['nullable','string'],
-                'file_name_original' => ['nullable','string'],
-                'file_mimetype' => ['nullable','string'],
-                'file_size' => ['nullable', 'numeric','between:0,9999.99'],
-                'file_path' => ['nullable', 'string'],
-                'percentage' => ['required', 'numeric','between:0,100'],
+                // 'file_name' => ['nullable', 'string'],
+                // 'file_name_original' => ['nullable', 'string'],
+                // 'file_mimetype' => ['nullable', 'string'],
+                // 'file_size' => [
+                //     'nullable',
+                //     'numeric',
+                //     'between:0,9999.99'
+                // ],
+                // 'file_path' => ['nullable', 'string'],
+                'paymentDifference' => [
+                    'required',
+                    'min:0',
+                    'max:9999.99',
+                    'decimal:2'
+                ],
 
-                'active' => ['nullable','boolean'],
+                'percentage' => [
+                    'required',
+                    'numeric',
+                    'between:0,100'
+                ],
+                'pho_phone_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phones', 'id')
+                        ->whereNull('deleted_at'),
+                ],
+                'pho_phone_incident_category_id' => [
+                    $request->pho_phone_incident_category_id > 0 ? [
+                        'integer'
+                    ] : 'nullable',
+                    Rule::exists('pho_phone_incident_categories', 'id')
+                        ->whereNull('deleted_at')
+                ],
+                'files' => ['required', 'filled', function ($attributes, $value, $fail) {
+                    $maxTotalSize = 300 * 1024 * 1024;
+                    $totalSize = 0;
 
-                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+                    foreach ($value as $idk => $file) {
+                        $totalSize += $file->getsize();
+                    }
+                    if ($totalSize > $maxTotalSize) {
+                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                    }
+                }]
+
+                // $request->pho_phone_id > 0 ? ['integer'] : 'nullable',
+                // Rule::exists('pho_phones', 'id')
+                // ->whereNull('deleted_at')
+
 
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
-
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-
-                'numeric' => 'El formato d:attribute debe ser numérico.',
+                'decimal' => 'El formato d:attribute debe ser decimal.',
                 'between' => 'El formato d:attribute debe ser entre 0 y 100.',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'exists' => ':attribute no existe.  ',
+                'max' => 'La longitud d:attribute ha excedido la cantidad máxima.',
+
             ];
 
             $attributes = [
-                'file_name' => 'el Nombre del Incidente',
-                'file_name_original' => 'el Nombre Original del Incidente',
-                'file_mimetype' => 'el Mimetype del Incidente',
-                'file_size' => 'el Size del Incidente',
-                'file_path' => 'el Path del Incidente',
+                // 'file_name' => 'el Nombre del Incidente',
+                // 'file_name_original' => 'el Nombre Original del Incidente',
+                // 'file_mimetype' => 'el Mimetype del Incidente',
+                // 'file_size' => 'el Size del Incidente',
+                // 'file_path' => 'el Path del Incidente',
+                'paymentDifference' => 'el precio del incidente',
                 'percentage' => 'el Porcentaje del Incidente',
-                'active' => 'el Estado del Incidente',
-
                 'pho_phone_id' => 'el Identificador del Teléfono',
+                'files' => 'archivo(s)',
+
+
             ];
 
             $request->validate($rules, $messages, $attributes);
 
 
-                $requestPhoneIncidentData = [
-                    'file_name' => $request->file_name,
-                    'file_name_original' => $request->file_name_original,
-                    'file_mimetype' => $request->file_mimetype,
-                    'file_size' => $request->file_size,
-                    'file_path' => $request->file_path,
-                    'percentage' => $request->percentage,
-                    'price' => $request->price,
 
-                    'active' => $request->active == 'true' ? true : false,
+            $requestPhoneIncidentData = [
+                // 'file_name' => $request->file_name,
+                // 'file_name_original' => $request->file_name_original,
+                // 'file_mimetype' => $request->file_mimetype,
+                // 'file_size' => $request->file_size,
+                // 'file_path' => $request->file_path,
+                'paymentDifference' => $request->paymentDifference,
+                'percentage' => $request->percentage,
+                'pho_phone_id' => $request->pho_phone_id,
+                'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
-                    'pho_phone_id' => $request->adm_employee_id,
 
-                ];
 
-               PhoneIncident::create($requestPhoneIncidentData);
+            ];
+            $newFileInfo = PhoneIncident::create($requestPhoneIncidentData);
 
-            return response()->json($requestPhoneIncidentData, 200);
+            if ($request->hasFile('files')) {
+                $basePath = 'phones/incidents/';
+                $fullPath = storage_path('app/public/' . $basePath);
+
+                if (!File::exists($fullPath)) {
+                    File::makeDirectory($fullPath, 0775, true);
+                }
+
+
+                foreach ($request->file('files') as $file) {
+                    $newFileName = $newFileInfo->id . '-' . $file->getClientOriginalName();
+                    $newFileNameUnique = FileHelper::fileNameUnique($fullPath, $newFileName);
+                    $file->move($fullPath, $newFileNameUnique);
+                    $fileSize = File::size($fullPath . $newFileNameUnique);
+
+                    $newFileInfo= PhoneIncident::insert([
+                        'file_name' => $newFileNameUnique,
+                        'file_name_original' => $file->getClientOriginalName(),
+                        'file_mimetype' => $file->getClientMimeType(),
+                        'file_size' => $fileSize,
+                        'file_path' => $basePath,
+                    ]);
+                }
+            }
+            $newFileInfo->load(['phone', 'incidentCat']);
+
+
+            // if($request->hasFile('files')){
+            //     $basePath = 'phones/incidents/';
+            //     $fullPath = storage_path('app/public/' . $basePath);
+
+            //     if(!File::exists($fullPath)){
+            //         File::makeDirectory($fullPath, 0775, true);
+            //     }
+
+            //     foreach ($request->file('files') as $idk => $file) {
+            //         $newFileName = $newFileInfo->id . '-' . $file->getClientOriginalName();
+            //         $newFileNameUnique = FileHelper::fileNameUnique($fullPath, $newFileName);
+            //         $file->move($fullPath . $newFileNameUnique);
+            //         $fileSize = File::size($fullPath . $newFileNameUnique);
+
+            //         $newFileInfo->attaches()->create([
+            //             'file_name' => $newFileNameUnique,
+            //             'file_name_original' => $file->getClientOriginalName(),
+            //             'file_mimetype' => $file->getClientMimetype(),
+            //             'file_size'=> $fileSize,
+            //             'file_location' => $basePath,
+            //         ]);
+
+            //         $newFileInfo->load(['attaches']);
+
+            //     }
+            // }
+
+            return response()->json($newFileInfo, 200);
         } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
@@ -147,12 +242,11 @@ class PhoneIncidentController extends Controller
                 ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
-            $phoneIncident =PhoneIncident::with([
+            $phoneIncident = PhoneIncident::with([
                 'phone'
             ])->findOrFail($validatedData['id']);
 
             return response()->json($phoneIncident, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -179,7 +273,7 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             //Getting the phone incident to edit
-            $phoneIncident =PhoneIncident::with([
+            $phoneIncident = PhoneIncident::with([
                 'phone'
             ])->findOrFail($validatedData['id']);
 
@@ -190,7 +284,6 @@ class PhoneIncidentController extends Controller
                 $phoneIncident,
                 $phones,
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -227,7 +320,7 @@ class PhoneIncidentController extends Controller
 
             $phone = NULL;
 
-            DB::transaction(function() use ($validatedData, &$phone) {
+            DB::transaction(function () use ($validatedData, &$phone) {
                 $phone = PhoneIncident::findOrFail($validatedData['id']);
                 $phone->delete();
                 $phone['status'] = 'deleted';
@@ -244,6 +337,4 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
-
 }

@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\BrandController;
-
+use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
@@ -52,6 +52,10 @@ Route::prefix('phones')
 Route::resource('/phones', PhoneController::class);
 /* End Phones routes */
 
+/* Start Incidents routes*/
+Route::resource('/incidents', PhoneIncidentController::class);
+/* End Incidents routes*/
+
 /* Start Contracts routes */
 Route::prefix('contracts')
 ->controller(ContractController::class)
@@ -69,3 +73,5 @@ Route::prefix('plans')
 });
 Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */
+
+

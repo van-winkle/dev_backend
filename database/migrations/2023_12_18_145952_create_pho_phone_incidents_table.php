@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('file_size')->nullable();
             $table->string('file_path')->nullable();
 
+            $table->decimal('paymentDifference', 6, 2, true);
             $table->double('percentage', 5, 2);
 
             $table->unsignedBigInteger('pho_phone_id');

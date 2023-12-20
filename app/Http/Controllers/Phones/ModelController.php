@@ -22,7 +22,8 @@ class ModelController extends Controller
     {
         try {
             $model = PhoneModel::with([
-                'brand'])
+                //'brand'
+                ])
                 ->get();
             return response()->json($model, 200);
 

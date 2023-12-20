@@ -75,8 +75,6 @@ Route::prefix('plans')
 Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */
 
-
-
 /* Start incidents routes */
 Route::prefix('incidents')
 ->controller(PhoneIncidentController::class)

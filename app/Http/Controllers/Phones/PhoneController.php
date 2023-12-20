@@ -268,7 +268,7 @@ class PhoneController extends Controller
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
-                'price' => ['required','max:9999.99','decimal:2'],
+                'price' => ['required','max:9999.99','decimal:0,2'],
                 'active' => ['nullable','boolean'],
 
                 'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
@@ -312,7 +312,7 @@ class PhoneController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
-            $requestPhone = PhoneContract::findOrFail($request->id);
+            $requestPhone = Phone::findOrFail($request->id);
 
             $requestPhoneData = [
                 'number' => $request->number,

@@ -47,10 +47,10 @@ class PhoneIncident extends Model
     {
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
-    public function attaches ()
-    {
-        return $this->hasMany(IncidentAttaches::class, 'pho,phones_incident_attaches_id');
-    }
+    // public function attaches ()
+    // {
+    //     return $this->hasMany(IncidentAttaches::class, 'pho,phones_incident_attaches_id');
+    // }
 
 
 

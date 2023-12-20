@@ -3,12 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\BrandController;
-use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
+use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +30,9 @@ Route::prefix('models')
 ->group(function (){
     Route::get('/models-active/{id?}', 'modelsActive');
 });
-Route::resource('/models', ModelController::class);
+Route::resource('/models', ModelController::class)
+
+;
 /* End Models route */
 
 /* Start Brands routes */
@@ -75,3 +76,12 @@ Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */
 
 
+
+/* Start incidents routes */
+Route::prefix('incidents')
+->controller(PhoneIncidentController::class)
+->group(function () {
+    Route::get('/incidents-active/{id?}', 'activeincidents');
+});
+Route::resource('/incidents', PhoneIncidentController::class);
+/* End Incidents route */

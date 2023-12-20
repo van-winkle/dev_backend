@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PhoneIncident extends Model
+class IncidentsAttaches extends Model
 {
-    use HasFactory,SoftDeletes;
-
-    protected $table = 'pho_phone_incidents';
+    use HasFactory, SoftDeletes;
+    protected $table = 'pho_phone_incident_attaches';
 
     protected $primaryKey = 'id';
 
@@ -19,10 +18,13 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
-        'paymentDifference',
-        'percentage',
-        'pho_phone_id',
-        'pho_phone_incident_category_id'
+        'file_name_original',
+        'file_name',
+        'file_size',
+        'file_extension',
+        'file_mimetype',
+        'file_location',
+        'pho_phone_incidents_id'
     ];
 
     public $hidden = [
@@ -43,10 +45,4 @@ class PhoneIncident extends Model
     {
         return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
     }
-    public function incidentCat()
-    {
-        return $this->belongsTo(Phone::class,'pho_phone_id');
-    }
-
-
 }

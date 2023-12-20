@@ -7,8 +7,8 @@ use App\Http\Controllers\Phones\BrandController;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
+use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -71,3 +71,12 @@ Route::prefix('plans')
 });
 Route::resource('/plans', PhonePlanController::class);
 /* End Plans route */
+
+/* Start incidents routes */
+Route::prefix('incidents')
+->controller(PhoneIncidentController::class)
+->group(function () {
+    Route::get('/incidents-active/{id?}', 'activeincidents');
+});
+Route::resource('/incidents', PhoneIncidentController::class);
+/* End Incidents route */

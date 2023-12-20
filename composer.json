@@ -21,16 +21,10 @@
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
-<<<<<<< HEAD
         "files":[
             "app/Helpers/FileHelper.php"
         ]
         ,
-=======
-        "files": [
-            "app/Helpers/FileHelper.php"
-        ],
->>>>>>> f237d290c1bcade1b7aa0d561fba5c0774387a83
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",

@@ -59,8 +59,8 @@ class PhoneIncidentController extends Controller
     {
         try {
             $rules = [
-                'paymentDifference' => ['required','max:9999.99','decimal:0,2'],
-                'percentage' => ['required', 'max:9999.99', 'min:0','decimal:0,2'],
+                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
                 'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
@@ -79,21 +79,20 @@ class PhoneIncidentController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'string' => 'El formato d:attribute es irreconocible.',
-
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-
-                'numeric' => 'El formato d:attribute debe ser numérico.',
-                'between' => 'El formato d:attribute debe ser entre 0 y 100.',
+                'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
+                'percentage.max' => ':attribute no puede ser mayor a 100%',
+                'min' => ':attribute no puede ser menor a 0',
                 'integer' => 'El formato d:attribute es irreconocible.',
+                'decimal' => ':attribute solo puede incluir 2 decimales',
                 'exists' => ':attribute no existe.  ',
             ];
 
             $attributes = [
+                'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
-                'active' => 'el Estado del Incidente',
                 'files' => 'archivo(s)',
                 'pho_phone_id' => 'el Identificador del Teléfono',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
             ];
 
 
@@ -105,7 +104,7 @@ class PhoneIncidentController extends Controller
             DB::transaction(function () use ($request, &$newRequestIncident) {
                 $newRequestIncidentData = [
                     'percentage' => $request->percentage,
-                    'active' => $request->active == 'true' ? true : false,
+                    'paymentDifference' => $request->paymentDifference,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
 
@@ -141,7 +140,6 @@ class PhoneIncidentController extends Controller
                 }
 
             });
-
             return response()->json($newRequestIncident, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
@@ -203,9 +201,7 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             //Getting the phone incident to edit
-            $phoneIncident =PhoneIncident::with([
-                'phone'
-            ])->findOrFail($validatedData['id']);
+            $phoneIncident =PhoneIncident::findOrFail($validatedData['id']);
 
             //Getting active phones
             $phones = Phone::where('active', true)->get();

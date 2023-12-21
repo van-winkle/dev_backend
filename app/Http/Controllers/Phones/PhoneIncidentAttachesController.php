@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class PhoneIncidentAttachesController extends Controller
 {
@@ -85,9 +87,51 @@ class PhoneIncidentAttachesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        try {
+
+            $rules = [
+                'id'=>['required', 'integer', 'exists:pho_phone_incident_attaches,id', Rule::in([$id])],
+                'file_name_original' => ['required', 'string', 'max:255'],
+                'file_name' => ['required', 'string', 'max:255'],
+                'file_size' => ['required', 'numeric'],
+                'file_extension' => ['required', 'string', 'max:10'],
+                'file_mimetype' => ['required', 'string', 'max:255'],
+                'file_location' => ['required', 'string', 'max:255'],
+
+            ];
+            $messages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'numeric' => 'El campo :attribute debe ser numérico.',
+                'max' => 'El campo :attribute no debe exceder :max caracteres.',
+            ];
+            $attributes = [
+                'file_name_original' => 'Nombre Original',
+                'file_name' => 'Nombre',
+                'file_size' => 'Tamaño',
+                'file_extension' => 'Extensión',
+                'file_mimetype' => 'Tipo MIME',
+                'file_location' => 'Ubicación',
+            ];
+
+            $validatedData = $request->validate($rules, $messages, $attributes);
+
+            /////aqui me quedo
+
+            $attachment = IncidentsAttaches::findOrFail($id);
+
+            return response()->json($attachment, 200);
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**

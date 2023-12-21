@@ -2,9 +2,10 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneIncident extends Model
 {
@@ -41,6 +42,11 @@ class PhoneIncident extends Model
     public function attaches ()
     {
         return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
+    }
+
+    public function phone ()
+    {
+        return $this->belongsTo(Phone::class,'pho_phone_id');
     }
 
 

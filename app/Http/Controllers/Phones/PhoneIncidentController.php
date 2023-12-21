@@ -67,7 +67,18 @@ class PhoneIncidentController extends Controller
                 'active' => ['nullable','boolean'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
-                'files' => ['required', 'filled'],
+                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+                    $maxTotalSize = 300 * 1024 * 1024;
+                    $totalSize = 0;
+
+                    foreach ($value as $idx => $file) {
+                        $totalSize += $file->getSize();
+                    }
+
+                    if ($totalSize > $maxTotalSize) {
+                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                    }
+                }],
             ];
 
             $messages = [
@@ -94,6 +105,7 @@ class PhoneIncidentController extends Controller
             $request->validate($rules, $messages, $attributes);
 
             $newRequestIncident = [];
+
             DB::transaction(function () use ($request, &$newRequestIncident) {
                 $newRequestIncidentData = [
                     'percentage' => $request->percentage,
@@ -111,10 +123,11 @@ class PhoneIncidentController extends Controller
                     if (!File::exists($fullPath)) {
                         File::makeDirectory($fullPath, 0775, true);
                     }
+                    $newRequestIncident->load('attaches');
+                    foreach ($request->allFiles('files') as $idx => $file) {
 
-                    foreach ($request->file('files') as $idx => $file) {
                         $newFileName = $newRequestIncident->id . '-' . $file->getClientOriginalName();
-                        $newFileNameUnique = FileHelper::saveFile($fullPath, $newFileName);
+                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
                         $file->move($fullPath, $newFileNameUnique);
                         $fileSize = File::size($fullPath . $newFileNameUnique);
 

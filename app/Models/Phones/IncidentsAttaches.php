@@ -24,7 +24,7 @@ class IncidentsAttaches extends Model
         'file_extension',
         'file_mimetype',
         'file_location',
-        'pho_phone_incidents_id'
+        'pho_phone_incident_id'
     ];
 
     public $hidden = [
@@ -41,8 +41,8 @@ class IncidentsAttaches extends Model
         'deleted',
     ];
 
-    public function attaches ()
+    public function incident ()
     {
-        return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
+        return $this->belongsTo(PhoneIncident::class,'pho_phone_incident_id');
     }
 }

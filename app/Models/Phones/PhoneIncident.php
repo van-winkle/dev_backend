@@ -20,8 +20,8 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
+        'paymentDifference',
         'percentage',
-        'active',
         'pho_phone_id',
         'pho_phone_incident_category_id'];
 
@@ -47,6 +47,9 @@ class PhoneIncident extends Model
     public function phone ()
     {
         return $this->belongsTo(Phone::class,'pho_phone_id');
+    }
+    public function incidentCat (){
+        return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
 
 

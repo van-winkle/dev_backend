@@ -59,6 +59,7 @@ class PhoneIncidentController extends Controller
     public function store(Request $request)
     {
         try {
+             //funnka
             $rules = [
                 'percentage' => ['required', 'numeric','between:0,100'],
                 'active' => ['nullable','boolean'],
@@ -77,6 +78,26 @@ class PhoneIncidentController extends Controller
                     }
                 }],
             ];
+
+            // $rules = [
+            //     'paymentDifference' => ['required', 'decimal', between:0,999.99],
+            //     'percentage' => ['required', 'numeric','between:0,100'],
+            //     'active' => ['nullable','boolean'],
+            //     'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+            //     'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+            //     'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+            //         $maxTotalSize = 300 * 1024 * 1024;
+            //         $totalSize = 0;
+
+            //         foreach ($value as $idx => $file) {
+            //             $totalSize += $file->getSize();
+            //         }
+
+            //         if ($totalSize > $maxTotalSize) {
+            //             $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+            //         }
+            //     }],
+            // ];
 
             $messages = [
                 'required' => 'Falta :attribute.',

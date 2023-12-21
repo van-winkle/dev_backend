@@ -52,10 +52,10 @@ class PhoneIncident extends Model
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
 
-    public function phone ()
-    {
-        return $this->belongsTo(Phone::class,'pho_phone_id');
-    }
+    // public function phone ()
+    // {
+    //     return $this->belongsTo(Phone::class,'pho_phone_id');
+    // }
 
 
 }

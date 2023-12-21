@@ -24,10 +24,7 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-            //Query to get phones list
-            $phoneIncidents = PhoneIncident::with([
-                'phone'
-            ])->get();
+            $phoneIncidents = PhoneIncident::all();
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -61,8 +58,8 @@ class PhoneIncidentController extends Controller
         try {
              //funnka
             $rules = [
-                'percentage' => ['required', 'numeric','between:0,100'],
-                'active' => ['nullable','boolean'],
+                'paymentDifference' => ['required','max:9999.99','decimal:0,2'],
+                'percentage' => ['required', 'max:9999.99', 'min:0','decimal:0,2'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
                 'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {

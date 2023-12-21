@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\PhoneIncidentAttachesController as ControllersPhoneIncidentAttachesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Phones\BrandController;
@@ -10,6 +9,8 @@ use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentAttachesController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +58,7 @@ Route::resource('/phones', PhoneController::class);
 
 /* Start Incidents routes*/
 Route::resource('/incidents', PhoneIncidentController::class);
-Route::resource('/incidentAttaches', ControllersPhoneIncidentAttachesController::class);
+Route::resource('/incidentAttaches', PhoneIncidentAttachesController::class);
 /* End Incidents routes*/
 
 /* Start Contracts routes */

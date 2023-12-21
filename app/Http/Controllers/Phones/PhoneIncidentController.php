@@ -60,7 +60,6 @@ class PhoneIncidentController extends Controller
      */
     public function store(Request $request)
     {
-        //
         try {
             $rules = [
                 'percentage' => ['required', 'numeric','between:0,100'],
@@ -117,7 +116,7 @@ class PhoneIncidentController extends Controller
                 $newRequestIncident = PhoneIncident::create($newRequestIncidentData);
 
                 if ($request->hasFile('files')) {
-                    
+
                     $basePath = 'phones/incidents/';
                     $fullPath = storage_path('app/public/' . $basePath);
 
@@ -125,7 +124,7 @@ class PhoneIncidentController extends Controller
                         File::makeDirectory($fullPath, 0775, true);
                     }
 
-                    foreach ($request->allFiles('files') as $idx => $file) {
+                    foreach ($request->file('files') as $idx => $file) {
 
                         $newFileName = $newRequestIncident->id . '-' . $file->getClientOriginalName();
                         $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);

@@ -81,15 +81,15 @@ class PhoneIncidentController extends Controller
 
                 'boolean' => 'El formato de :attribute es diferente al esperado',
 
-                'numeric' => 'El formato d:attribute debe ser numérico.',
+                'decimal' => 'El formato d:attribute debe ser decimal.',
                 'between' => 'El formato d:attribute debe ser entre 0 y 100.',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'exists' => ':attribute no existe.  ',
             ];
 
             $attributes = [
+                'paymentDifference'=> 'La diferencia de pago',
                 'percentage' => 'el Porcentaje del Incidente',
-                'active' => 'el Estado del Incidente',
                 'files' => 'archivo(s)',
                 'pho_phone_id' => 'el Identificador del Teléfono',
             ];
@@ -103,7 +103,7 @@ class PhoneIncidentController extends Controller
             DB::transaction(function () use ($request, &$newRequestIncident) {
                 $newRequestIncidentData = [
                     'percentage' => $request->percentage,
-                    'active' => $request->active == 'true' ? true : false,
+                    'paymentDifference' => $request->paymentDifference,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
 

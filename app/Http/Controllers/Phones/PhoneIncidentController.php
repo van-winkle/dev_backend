@@ -117,13 +117,14 @@ class PhoneIncidentController extends Controller
                 $newRequestIncident = PhoneIncident::create($newRequestIncidentData);
 
                 if ($request->hasFile('files')) {
+                    
                     $basePath = 'phones/incidents/';
                     $fullPath = storage_path('app/public/' . $basePath);
 
                     if (!File::exists($fullPath)) {
                         File::makeDirectory($fullPath, 0775, true);
                     }
-                    $newRequestIncident->load('attaches');
+
                     foreach ($request->allFiles('files') as $idx => $file) {
 
                         $newFileName = $newRequestIncident->id . '-' . $file->getClientOriginalName();
@@ -140,7 +141,9 @@ class PhoneIncidentController extends Controller
                             'file_location' => $basePath,
                         ]);
                     }
+                    $newRequestIncident->load('attaches');
                 }
+
             });
 
             return response()->json($newRequestIncident, 200);

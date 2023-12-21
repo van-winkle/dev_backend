@@ -58,60 +58,24 @@ class PhoneIncidentController extends Controller
      */
     public function store(Request $request)
     {
-        //
         try {
             $rules = [
-                // 'file_name' => ['nullable', 'string'],
-                // 'file_name_original' => ['nullable', 'string'],
-                // 'file_mimetype' => ['nullable', 'string'],
-                // 'file_size' => [
-                //     'nullable',
-                //     'numeric',
-                //     'between:0,9999.99'
-                // ],
-                // 'file_path' => ['nullable', 'string'],
-                'paymentDifference' => [
-                    'required',
-                    'min:0',
-                    'max:9999.99',
-                    'decimal:2'
-                ],
-
-                'percentage' => [
-                    'required',
-                    'numeric',
-                    'between:0,100'
-                ],
-                'pho_phone_id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('pho_phones', 'id')
-                        ->whereNull('deleted_at'),
-                ],
-                'pho_phone_incident_category_id' => [
-                    $request->pho_phone_incident_category_id > 0 ? [
-                        'integer'
-                    ] : 'nullable',
-                    Rule::exists('pho_phone_incident_categories', 'id')
-                        ->whereNull('deleted_at')
-                ],
-                'files' => ['required', 'filled', function ($attributes, $value, $fail) {
+                'percentage' => ['required', 'numeric','between:0,100'],
+                'active' => ['nullable','boolean'],
+                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
 
-                    foreach ($value as $idk => $file) {
-                        $totalSize += $file->getsize();
+                    foreach ($value as $idx => $file) {
+                        $totalSize += $file->getSize();
                     }
+
                     if ($totalSize > $maxTotalSize) {
                         $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
                     }
-                }]
-
-                // $request->pho_phone_id > 0 ? ['integer'] : 'nullable',
-                // Rule::exists('pho_phones', 'id')
-                // ->whereNull('deleted_at')
-
-
+                }],
             ];
 
             $messages = [
@@ -141,31 +105,42 @@ class PhoneIncidentController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
+            $newRequestIncident = [];
+
+            DB::transaction(function () use ($request, &$newRequestIncident) {
+                $newRequestIncidentData = [
+                    'percentage' => $request->percentage,
+                    'active' => $request->active == 'true' ? true : false,
+                    'pho_phone_id' => $request->pho_phone_id,
+                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
 
 
-            $requestPhoneIncidentData = [
-                // 'file_name' => $request->file_name,
-                // 'file_name_original' => $request->file_name_original,
-                // 'file_mimetype' => $request->file_mimetype,
-                // 'file_size' => $request->file_size,
-                // 'file_path' => $request->file_path,
-                'paymentDifference' => $request->paymentDifference,
-                'percentage' => $request->percentage,
-                'pho_phone_id' => $request->pho_phone_id,
-                'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
+                if ($request->hasFile('files')) {
+
+                    $basePath = 'phones/incidents/';
+                    $fullPath = storage_path('app/public/' . $basePath);
 
 
+                    foreach ($request->file('files') as $idx => $file) {
 
-            ];
-            $newFileInfo = PhoneIncident::create($requestPhoneIncidentData);
+                        $newFileName = $newRequestIncident->id . '-' . $file->getClientOriginalName();
+                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+                        $file->move($fullPath, $newFileNameUnique);
+                        $fileSize = File::size($fullPath . $newFileNameUnique);
 
-            if ($request->hasFile('files')) {
-                $basePath = 'phones/incidents/';
-                $fullPath = storage_path('app/public/' . $basePath);
-
-                if (!File::exists($fullPath)) {
-                    File::makeDirectory($fullPath, 0775, true);
+                        $newRequestIncident->attaches()->create([
+                            'file_name_original' => $file->getClientOriginalName(),
+                            'file_name' => $newFileNameUnique,
+                            'file_size' => $fileSize,
+                            'file_extension' => $file->getClientOriginalExtension(),
+                            'file_mimetype' => $file->getClientMimetype(),
+                            'file_location' => $basePath,
+                        ]);
+                    }
+                    $newRequestIncident->load('attaches');
                 }
+
+            });
 
 
                 foreach ($request->file('files') as $file) {

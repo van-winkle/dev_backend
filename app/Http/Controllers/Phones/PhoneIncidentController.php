@@ -90,7 +90,7 @@ class PhoneIncidentController extends Controller
                 'percentage' => 'el Porcentaje del Incidente',
                 'files' => 'archivo(s)',
                 'pho_phone_id' => 'el Identificador del Teléfono',
-                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
 

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Database\Seeder;
 use Database\Seeders\EmployeesSeeder;
 
@@ -23,6 +25,7 @@ class DatabaseSeeder extends Seeder
         PhonesSeeder::class,
         IncidentCategorySeeder::class,
         IncidentsSeeder::class,
+        IncidentAttachesSeeder::class
         ]);
 
         // \App\Models\User::factory(10)->create();

@@ -16,7 +16,6 @@ return new class extends Migration
 
             $table->decimal('paymentDifference', 6, 2, true);
             $table->double('percentage', 5, 2);
-            $table->boolean('active')->default(true);
 
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');

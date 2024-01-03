@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Phones;
 
-use Exception;
 use App\Helpers\FileHelper;
+use Exception;
 use App\Models\Phones\Phone;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -27,7 +27,6 @@ class PhoneIncidentController extends Controller
         try {
             $phoneIncidents = PhoneIncident::all();
             return response()->json($phoneIncidents, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -47,7 +46,6 @@ class PhoneIncidentController extends Controller
             return response()->json([
                 $phones,$category
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -94,7 +92,7 @@ class PhoneIncidentController extends Controller
                 'percentage' => 'el Porcentaje del Incidente',
                 'files' => 'archivo(s)',
                 'pho_phone_id' => 'el Identificador del Teléfono',
-                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
 
@@ -153,7 +151,6 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
     /**
      * Display the specified resource.
      */
@@ -171,12 +168,12 @@ class PhoneIncidentController extends Controller
                 ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
-            $phoneIncident =PhoneIncident::with([
-                'phone'
+            $phoneIncident = PhoneIncident::with([
+                'phone',
+                'attaches'
             ])->findOrFail($validatedData['id']);
 
             return response()->json($phoneIncident, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -203,7 +200,9 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             //Getting the phone incident to edit
-            $phoneIncident =PhoneIncident::findOrFail($validatedData['id']);
+            $phoneIncident =PhoneIncident::with([
+                'phone'
+            ])->findOrFail($validatedData['id']);
 
             //Getting active phones
             $phones = Phone::where('active', true)->get();
@@ -214,7 +213,6 @@ class PhoneIncidentController extends Controller
                 $phones,
                 $category
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -250,7 +248,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
                 'pho_phone_id' => 'el Identificador del Teléfono',
-                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
 
@@ -307,7 +305,7 @@ class PhoneIncidentController extends Controller
 
             $phone = NULL;
 
-            DB::transaction(function() use ($validatedData, &$phone) {
+            DB::transaction(function () use ($validatedData, &$phone) {
                 $phone = PhoneIncident::findOrFail($validatedData['id']);
                 $phone->delete();
                 $phone['status'] = 'deleted';
@@ -324,6 +322,4 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
-
 }

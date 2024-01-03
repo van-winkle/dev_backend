@@ -23,7 +23,8 @@ class PhoneIncident extends Model
         'paymentDifference',
         'percentage',
         'pho_phone_id',
-        'pho_phone_incident_category_id'];
+        'pho_phone_incident_category_id'
+    ];
 
     public $hidden = [
         'created_at',
@@ -43,7 +44,6 @@ class PhoneIncident extends Model
     {
         return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
     }
-
     public function phone ()
     {
         return $this->belongsTo(Phone::class,'pho_phone_id');

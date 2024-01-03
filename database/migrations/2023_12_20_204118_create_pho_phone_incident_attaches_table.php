@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('file_mimetype')->nullable();
             $table->string('file_location')->nullable();
 
-
             $table->unsignedBigInteger('pho_phone_incident_id');
             $table->foreign('pho_phone_incident_id')->references('id')->on('pho_phone_incidents');
 

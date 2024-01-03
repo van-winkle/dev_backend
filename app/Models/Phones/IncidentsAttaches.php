@@ -41,8 +41,12 @@ class IncidentsAttaches extends Model
         'deleted',
     ];
 
-    public function incident ()
+    public function incidents ()
     {
         return $this->belongsTo(PhoneIncident::class,'pho_phone_incident_id');
+    }
+    public function attaches ()
+    {
+        return $this->hasMany(IncidentsAttaches::class, 'pho_phone_incident_id');
     }
 }

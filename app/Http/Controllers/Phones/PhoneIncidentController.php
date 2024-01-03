@@ -169,7 +169,8 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             $phoneIncident = PhoneIncident::with([
-                'phone'
+                'phone',
+                'attaches'
             ])->findOrFail($validatedData['id']);
 
             return response()->json($phoneIncident, 200);
@@ -247,7 +248,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
                 'pho_phone_id' => 'el Identificador del Teléfono',
-                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
 

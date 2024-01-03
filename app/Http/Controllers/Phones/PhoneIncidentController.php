@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Phones;
 
 use App\Helpers\FileHelper;
 use Exception;
-use App\Http\Controllers\Controller;
 use App\Models\Phones\Phone;
-use App\Models\Phones\PhoneIncident;
-use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;

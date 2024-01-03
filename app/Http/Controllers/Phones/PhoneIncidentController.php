@@ -228,7 +228,7 @@ class PhoneIncidentController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists: pho_phone_incidents,id', Rule::in([$id])],
+                'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
                 'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],

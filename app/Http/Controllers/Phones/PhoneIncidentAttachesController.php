@@ -118,7 +118,7 @@ class PhoneIncidentAttachesController extends Controller
 
             $validatedData = $request->validate($rules, $messages, $attributes);
 
-            /////aqui me quedo
+
 
             $attachment = IncidentsAttaches::findOrFail($id);
 

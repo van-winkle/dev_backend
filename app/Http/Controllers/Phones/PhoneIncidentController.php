@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Phones;
 
+use App\Helpers\FileHelper;
 use Exception;
-use App\Http\Controllers\Controller;
 use App\Models\Phones\Phone;
-use App\Models\Phones\PhoneIncident;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Models\Phones\IncidentsCategory;
+use App\Models\Phones\PhoneIncident;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -22,12 +25,8 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-            //Query to get phones list
-            $phoneIncidents = PhoneIncident::with([
-                'phone'
-            ])->get();
+            $phoneIncidents = PhoneIncident::all();
             return response()->json($phoneIncidents, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -42,11 +41,11 @@ class PhoneIncidentController extends Controller
         try {
             //Getting active phones
             $phones = Phone::where('active', true)->get();
+            $category = IncidentsCategory::where('active', true)->get();
 
             return response()->json([
-                $phones
+                $phones,$category
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -58,67 +57,90 @@ class PhoneIncidentController extends Controller
      */
     public function store(Request $request)
     {
-        //
         try {
             $rules = [
-                'file_name' => ['nullable','string'],
-                'file_name_original' => ['nullable','string'],
-                'file_mimetype' => ['nullable','string'],
-                'file_size' => ['nullable', 'numeric','between:0,9999.99'],
-                'file_path' => ['nullable', 'string'],
-                'percentage' => ['required', 'numeric','between:0,100'],
-
-                'active' => ['nullable','boolean'],
-
+                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+                    $maxTotalSize = 300 * 1024 * 1024;
+                    $totalSize = 0;
 
+                    foreach ($value as $idx => $file) {
+                        $totalSize += $file->getSize();
+                    }
+
+                    if ($totalSize > $maxTotalSize) {
+                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                    }
+                }],
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'string' => 'El formato d:attribute es irreconocible.',
-
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-
-                'numeric' => 'El formato d:attribute debe ser numérico.',
-                'between' => 'El formato d:attribute debe ser entre 0 y 100.',
+                'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
+                'percentage.max' => ':attribute no puede ser mayor a 100%',
+                'min' => ':attribute no puede ser menor a 0',
                 'integer' => 'El formato d:attribute es irreconocible.',
+                'decimal' => ':attribute solo puede incluir 2 decimales',
                 'exists' => ':attribute no existe.  ',
             ];
 
             $attributes = [
-                'file_name' => 'el Nombre del Incidente',
-                'file_name_original' => 'el Nombre Original del Incidente',
-                'file_mimetype' => 'el Mimetype del Incidente',
-                'file_size' => 'el Size del Incidente',
-                'file_path' => 'el Path del Incidente',
+                'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
-                'active' => 'el Estado del Incidente',
-
+                'files' => 'archivo(s)',
                 'pho_phone_id' => 'el Identificador del Teléfono',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
+
+
 
             $request->validate($rules, $messages, $attributes);
 
+            $newRequestIncident = [];
 
-                $requestPhoneIncidentData = [
-                    'file_name' => $request->file_name,
-                    'file_name_original' => $request->file_name_original,
-                    'file_mimetype' => $request->file_mimetype,
-                    'file_size' => $request->file_size,
-                    'file_path' => $request->file_path,
+            DB::transaction(function () use ($request, &$newRequestIncident) {
+                $newRequestIncidentData = [
                     'percentage' => $request->percentage,
-                    'price' => $request->price,
-
-                    'active' => $request->active == 'true' ? true : false,
-
-                    'pho_phone_id' => $request->adm_employee_id,
+                    'paymentDifference' => $request->paymentDifference,
+                    'pho_phone_id' => $request->pho_phone_id,
+                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
 
                 ];
+                $newRequestIncident = PhoneIncident::create($newRequestIncidentData);
 
-               PhoneIncident::create($requestPhoneIncidentData);
+                if ($request->hasFile('files')) {
 
-            return response()->json($requestPhoneIncidentData, 200);
+                    $basePath = 'phones/incidents/';
+                    $fullPath = storage_path('app/public/' . $basePath);
+
+                    if (!File::exists($fullPath)) {
+                        File::makeDirectory($fullPath, 0775, true);
+                    }
+
+                    foreach ($request->file('files') as $idx => $file) {
+
+                        $newFileName = $newRequestIncident->id . '-' . $file->getClientOriginalName();
+                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+                        $file->move($fullPath, $newFileNameUnique);
+                        $fileSize = File::size($fullPath . $newFileNameUnique);
+
+                        $newRequestIncident->attaches()->create([
+                            'file_name_original' => $file->getClientOriginalName(),
+                            'file_name' => $newFileNameUnique,
+                            'file_size' => $fileSize,
+                            'file_extension' => $file->getClientOriginalExtension(),
+                            'file_mimetype' => $file->getClientMimetype(),
+                            'file_location' => $basePath,
+                        ]);
+                    }
+                    $newRequestIncident->load('attaches');
+                }
+
+            });
+            return response()->json($newRequestIncident, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
 
@@ -129,7 +151,6 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
     /**
      * Display the specified resource.
      */
@@ -147,12 +168,12 @@ class PhoneIncidentController extends Controller
                 ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
-            $phoneIncident =PhoneIncident::with([
-                'phone'
+            $phoneIncident = PhoneIncident::with([
+                'phone',
+                'attaches'
             ])->findOrFail($validatedData['id']);
 
             return response()->json($phoneIncident, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -185,12 +206,13 @@ class PhoneIncidentController extends Controller
 
             //Getting active phones
             $phones = Phone::where('active', true)->get();
+            $category = IncidentsCategory::where('active', true)->get();
 
             return response()->json([
                 $phoneIncident,
                 $phones,
+                $category
             ], 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -200,9 +222,65 @@ class PhoneIncidentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        try {
+            $rules = [
+                'id' => ['required', 'integer', 'exists: pho_phone_incidents,id', Rule::in([$id])],
+                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
+                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+            ];
+
+            $messages = [
+                'required' => 'Falta :attribute.',
+                'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
+                'percentage.max' => ':attribute no puede ser mayor a 100%',
+                'min' => ':attribute no puede ser menor a 0',
+                'integer' => 'El formato d:attribute es irreconocible.',
+                'decimal' => ':attribute solo puede incluir 2 decimales',
+                'exists' => ':attribute no existe.  ',
+            ];
+
+            $attributes = [
+                'id' => 'el Identificador de Incidente',
+                'paymentDifference' => 'la diferencia del pago',
+                'percentage' => 'el Porcentaje del Incidente',
+                'pho_phone_id' => 'el Identificador del Teléfono',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
+            ];
+
+
+
+            $request->validate($rules, $messages, $attributes);
+
+            $requestIncident = [];
+
+            DB::transaction(function () use ($request, &$requestIncident) {
+                $requestIncident = PhoneIncident::findOrFail($request->id);
+                $newRequestIncidentData = [
+                    'percentage' => $request->percentage,
+                    'paymentDifference' => $request->paymentDifference,
+                    'pho_phone_id' => $request->pho_phone_id,
+                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
+
+                ];
+
+                $requestIncident->update($newRequestIncidentData);
+
+
+            });
+            return response()->json($requestIncident, 200);
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -227,7 +305,7 @@ class PhoneIncidentController extends Controller
 
             $phone = NULL;
 
-            DB::transaction(function() use ($validatedData, &$phone) {
+            DB::transaction(function () use ($validatedData, &$phone) {
                 $phone = PhoneIncident::findOrFail($validatedData['id']);
                 $phone->delete();
                 $phone['status'] = 'deleted';
@@ -244,6 +322,4 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
-
 }

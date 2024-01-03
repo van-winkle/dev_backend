@@ -13,12 +13,8 @@ return new class extends Migration
     {
         Schema::create('pho_phone_incidents', function (Blueprint $table) {
             $table->id();
-            $table->string('file_name')->nullable();
-            $table->string('file_name_original')->nullable();
-            $table->string('file_mimetype')->nullable();
-            $table->string('file_size')->nullable();
-            $table->string('file_path')->nullable();
 
+            $table->decimal('paymentDifference', 6, 2, true);
             $table->double('percentage', 5, 2);
 
             $table->unsignedBigInteger('pho_phone_id');

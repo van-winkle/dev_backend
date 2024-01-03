@@ -2,9 +2,10 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneIncident extends Model
 {
@@ -19,13 +20,11 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
-        'file_name',
-        'file_name_original',
-        'file_mimetype',
-        'file_size',
-        'file_path',
+        'paymentDifference',
         'percentage',
-        'pho_phone_id'];
+        'pho_phone_id',
+        'pho_phone_incident_category_id'
+    ];
 
     public $hidden = [
         'created_at',
@@ -41,9 +40,16 @@ class PhoneIncident extends Model
         'deleted',
     ];
 
+    public function attaches ()
+    {
+        return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
+    }
     public function phone ()
     {
         return $this->belongsTo(Phone::class,'pho_phone_id');
+    }
+    public function incidentCat (){
+        return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
 
 

@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Models\Phones\IncidentsCategory;
+use App\Models\Phones\PhoneIncident;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -40,9 +44,10 @@ class PhoneIncidentController extends Controller
         try {
             //Getting active phones
             $phones = Phone::where('active', true)->get();
+            $category = IncidentsCategory::where('active', true)->get();
 
             return response()->json([
-                $phones
+                $phones,$category
             ], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -203,10 +208,12 @@ class PhoneIncidentController extends Controller
 
             //Getting active phones
             $phones = Phone::where('active', true)->get();
+            $category = IncidentsCategory::where('active', true)->get();
 
             return response()->json([
                 $phoneIncident,
                 $phones,
+                $category
             ], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -217,9 +224,65 @@ class PhoneIncidentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        try {
+            $rules = [
+                'id' => ['required', 'integer', 'exists: pho_phone_incidents,id', Rule::in([$id])],
+                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
+                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+            ];
+
+            $messages = [
+                'required' => 'Falta :attribute.',
+                'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
+                'percentage.max' => ':attribute no puede ser mayor a 100%',
+                'min' => ':attribute no puede ser menor a 0',
+                'integer' => 'El formato d:attribute es irreconocible.',
+                'decimal' => ':attribute solo puede incluir 2 decimales',
+                'exists' => ':attribute no existe.  ',
+            ];
+
+            $attributes = [
+                'id' => 'el Identificador de Incidente',
+                'paymentDifference' => 'la diferencia del pago',
+                'percentage' => 'el Porcentaje del Incidente',
+                'pho_phone_id' => 'el Identificador del Teléfono',
+                'pho_phone_incident_category_id' => 'el Identificador de la Categoria del Incidente',
+            ];
+
+
+
+            $request->validate($rules, $messages, $attributes);
+
+            $requestIncident = [];
+
+            DB::transaction(function () use ($request, &$requestIncident) {
+                $requestIncident = PhoneIncident::findOrFail($request->id);
+                $newRequestIncidentData = [
+                    'percentage' => $request->percentage,
+                    'paymentDifference' => $request->paymentDifference,
+                    'pho_phone_id' => $request->pho_phone_id,
+                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
+
+                ];
+
+                $requestIncident->update($newRequestIncidentData);
+
+
+            });
+            return response()->json($requestIncident, 200);
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**

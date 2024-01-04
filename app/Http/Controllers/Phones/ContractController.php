@@ -22,9 +22,9 @@ class ContractController extends Controller
     {
         try {
             $requestContract = PhoneContract::with([
-                'contact',
-                'plans',
-                'phones'
+                //'contact',
+                //'plans',
+                //'phones'
             ])->withCount(['plans','phones'])->get();
             return response()->json($requestContract, 200);
 

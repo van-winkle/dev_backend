@@ -20,7 +20,7 @@ class BrandController extends Controller
     {
         try {
             $phoneBrands = PhoneBrand::with([
-                'models'
+                //'models'
             ])
                 ->withCount('models')
                 ->get();

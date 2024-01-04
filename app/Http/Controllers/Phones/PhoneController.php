@@ -26,11 +26,11 @@ class PhoneController extends Controller
         try {
             //Query to get phones list
             $phones = Phone::with([
-                'employee',
-                'plan',
-                'contract',
-                'model',
-                'incidents'
+                //'employee',
+                //'plan',
+                //'contract',
+                //'model',
+                //'incidents'
             ])->withCount(['incidents'])->get();
             return response()->json($phones, 200);
 

@@ -19,10 +19,7 @@ class BrandController extends Controller
     public function index()
     {
         try {
-            $phoneBrands = PhoneBrand::with([
-                //'models'
-            ])
-                ->withCount('models')
+            $phoneBrands = PhoneBrand::withCount('models')
                 ->get();
 
             return response()->json($phoneBrands, 200);

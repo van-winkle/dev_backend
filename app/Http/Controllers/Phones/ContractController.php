@@ -21,11 +21,12 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::with([
-                //'contact',
-                //'plans',
-                //'phones'
-            ])->withCount(['plans','phones'])->get();
+            $requestContract = PhoneContract::withCount(
+                [
+                    'plans',
+                    'phones'
+                    ]
+                    )->get();
             return response()->json($requestContract, 200);
 
         } catch (Exception $e) {

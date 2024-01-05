@@ -9,7 +9,6 @@ use App\Models\Phones\PhonePlan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\Phones\PhoneContract;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -21,11 +20,16 @@ class PhonePlanController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhonePlan::with([
-                'contract',
-            ])->withCount(['phones'])->get();
+            $requestContract = PhonePlan::with(
+                [
+                    'contract',
+                ]
+            )->withCount(
+                [
+                    'phones'
+                ]
+            )->get();
             return response()->json($requestContract, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -37,7 +41,7 @@ class PhonePlanController extends Controller
      */
     public function create()
     {
-      /*   try {
+        /*   try {
             $phoneContracts = PhoneContract::where('active', true)->get();
             return response()->json([
                 $phoneContracts,
@@ -56,14 +60,14 @@ class PhonePlanController extends Controller
     {
         try {
             $rules = [
-                'name' => ['required', 'string','max:250', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],
+                'name' => ['required', 'string', 'max:250', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],
                 'mobile_data' => ['nullable', 'integer', 'min:0'],
                 'roaming_data' => ['nullable', 'integer', 'min:0'],
                 'minutes' => ['nullable', 'integer', 'min:0'],
                 'roaming_minutes' => ['nullable', 'integer', 'min:0'],
                 'active' => ['nullable', 'boolean'],
                 'type' => ['required', 'string', 'max:250'],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active',true)->whereNull('deleted_at')],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
             ];
 
             $messages = [
@@ -98,17 +102,15 @@ class PhonePlanController extends Controller
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
                 'active' => $request->active == 'true' ? true : false,
-                'type' =>$request->type,
+                'type' => $request->type,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
 
             PhonePlan::create($requestPlantData);
             return response()->json($requestPlantData, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->getMessage()], 500);
@@ -125,9 +127,9 @@ class PhonePlanController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
                 [
-                 'id.required' => 'Falta :attribute.',
-                 'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.required' => 'Falta :attribute.',
+                    'id.integer' => ':attribute irreconocible.',
+                    'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
                 ['id' => 'Identificador de Planes'],
             )->validate();
@@ -140,7 +142,6 @@ class PhonePlanController extends Controller
 
 
             return response()->json($plan, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -152,7 +153,7 @@ class PhonePlanController extends Controller
      */
     public function edit(int $id)
     {
-       /*  try {
+        /*  try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
@@ -182,20 +183,20 @@ class PhonePlanController extends Controller
      */
     public function update(Request $request, int $id)
     {
-            try {
-                $rules = [
-                    'id' => ['required', 'integer', 'exists:pho_phone_plans,id', Rule::in([$id])],
-                    'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->ignore($request->id)->whereNull('deleted_at')],'max:250',
-                    'mobile_data' => ['nullable', 'integer', 'min:0'],
-                    'roaming_data' => ['nullable', 'integer', 'min:0'],
-                    'minutes' => ['nullable', 'integer', 'min:0'],
-                    'roaming_minutes' => ['nullable', 'integer', 'min:0'],
-                    'active' => ['nullable', 'boolean'],
-                    'type' => ['required', 'string', 'max:250'],
-                    'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active',true)->whereNull('deleted_at')],
-                ];
+        try {
+            $rules = [
+                'id' => ['required', 'integer', 'exists:pho_phone_plans,id', Rule::in([$id])],
+                'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->ignore($request->id)->whereNull('deleted_at')], 'max:250',
+                'mobile_data' => ['nullable', 'integer', 'min:0'],
+                'roaming_data' => ['nullable', 'integer', 'min:0'],
+                'minutes' => ['nullable', 'integer', 'min:0'],
+                'roaming_minutes' => ['nullable', 'integer', 'min:0'],
+                'active' => ['nullable', 'boolean'],
+                'type' => ['required', 'string', 'max:250'],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
+            ];
 
-                $messages = [
+            $messages = [
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'min' => ':attributes ingresado debe ser mayor o igual a 0',
@@ -204,20 +205,20 @@ class PhonePlanController extends Controller
                 'name.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
-                ];
+            ];
 
-                $attributes = [
-                    'name' => 'el Nombre del Plan',
-                    'mobile_data' => ' Datos Móviles',
-                    'roaming_data' => ' Datos Roaming',
-                    'minutes' => ' Minutos de LLamada',
-                    'roaming_minutes' => ' Minutos de LLamada Roaming',
-                    'active' => 'el Estado del Plan',
-                    'type' => 'el Tipo del Teléfono',
-                    'pho_phone_contract_id' => 'el Identificador del Contrato'
-                ];
+            $attributes = [
+                'name' => 'el Nombre del Plan',
+                'mobile_data' => ' Datos Móviles',
+                'roaming_data' => ' Datos Roaming',
+                'minutes' => ' Minutos de LLamada',
+                'roaming_minutes' => ' Minutos de LLamada Roaming',
+                'active' => 'el Estado del Plan',
+                'type' => 'el Tipo del Teléfono',
+                'pho_phone_contract_id' => 'el Identificador del Contrato'
+            ];
 
-                $request->validate($rules, $messages, $attributes);
+            $request->validate($rules, $messages, $attributes);
 
 
 
@@ -235,11 +236,9 @@ class PhonePlanController extends Controller
 
             $requestPlan->update($requestPlanData);
             return response()->json($requestPlan, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->getMessage()], 500);
@@ -256,13 +255,14 @@ class PhonePlanController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
                 [
-                 'id.required' => 'Falta el :attribute.',
-                 'id.integer' => 'El :attribute es irreconocible.',
-                 'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                    'id.required' => 'Falta el :attribute.',
+                    'id.integer' => 'El :attribute es irreconocible.',
+                    'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
-                ['id' => 'Identificador del Plan',])->validate();
+                ['id' => 'Identificador del Plan',]
+            )->validate();
 
-                $contract = NULL;
+            $contract = NULL;
 
             DB::transaction(function () use ($validatedData, &$contract) {
                 $contract = PhonePlan::findOrFail($validatedData['id']);
@@ -291,19 +291,18 @@ class PhonePlanController extends Controller
                     ['id' => $id],
                     ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
                     [
-                     'id.required' => 'Falta el :attribute.',
-                     'id.integer' => 'El :attribute es irreconocible.',
-                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                        'id.required' => 'Falta el :attribute.',
+                        'id.integer' => 'El :attribute es irreconocible.',
+                        'id.exists' => 'El :attribute enviado, sin coincidencia.',
                     ],
-                    ['id' => 'Identificador del Plan',])->validate();
+                    ['id' => 'Identificador del Plan',]
+                )->validate();
 
-                $requestContracts = $commonQuery->with(['contract','phones'])->findOrFail($validatedData['id']);
-
+                $requestContracts = $commonQuery->with(['contract', 'phones'])->findOrFail($validatedData['id']);
             } else {
                 $requestContracts = $commonQuery->with(['contract'])->withCount('phones')->get();
             }
             return response()->json($requestContracts, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => $e->getMessage()], 500);

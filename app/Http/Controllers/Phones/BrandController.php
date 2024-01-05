@@ -20,8 +20,9 @@ class BrandController extends Controller
     public function index()
     {
         try {
-            $phoneBrands = PhoneBrand::withCount('models')
-                ->get();
+            $phoneBrands = PhoneBrand::withCount(
+                'models'
+            )->get();
 
             return response()->json($phoneBrands, 200);
         } catch (Exception $e) {
@@ -122,7 +123,7 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                        ->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
                     ],
                 ],
                 [

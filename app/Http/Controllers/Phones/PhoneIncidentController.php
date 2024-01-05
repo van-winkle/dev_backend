@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Phones;
 
 use App\Helpers\FileHelper;
 use Exception;
-use App\Models\Phones\Phone;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\Phones\IncidentsCategory;
 use App\Models\Phones\PhoneIncident;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +23,12 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-            $phoneIncidents = PhoneIncident::with('phone','incidentCat')->withCount('attaches')->get();
+            $phoneIncidents = PhoneIncident::with(
+                'phone',
+                'incidentCat'
+            )->withCount(
+                'attaches'
+            )->get();
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -38,7 +41,7 @@ class PhoneIncidentController extends Controller
      */
     public function create()
     {
-      /*   try {
+        /*   try {
             //Getting active phones
             $phones = Phone::where('active', true)->get();
             $category = IncidentsCategory::where('active', true)->get();
@@ -59,10 +62,10 @@ class PhoneIncidentController extends Controller
     {
         try {
             $rules = [
-                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
-                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
-                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
-                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+                'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
+                'pho_phone_id' => [$request->pho_phone_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phones', 'id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [$request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incident_categories', 'id')->whereNull('deleted_at')],
                 'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
@@ -106,7 +109,7 @@ class PhoneIncidentController extends Controller
                     'percentage' => $request->percentage,
                     'paymentDifference' => $request->paymentDifference,
                     'pho_phone_id' => $request->pho_phone_id,
-                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
+                    'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
                 ];
                 $newRequestIncident = PhoneIncident::create($newRequestIncidentData);
@@ -138,11 +141,10 @@ class PhoneIncidentController extends Controller
                     }
                     $newRequestIncident->load('attaches');
                 }
-
             });
             return response()->json($newRequestIncident, 200);
         } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
@@ -186,7 +188,7 @@ class PhoneIncidentController extends Controller
      */
     public function edit(int $id)
     {
-      /*   //
+        /*   //
         try {
             //Validate id
             $validatedData = Validator::make(
@@ -228,10 +230,10 @@ class PhoneIncidentController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
-                'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
-                'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
-                'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
-                'pho_phone_incident_category_id' => [ $request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_incident_categories','id')->whereNull('deleted_at')],
+                'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
+                'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
+                'pho_phone_id' => [$request->pho_phone_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phones', 'id')->whereNull('deleted_at')],
+                'pho_phone_incident_category_id' => [$request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incident_categories', 'id')->whereNull('deleted_at')],
             ];
 
             $messages = [
@@ -264,17 +266,15 @@ class PhoneIncidentController extends Controller
                     'percentage' => $request->percentage,
                     'paymentDifference' => $request->paymentDifference,
                     'pho_phone_id' => $request->pho_phone_id,
-                    'pho_phone_incident_category_id'=>$request->pho_phone_incident_category_id
+                    'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
                 ];
 
                 $requestIncident->update($newRequestIncidentData);
-
-
             });
             return response()->json($requestIncident, 200);
         } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {

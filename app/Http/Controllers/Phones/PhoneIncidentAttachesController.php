@@ -20,9 +20,11 @@ class PhoneIncidentAttachesController extends Controller
     {
         try {
 
-            $incidentAttaches = IncidentsAttaches::withCount([
-                'incidents', 'attaches'
-                ])->get();
+            $incidentAttaches = IncidentsAttaches::withCount(
+                [
+                    'incident'
+                ]
+            )->get();
             return response()->json($incidentAttaches, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -53,10 +55,11 @@ class PhoneIncidentAttachesController extends Controller
         try {
             $validateData = Validator::make(
                 ['id' => $id],
-                ['id' => [
-                    'required',
-                    'integer',
-                    'exists:pho_phone_incident_attaches,pho_phone_incident_id'
+                [
+                    'id' => [
+                        'required',
+                        'integer',
+                        'exists:pho_phone_incident_attaches,pho_phone_incident_id'
                     ]
                 ],
                 [
@@ -141,21 +144,21 @@ class PhoneIncidentAttachesController extends Controller
      * Remove the specified resource from storage.
      */
 
-     public function destroy(int $id)
-{
-    try {
-        $validateData = Validator::make(
-            ['id' => $id],
-            ['id' => ['required', 'integer', 'exists:pho_phone_incident_attaches,id']],
-            [
-                'id.required' => 'Falta el :attribute.',
-                'id.integer' => 'El :attribute es irreconocible.',
-                'id.exists' => 'El :attribute enviado, sin coincidencia.',
-            ],
-            ['id' => 'Identificador de archivo no reconocido.']
-        )->validate();
+    public function destroy(int $id)
+    {
+        try {
+            $validateData = Validator::make(
+                ['id' => $id],
+                ['id' => ['required', 'integer', 'exists:pho_phone_incident_attaches,id']],
+                [
+                    'id.required' => 'Falta el :attribute.',
+                    'id.integer' => 'El :attribute es irreconocible.',
+                    'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                ],
+                ['id' => 'Identificador de archivo no reconocido.']
+            )->validate();
 
-        $attaches = [];
+            $attaches = [];
             DB::transaction(function () use ($validateData, &$attaches) {
                 $attaches = IncidentsAttaches::findOrFail($validateData['id']);
                 $attaches->delete();
@@ -163,17 +166,17 @@ class PhoneIncidentAttachesController extends Controller
             });
 
 
-        return response()->json([$attaches], 200);
-    } catch (ValidationException $e) {
-        Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode(['id' => $id]));
+            return response()->json([$attaches], 200);
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode(['id' => $id]));
 
-        return response()->json(['message' => 'Archivo no encontrado.'], 404);
-    } catch (Exception $e) {
-        Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode(['id' => $id]));
+            return response()->json(['message' => 'Archivo no encontrado.'], 404);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode(['id' => $id]));
 
-        return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
-}
 
 
     // public function destroy(int $incidentId, int $attachId)

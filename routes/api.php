@@ -25,15 +25,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-/* Start Models routes */
-Route::prefix('phone/models')
-->controller(ModelController::class)
-->group(function (){
-    Route::get('/models-active/{id?}', 'modelsActive');
-});
-Route::resource('phone/models', ModelController::class);
-/* End Models route */
-
 /* Start Brands routes */
 Route::prefix('phone/brands')
 ->controller(BrandController::class)
@@ -43,6 +34,15 @@ Route::prefix('phone/brands')
 Route::resource('/phone/brands', BrandController::class)->except('create, edit');
 /* End Brands route */
 
+/* Start Models routes */
+Route::prefix('phone/models')
+->controller(ModelController::class)
+->group(function (){
+    Route::get('/models-active/{id?}', 'modelsActive');
+});
+Route::resource('phone/models', ModelController::class);
+/* End Models route */
+
 /* Start Phones routes */
 Route::prefix('phone/phones')
 ->controller(PhoneController::class)
@@ -51,10 +51,6 @@ Route::prefix('phone/phones')
 });
 Route::resource('/phone/phones', PhoneController::class);
 /* End Phones routes */
-
-/* Start Incidents Attaches routes*/
-Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
-/* End Incidents Attaches routes*/
 
 /* Start Contracts routes */
 Route::prefix('phone/contracts')
@@ -75,10 +71,16 @@ Route::resource('/phone/plans', PhonePlanController::class);
 /* End Plans route */
 
 /* Start incidents routes */
-Route::prefix('phone/incidents')
-->controller(PhoneIncidentController::class)
-->group(function () {
-    Route::get('/incidents-active/{id?}', 'activeincidents');
-});
+
+// Route::prefix('phone/incidents')
+// ->controller(PhoneIncidentController::class)
+// ->group(function () {
+//     Route::get('/incidents-active/{id?}', 'activeIncidents');
+// });
+
 Route::resource('/phone/incidents', PhoneIncidentController::class);
 /* End Incidents route */
+
+/* Start Incidents Attaches routes*/
+Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
+/* End Incidents Attaches routes*/

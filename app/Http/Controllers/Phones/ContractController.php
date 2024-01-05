@@ -145,7 +145,12 @@ class ContractController extends Controller
         /* try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_contracts', 'id')
+                        ->whereNull('deleted_at')
+                    ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
@@ -155,8 +160,8 @@ class ContractController extends Controller
             )->validate();
 
             $contract = PhoneContract::with([
-                'plans',
                 'contact',
+                'plans',
                 'phones'
             ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
 
@@ -194,7 +199,7 @@ class ContractController extends Controller
                 'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe o esta inactivo'
+                'exists' => ':attribute no existe o está inactivo.'
             ];
 
             $attributes = [

@@ -16,11 +16,11 @@ class ContractsSeeder extends Seeder
     public function run(): void
     {
         DB::table('pho_phone_contracts')->insert(
-            [['code' => '1a', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 1],
-            ['code' => '2a', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 1],
-            ['code' => '3a', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 3],
-            ['code' => '4a', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 4],
-            ['code' => '5a', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 5]]
+            [['code' => 'Contrato01', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 1],
+            ['code' => 'Contrato02', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 1],
+            ['code' => 'Contrato03', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 3],
+            ['code' => 'Contrato04', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 4],
+            ['code' => 'Contrato05', 'start_date'=> Carbon::now(),'expiry_date' => Carbon::now(), 'active' => true, 'dir_contact_id' => 5]]
         );
     }
 }

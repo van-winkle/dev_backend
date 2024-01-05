@@ -64,7 +64,7 @@ class ModelController extends Controller
                 'required' => 'El valor del :attribute es necesario',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
-                'unique' => 'Ya existe un registro con el mismo nombre.',
+                'unique' => 'El :attribute ya está registrado.',
                 'integer' => 'El formato de:attribute es irreconocible.',
                 'exists' => ':attribute no existe o esta inactivo.',
             ];
@@ -106,12 +106,16 @@ class ModelController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
-                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_models', 'id')
+                        ->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute no se ha encontrado.',
+                    'id.exists' => ':attribute No se ha encontrado.',
                 ],
                 ['id' => 'Identificador de Modelo de Solicitud.'],
             )->validate();
@@ -121,6 +125,9 @@ class ModelController extends Controller
             ])->findOrFail($validatedData['id']);
 
             return response()->json($phoneModel, 200);
+        }catch (ValidationException $e) {
+
+            return response()->json(['errors' => $e->errors()], 400);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
@@ -137,7 +144,12 @@ class ModelController extends Controller
        /*  try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_models', 'id')
+                        ->whereNull('deleted_at')
+                    ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
@@ -168,7 +180,7 @@ class ModelController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
+                'id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->whereNull('deleted_at') , Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean',],
                 'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->where('active', true)->whereNull('deleted_at')],
@@ -181,7 +193,7 @@ class ModelController extends Controller
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
                 'integer' => 'El formato de:attribute es irreconocible.',
-                'exists'=> ':attribute no existe o esta inactivo.'
+                'exists'=> ':attribute no existe o está inactivo.'
             ];
 
             $attributes = [
@@ -232,7 +244,7 @@ class ModelController extends Controller
                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
                 [
-                    'id' => 'Identificador del modelo de Solicitud',
+                    'id' => 'Identificador del Modelo',
                 ]
             )->validate();
 
@@ -271,7 +283,7 @@ class ModelController extends Controller
                         'id.exists' => 'El :attribute enviado, sin coincidencia.',
                     ],
                     [
-                        'id' => 'Identificador de Contrato de Solicitud',
+                        'id' => 'Identificador de Modelo de Solicitud',
                     ]
                 )->validate();
 

@@ -32,6 +32,7 @@ class PhoneController extends Controller
                 'model.brand', // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 'model',
             ])->withCount(['incidents'])->get();
+            $phones->employee;
             return response()->json($phones, 200);
 
         } catch (Exception $e) {
@@ -104,7 +105,7 @@ class PhoneController extends Controller
                 'price.min' => ':attribute debe ser de 0 caracteres. ',
                 'price.max' => ':attribute debe ser de 9999.99 caracteres. ',
 
-                'min' => ':attribute ser de mínimo 9 caracteres.  ',
+                'min' => ':attribute ser de mínimo 10 caracteres.  ',
                 'imei.max' => ':attribute ser de máximo 15 caracteres. ',
                 'imei.unique' => ':attribute ya existe',
 
@@ -169,7 +170,11 @@ class PhoneController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phones','id')->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
@@ -190,7 +195,6 @@ class PhoneController extends Controller
             return response()->json($phone, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -205,11 +209,15 @@ class PhoneController extends Controller
             //Validate id
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phones','id')->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.exists' => ':attribute Sin coincidencia.',
                 ],
                 ['id' => 'Identificador de Teléfono de Solicitud.'],
             )->validate();
@@ -257,11 +265,11 @@ class PhoneController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phones,id',  Rule::in([$id])],
+                'id' => ['required', 'integer', Rule::exists('pho_phones','id')->whereNull('deleted_at'),  Rule::in([$id])],
                 'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
                 'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
-                'price' => ['required','max:9999.99','decimal:2'],
+                'price' => ['required','max:9999.99','decimal:0,2'],
                 'active' => ['nullable','boolean'],
 
                 'adm_employee_id' => [ 'nullable', 'integer' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
@@ -305,7 +313,7 @@ class PhoneController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
-            $requestPhone = PhoneContract::findOrFail($request->id);
+            $requestPhone = Phone::findOrFail($request->id);
 
             $requestPhoneData = [
                 'number' => $request->number,

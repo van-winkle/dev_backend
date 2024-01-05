@@ -62,6 +62,7 @@ class BrandController extends Controller
 
             $messages = [
                 'required' => 'El campo :attribute es requerido',
+                'string' => 'El campo :attribute se espera que sea texto.',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
                 'name.unique' => 'El nombre ya existe!',
             ];
@@ -166,7 +167,7 @@ class BrandController extends Controller
                 'id' => [
                     'required',
                     'integer',
-                    'exists:pho_phone_brands,id',
+                    Rule::exists('pho_phone_brands','id')->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
                 'name' => [
@@ -236,7 +237,7 @@ class BrandController extends Controller
                 [
                     'id.required' => 'Falta ingresar el :attribute.',
                     'id.integer' => 'El :attribute no es reconocible',
-                    'id.exist' => 'El :attribute ingresado no coincide',
+                    'id.exists' => 'El :attribute ingresado no se encontró.',
                 ],
                 [
                     'id' => 'Identificador de la Marca',

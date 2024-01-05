@@ -25,7 +25,7 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-            $phoneIncidents = PhoneIncident::all();
+            $phoneIncidents = PhoneIncident::with('phone','incidentCat')->withCount('attaches')->get();
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -38,7 +38,7 @@ class PhoneIncidentController extends Controller
      */
     public function create()
     {
-        try {
+      /*   try {
             //Getting active phones
             $phones = Phone::where('active', true)->get();
             $category = IncidentsCategory::where('active', true)->get();
@@ -49,7 +49,7 @@ class PhoneIncidentController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -169,6 +169,7 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             $phoneIncident = PhoneIncident::with([
+                'incidentCat',
                 'phone',
                 'attaches'
             ])->findOrFail($validatedData['id']);
@@ -185,7 +186,7 @@ class PhoneIncidentController extends Controller
      */
     public function edit(int $id)
     {
-        //
+      /*   //
         try {
             //Validate id
             $validatedData = Validator::make(
@@ -216,7 +217,7 @@ class PhoneIncidentController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -226,7 +227,7 @@ class PhoneIncidentController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists: pho_phone_incidents,id', Rule::in([$id])],
+                'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
                 'paymentDifference' => ['required','max:9999.99','min:0','decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0','decimal:0,2'],
                 'pho_phone_id' => [ $request->pho_phone_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phones','id')->whereNull('deleted_at')],
@@ -303,7 +304,7 @@ class PhoneIncidentController extends Controller
                 ]
             )->validate();
 
-            $phone = NULL;
+            $phone = [];
 
             DB::transaction(function () use ($validatedData, &$phone) {
                 $phone = PhoneIncident::findOrFail($validatedData['id']);

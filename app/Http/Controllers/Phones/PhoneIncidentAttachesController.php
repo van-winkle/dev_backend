@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\IncidentsAttaches;
@@ -19,9 +20,7 @@ class PhoneIncidentAttachesController extends Controller
     {
         try {
 
-            $incidentAttaches = IncidentsAttaches::withCount([
-                'incidents', 'attaches'
-                ])->get();
+            $incidentAttaches = IncidentsAttaches::with('incident')->withCount(['attaches'])->get();
             return response()->json($incidentAttaches, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -49,35 +48,33 @@ class PhoneIncidentAttachesController extends Controller
      */
     public function show(int $id)
     {
-        // try {
-        //     $validateData = Validator::make(
-        //         ['id' => $id],
-        //         ['id' => [
-        //             'required',
-        //             'integer',
-        //             'exists:pho_phone_incident_attaches,pho_phone_incident_id'
-        //             ]
-        //         ],
-        //         [
-        //             'id.required' => 'Falta el :attribute',
-        //             'id.integer' => ':attribute irreconocible.',
-        //             'id.exists' => ':attribute solicitado sin coincidencia.',
-        //         ],
-        //         ['id' => 'Identificador de los archivos por incidencia']
+        try {
+            $validateData = Validator::make(
+                ['id' => $id],
+                ['id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_incident_attaches,pho_phone_incident_id'
+                    ]
+                ],
+                [
+                    'id.required' => 'Falta el :attribute',
+                    'id.integer' => ':attribute irreconocible.',
+                    'id.exists' => ':attribute solicitado sin coincidencia.',
+                ],
+                ['id' => 'Identificador de los archivos por incidencia']
 
-        //     )->validate();
+            )->validate();
 
-        //     $incidentAttaches = IncidentsAttaches::with([
-        //         'incidents',
-        //         'attaches'
-        //     ])->withCount(['incidents', 'attaches'])
-        //         ->findOrFail($validateData['id']);
-        //     return response()->json($incidentAttaches, 200);
-        // } catch (Exception $e) {
-        //     Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+            $incidentAttaches = IncidentsAttaches::with([
+                'incident',
+            ])->findOrFail($validateData['id']);
+            return response()->json($incidentAttaches, 200);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
-        //     return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        // }
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -156,10 +153,15 @@ class PhoneIncidentAttachesController extends Controller
             ['id' => 'Identificador de archivo no reconocido.']
         )->validate();
 
-        $incidentAttaches = IncidentsAttaches::findOrFail($validateData['id']);
-        $incidentAttaches->delete();
+        $attaches = [];
+            DB::transaction(function () use ($validateData, &$attaches) {
+                $attaches = IncidentsAttaches::findOrFail($validateData['id']);
+                $attaches->delete();
+                $attaches['status'] = 'deleted';
+            });
 
-        return response()->json(['message' => 'Archivo eliminado exitosamente.'], 200);
+
+        return response()->json([$attaches], 200);
     } catch (ValidationException $e) {
         Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode(['id' => $id]));
 

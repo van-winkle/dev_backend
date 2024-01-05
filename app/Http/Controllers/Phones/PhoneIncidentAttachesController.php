@@ -20,7 +20,9 @@ class PhoneIncidentAttachesController extends Controller
     {
         try {
 
-            $incidentAttaches = IncidentsAttaches::with('incident')->withCount(['attaches'])->get();
+            $incidentAttaches = IncidentsAttaches::withCount([
+                'incidents', 'attaches'
+                ])->get();
             return response()->json($incidentAttaches, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());

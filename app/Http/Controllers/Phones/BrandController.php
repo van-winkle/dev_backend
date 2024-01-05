@@ -172,7 +172,8 @@ class BrandController extends Controller
                 'name' => [
                     'required',
                     'string',
-                    'max:50'
+                    'max:50',
+                    Rule::unique('pho_phone_brands', 'name')->ignore($request->id)->whereNull('deleted_at')
                 ],
                 'active' => [
                     'nullable',

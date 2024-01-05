@@ -22,8 +22,7 @@ class PhonePlanController extends Controller
     {
         try {
             $requestContract = PhonePlan::with([
-                //'contract',
-                //'phones'
+                'contract',
             ])->withCount(['phones'])->get();
             return response()->json($requestContract, 200);
 
@@ -38,7 +37,7 @@ class PhonePlanController extends Controller
      */
     public function create()
     {
-        try {
+      /*   try {
             $phoneContracts = PhoneContract::where('active', true)->get();
             return response()->json([
                 $phoneContracts,
@@ -47,7 +46,7 @@ class PhonePlanController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -157,7 +156,7 @@ class PhonePlanController extends Controller
      */
     public function edit(int $id)
     {
-        try {
+       /*  try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => [
@@ -184,7 +183,7 @@ class PhonePlanController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -309,10 +308,10 @@ class PhonePlanController extends Controller
                     ],
                     ['id' => 'Identificador del Plan',])->validate();
 
-                $requestContracts = $commonQuery->with(['phones', 'contract'])->findOrFail($validatedData['id']);
+                $requestContracts = $commonQuery->with(['contract','phones'])->findOrFail($validatedData['id']);
 
             } else {
-                $requestContracts = $commonQuery->with(['phones', 'contract'])->get();
+                $requestContracts = $commonQuery->with(['contract'])->withCount('phones')->get();
             }
             return response()->json($requestContracts, 200);
 

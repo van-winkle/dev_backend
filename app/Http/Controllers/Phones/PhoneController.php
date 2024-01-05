@@ -26,11 +26,11 @@ class PhoneController extends Controller
         try {
             //Query to get phones list
             $phones = Phone::with([
-                //'employee',
-                //'plan',
-                //'contract',
-                //'model',
-                //'incidents'
+                'employee',
+                'plan',
+                'contract',
+                'model.brand', // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
+                'model',
             ])->withCount(['incidents'])->get();
             $phones->employee;
             return response()->json($phones, 200);
@@ -47,7 +47,7 @@ class PhoneController extends Controller
      */
     public function create()
     {
-        try {
+       /*  try {
             //Getting active employees
             $admEmployees = AdminEmployee::where('active', true)->get();
 
@@ -63,16 +63,17 @@ class PhoneController extends Controller
             ])->withCount('models')->where('active', true)->get();
 
             return response()->json([
-                $admEmployees,
-                $phoneBrands,
-                $phonePlans,
-                $phoneContracts,
+                'employee' => $admEmployees,
+                'brand' => $phoneBrands,
+                'plan' => $phonePlans,
+                'contract' => $phoneContracts,
             ], 200);
 
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -80,7 +81,6 @@ class PhoneController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             $rules = [
                 'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
@@ -89,8 +89,8 @@ class PhoneController extends Controller
                 'price' => ['required','max:9999.99','decimal:0,2'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_plan_id' => [ $request->pho_phone_plan_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
+                'adm_employee_id' => [ 'nullable', 'integer' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_plan_id' => [ 'nullable', 'intenger' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
                 'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
                 'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ]
             ];
@@ -134,21 +134,20 @@ class PhoneController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
+            $requestPhoneData = [
+                'number' => $request->number,
+                'type' => $request->type,
+                'imei' => $request->imei,
+                'price' => $request->price,
+                'active' => $request->active == 'true' ? true : false,
 
-                $requestPhoneData = [
-                    'number' => $request->number,
-                    'type' => $request->type,
-                    'imei' => $request->imei,
-                    'price' => $request->price,
-                    'active' => $request->active == 'true' ? true : false,
+                'adm_employee_id' => $request->adm_employee_id,
+                'pho_phone_plan_id' => $request->pho_phone_plan_id,
+                'pho_phone_contract_id' => $request->pho_phone_contract_id,
+                'pho_phone_model_id' => $request->pho_phone_model_id
+            ];
 
-                    'adm_employee_id' => $request->adm_employee_id,
-                    'pho_phone_plan_id' => $request->pho_phone_plan_id,
-                    'pho_phone_contract_id' => $request->pho_phone_contract_id,
-                    'pho_phone_model_id' => $request->pho_phone_model_id
-                ];
-
-               Phone::create($requestPhoneData);
+            Phone::create($requestPhoneData);
 
             return response()->json($requestPhoneData, 200);
         } catch (ValidationException $e) {
@@ -188,6 +187,7 @@ class PhoneController extends Controller
                 'employee',
                 'plan',
                 'contract',
+                'model.brand',
                 'model',
                 'incidents'
             ])->withCount(['incidents'])->findOrFail($validatedData['id']);
@@ -204,7 +204,7 @@ class PhoneController extends Controller
      */
     public function edit(int $id)
     {
-        //
+      /*   //
         try {
             //Validate id
             $validatedData = Validator::make(
@@ -245,17 +245,17 @@ class PhoneController extends Controller
             ])->withCount('models')->where('active', true)->get();
 
             return response()->json([
-                $phone,
-                $admEmployees,
-                $phoneBrands,
-                $phonePlans,
-                $phoneContracts,
+                'phone' => $phone,
+                'employee' => $admEmployees,
+                'brand' => $phoneBrands,
+                'plans' => $phonePlans,
+                'contracts' => $phoneContracts,
             ], 200);
 
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -272,8 +272,8 @@ class PhoneController extends Controller
                 'price' => ['required','max:9999.99','decimal:0,2'],
                 'active' => ['nullable','boolean'],
 
-                'adm_employee_id' => [ $request->adm_employee_id > 0 ? ['integer'] : 'nullable' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_plan_id' => [ $request->pho_phone_plan_id > 0 ? ['integer'] : 'nullable' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
+                'adm_employee_id' => [ 'nullable', 'integer' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
+                'pho_phone_plan_id' => [ 'nullable', 'integer', Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
                 'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
                 'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ],
 
@@ -407,16 +407,17 @@ class PhoneController extends Controller
                     'employee',
                     'plan',
                     'contract',
+                    'model.brand',
                     'model',
                     'incidents'
-                ])->withCount(['incidents'])->findOrFail($validatedData['id']);
+                ])->findOrFail($validatedData['id']);
             } else {
                 $requestPhones = $commonQuery->with([
                     'employee',
                     'plan',
                     'contract',
+                    'model.brand',
                     'model',
-                    'incidents'
                 ])->withCount(['incidents'])->get();
             }
 

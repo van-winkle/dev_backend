@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Phones\PhoneBrand;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -19,15 +20,11 @@ class BrandController extends Controller
     public function index()
     {
         try {
-            $phoneBrands = PhoneBrand::with([
-                //'models'
-            ])
-                ->withCount('models')
+            $phoneBrands = PhoneBrand::withCount('models')
                 ->get();
 
             return response()->json($phoneBrands, 200);
         } catch (Exception $e) {
-
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
 
             return response()->json([
@@ -88,7 +85,7 @@ class BrandController extends Controller
 
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' && $request->active   != null ? true : false,
+                'active' => $request->active == 'true' && $request->active != null ? true : false,
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
@@ -121,7 +118,6 @@ class BrandController extends Controller
                 [
                     'id' => $id
                 ],
-
                 [
                     'id' => [
                         'required',
@@ -130,19 +126,17 @@ class BrandController extends Controller
                         ->whereNull('deleted_at')
                     ],
                 ],
-
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute no coincide con los registros.',
                 ],
-
                 [
                     'id' => 'Identificador de Marca de Teléfono'
                 ]
             )->validate();
 
-            $phoneBrand = PhoneBrand::with(['models'])->findOrFail($validatedData['id']);
+            $phoneBrand = PhoneBrand::with(['models'])->withCount(['models'])->findOrFail($validatedData['id']);
 
             return response()->json($phoneBrand, 200);
         } catch (ValidationException $e) {
@@ -217,18 +211,15 @@ class BrandController extends Controller
 
             return response()->json($updateBrand, 200);
         } catch (ValidationException $e) {
-
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['errors' => $e->errors()], 400);
         } catch (Exception $e) {
-
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -240,37 +231,33 @@ class BrandController extends Controller
                 [
                     'id' => $id
                 ],
-
                 [
                     'id' => ['required', 'integer', 'exists:pho_phone_brands,id']
                 ],
-
                 [
                     'id.required' => 'Falta ingresar el :attribute.',
                     'id.integer' => 'El :attribute no es reconocible',
                     'id.exists' => 'El :attribute ingresado no se encontró.',
                 ],
-
                 [
                     'id' => 'Identificador de la Marca',
                 ]
-
             )->validate();
 
-            $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
+            $phoneBrand = [];
 
-            $phoneBrand->delete();
-
-            $phoneBrand['status'] = 'deleted';
+            DB::transaction(function () use ($validatedData, &$phoneBrand) {
+                $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
+                $phoneBrand->delete();
+                $phoneBrand['status'] = 'deleted';
+            });
 
             return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);
         } catch (ValidationException $e) {
-
             Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
-
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => 'Error al borrar marca.', 'error' => $e->getMessage()], 500);
@@ -287,27 +274,24 @@ class BrandController extends Controller
                     [
                         'id' => $id
                     ],
-
                     [
                         'id' => [
                             'required',
                             'integer',
-                            'exist:pho_phone_brands,id'
+                            'exists:pho_phone_brands,id'
                         ]
                     ],
-
                     [
                         'id.required' => 'Falta el :attribute',
                         'id.integer' => 'El :attribute es irreconocible.',
-                        'id.exist' => 'El :attribute no coincide con los registros'
+                        'id.exists' => 'El :attribute no coincide con los registros'
                     ],
-
                     [
                         'id' => 'Identificador de la marca',
                     ]
                 )->validate();
 
-                $requestBrands = $commonQuery->with(
+                $requestBrands = $commonQuery->withCount('models')->with(
                     [
                         'models' => function ($query) {
                             $query->where('active', true);
@@ -317,18 +301,11 @@ class BrandController extends Controller
                     $validatedData['id']
                 );
             } else {
-                $requestBrands = $commonQuery->with(
-                    [
-                        'models' => function ($query) {
-                            $query->where('active', true);
-                        }
-                    ]
-                )->get();
+                $requestBrands = $commonQuery->withCount('models')->get();
             }
 
             return response()->json($requestBrands, 200);
         } catch (Exception $e) {
-
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => $e->getMessage()], 500);

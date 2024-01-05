@@ -39,8 +39,12 @@ class PhoneModel extends Model
     ];
 
     public function brand()
-
     {
         return $this->belongsTo(PhoneBrand::class, 'pho_phone_brand_id');
+    }
+
+    public function phones()
+    {
+        return $this->hasMany(Phone::class, 'pho_phone_model_id');
     }
 }

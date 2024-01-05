@@ -41,9 +41,9 @@ class ModelController extends Controller
     public function create()
     {
         try {
-            $phoneModels = PhoneModel::where('active', true)->get();
+            $phoneBrand = PhoneBrand::where('active', true)->get();
             return response()->json([
-                $phoneModels,
+                $phoneBrand,
             ], 200);
 
         } catch (Exception $e) {

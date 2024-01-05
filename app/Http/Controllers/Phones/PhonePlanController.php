@@ -60,14 +60,59 @@ class PhonePlanController extends Controller
     {
         try {
             $rules = [
-                'name' => ['required', 'string', 'max:250', Rule::unique('pho_phone_plans', 'name')->whereNull('deleted_at')],
-                'mobile_data' => ['nullable', 'integer', 'min:0'],
-                'roaming_data' => ['nullable', 'integer', 'min:0'],
-                'minutes' => ['nullable', 'integer', 'min:0'],
-                'roaming_minutes' => ['nullable', 'integer', 'min:0'],
-                'active' => ['nullable', 'boolean'],
-                'type' => ['required', 'string', 'max:250'],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:250',
+                    Rule::unique(
+                        'pho_phone_plans',
+                        'name'
+                    )->whereNull(
+                        'deleted_at'
+                    )
+                ],
+                'mobile_data' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'roaming_data' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'minutes' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'roaming_minutes' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'active' => [
+                    'nullable',
+                    'boolean'
+                ],
+                'type' => [
+                    'required',
+                    'string',
+                    'max:250'
+                ],
+                'pho_phone_contract_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'pho_phone_contracts',
+                        'id'
+                    )->where(
+                        'active',
+                        true
+                    )->whereNull(
+                        'deleted_at'
+                    )
+                ],
             ];
 
             $messages = [

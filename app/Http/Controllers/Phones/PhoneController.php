@@ -90,7 +90,7 @@ class PhoneController extends Controller
                 'active' => ['nullable', 'boolean'],
 
                 'adm_employee_id' => ['nullable', 'integer', Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at')],
-                'pho_phone_plan_id' => ['nullable', 'intenger', Rule::exists('pho_phone_plans', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_plan_id' => ['nullable', 'integer', Rule::exists('pho_phone_plans', 'id')->where('active', true)->whereNull('deleted_at')],
                 'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
                 'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models', 'id')->where('active', true)->whereNull('deleted_at')]
             ];

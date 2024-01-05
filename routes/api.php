@@ -10,8 +10,6 @@ use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentAttachesController;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | API Routes

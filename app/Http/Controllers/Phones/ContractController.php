@@ -21,8 +21,8 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::withCount(['plans','phones'])->get();
-            
+            $requestContract = PhoneContract::with('contact')->withCount(['plans','phones'])->get();
+
             return response()->json($requestContract, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
@@ -35,7 +35,7 @@ class ContractController extends Controller
      */
     public function create()
     {
-        try {
+      /*   try {
             $phoneContacts = PhoneContact::where('active', true)->get(); // No es necesario jalar los contratos actuales para la creación de un nuevo contrato... aquí en todo caso se debe de jalar información que dependa para la creación de un nuevo contrato, por ejemplo si para crear un contrato necesito los proveedores, aquí es donde deberían de tener el listado de proveedores. También se puede hacer directamente en el formulario.
             return response()->json([
                 $phoneContacts,
@@ -44,7 +44,7 @@ class ContractController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -95,7 +95,7 @@ class ContractController extends Controller
 
             PhoneContract::create($requestContractData);
             $requestContractData['status'] = 'created';
-            
+
             return response()->json($requestContractData, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
@@ -125,10 +125,10 @@ class ContractController extends Controller
             )->validate();
 
             $contract = PhoneContract::with([
-                'plans',
                 'contact',
+                'plans',
                 'phones'
-            ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
+            ])->findOrFail($validatedData['id']);
 
             return response()->json($contract, 200);
         } catch (Exception $e) {
@@ -142,7 +142,7 @@ class ContractController extends Controller
      */
     public function edit(int $id) // Este es innecesario si es identico al método show(), y por lo que veo la única modificación que encontré es que para editar el registro ¿debe de estar activo?, ¿no puedo editar registros que esten inactivos?
     {
-        try {
+        /* try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
@@ -159,14 +159,14 @@ class ContractController extends Controller
                 'contact',
                 'phones'
             ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
-            
-            $phoneContacts = PhoneContact::where('active', true)->get(); /* Solo aquellos que estén activos? */
-            
+
+            $phoneContacts = PhoneContact::where('active', true)->get();
+
             return response()->json([$contract, $phoneContacts], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -209,7 +209,7 @@ class ContractController extends Controller
             $request->validate($rules, $messages, $attributes);
 
             $requestContract = PhoneContract::findOrFail($request->id);
-            
+
             $requestContractData = [
                 'code' => $request->code,
                 'start_date' => $request->start_date,
@@ -220,15 +220,15 @@ class ContractController extends Controller
 
             $requestContract->update($requestContractData);
             $requestContract['status'] = 'updated';
-            
+
             return response()->json($requestContract, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
-            
+
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
-            
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -249,7 +249,7 @@ class ContractController extends Controller
                 ],
                 ['id' => 'Identificador de Contrato',])->validate();
 
-                $contract = NULL;
+                $contract = [];
 
             DB::transaction(function () use ($validatedData, &$contract) {
                 $contract = PhoneContract::findOrFail($validatedData['id']);
@@ -273,7 +273,7 @@ class ContractController extends Controller
     {
         try {
             $commonQuery = PhoneContract::where('active', true);
-            
+
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],
@@ -287,13 +287,13 @@ class ContractController extends Controller
 
                 $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->findOrFail($validatedData['id']);
             } else {
-                $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->get();
+                $requestContracts = $commonQuery->with(['contact'])->withCount(['plans','phones'])->get();
             }
-            
+
             return response()->json($requestContracts, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-            
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }

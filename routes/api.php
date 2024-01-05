@@ -28,62 +28,61 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /* Start Models routes */
-Route::prefix('models')
+Route::prefix('phone/models')
 ->controller(ModelController::class)
 ->group(function (){
     Route::get('/models-active/{id?}', 'modelsActive');
 });
-Route::resource('/models', ModelController::class)
+Route::resource('phone/models', ModelController::class)
 
 ;
 /* End Models route */
 
 /* Start Brands routes */
-Route::prefix('brands')
+Route::prefix('phone/brands')
 ->controller(BrandController::class)
 ->group(function () {
     Route::get('/brands-active/{id?}', 'brandsActive');
 });
-Route::resource('/brands', BrandController::class)->except('create, edit');
+Route::resource('/phone/brands', BrandController::class)->except('create, edit');
 /* End Brands route */
 
 /* Start Phones routes */
-Route::prefix('phones')
+Route::prefix('phone/phones')
 ->controller(PhoneController::class)
 ->group(function () {
     Route::get('/phones-active/{id?}', 'activePhones');
 });
-Route::resource('/phones', PhoneController::class);
+Route::resource('/phone/phones', PhoneController::class);
 /* End Phones routes */
 
-/* Start Incidents routes*/
-Route::resource('/incidents', PhoneIncidentController::class);
-Route::resource('/incidentAttaches', PhoneIncidentAttachesController::class);
-/* End Incidents routes*/
+/* Start Incidents Attaches routes*/
+Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
+/* End Incidents Attaches routes*/
 
 /* Start Contracts routes */
-Route::prefix('contracts')
+Route::prefix('phone/contracts')
 ->controller(ContractController::class)
 ->group(function () {
     Route::get('/contracts-active/{id?}', 'activeContracts');
 });
-Route::resource('/contracts', ContractController::class);
+Route::resource('/phone/contracts', ContractController::class);
 /* End Contracts route */
 
 /* Start Plans routes */
-Route::prefix('plans')
+Route::prefix('phone/plans')
 ->controller(PhonePlanController::class)
 ->group(function () {
     Route::get('/plans-active/{id?}', 'activePlans');
 });
-Route::resource('/plans', PhonePlanController::class);
+Route::resource('/phone/plans', PhonePlanController::class);
 /* End Plans route */
 
 /* Start incidents routes */
-Route::prefix('incidents')
+Route::prefix('phone/incidents')
 ->controller(PhoneIncidentController::class)
 ->group(function () {
     Route::get('/incidents-active/{id?}', 'activeincidents');
 });
-Route::resource('/incidents', PhoneIncidentController::class);
+Route::resource('/phone/incidents', PhoneIncidentController::class);
 /* End Incidents route */

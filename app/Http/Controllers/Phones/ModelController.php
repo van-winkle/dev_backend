@@ -21,7 +21,7 @@ class ModelController extends Controller
     public function index()
     {
         try {
-            $model = PhoneModel::with([
+            $model = PhoneModel::withCount('phones')->with([
                 'brand'])
                 ->get();
 
@@ -37,7 +37,7 @@ class ModelController extends Controller
      */
     public function create()
     {
-        try {
+      /*   try {
             $phoneBrand = PhoneBrand::where('active', true)->get();
             return response()->json([
                 $phoneBrand,
@@ -45,7 +45,7 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -134,7 +134,7 @@ class ModelController extends Controller
      */
     public function edit(int $id)
     {
-        try {
+       /*  try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
@@ -157,7 +157,7 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
 
     }
 
@@ -281,7 +281,7 @@ class ModelController extends Controller
             } else {
                 $requestPhoneModel = $commonQuery->with([
                     'brand',
-                ])->get();
+                ])->withCount('phones')->get();
             }
 
             return response()->json($requestPhoneModel, 200);

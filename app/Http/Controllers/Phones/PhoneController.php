@@ -31,7 +31,6 @@ class PhoneController extends Controller
                 'contract',
                 'model.brand', // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 'model',
-                'incidents'
             ])->withCount(['incidents'])->get();
             return response()->json($phones, 200);
 
@@ -47,7 +46,7 @@ class PhoneController extends Controller
      */
     public function create()
     {
-        try {
+       /*  try {
             //Getting active employees
             $admEmployees = AdminEmployee::where('active', true)->get();
 
@@ -71,9 +70,9 @@ class PhoneController extends Controller
 
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
-            
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -201,7 +200,7 @@ class PhoneController extends Controller
      */
     public function edit(int $id)
     {
-        //
+      /*   //
         try {
             //Validate id
             $validatedData = Validator::make(
@@ -248,7 +247,7 @@ class PhoneController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**
@@ -400,10 +399,10 @@ class PhoneController extends Controller
                     'employee',
                     'plan',
                     'contract',
-                    'model.brand', 
+                    'model.brand',
                     'model',
                     'incidents'
-                ])->withCount(['incidents'])->findOrFail($validatedData['id']);
+                ])->findOrFail($validatedData['id']);
             } else {
                 $requestPhones = $commonQuery->with([
                     'employee',
@@ -411,7 +410,6 @@ class PhoneController extends Controller
                     'contract',
                     'model.brand',
                     'model',
-                    'incidents'
                 ])->withCount(['incidents'])->get();
             }
 

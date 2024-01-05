@@ -277,20 +277,20 @@ class BrandController extends Controller
                         'id' => [
                             'required',
                             'integer',
-                            'exist:pho_phone_brands,id'
+                            'exists:pho_phone_brands,id'
                         ]
                     ],
                     [
                         'id.required' => 'Falta el :attribute',
                         'id.integer' => 'El :attribute es irreconocible.',
-                        'id.exist' => 'El :attribute no coincide con los registros'
+                        'id.exists' => 'El :attribute no coincide con los registros'
                     ],
                     [
                         'id' => 'Identificador de la marca',
                     ]
                 )->validate();
 
-                $requestBrands = $commonQuery->with(
+                $requestBrands = $commonQuery->withCount('models')->with(
                     [
                         'models' => function ($query) {
                             $query->where('active', true);
@@ -300,13 +300,7 @@ class BrandController extends Controller
                     $validatedData['id']
                 );
             } else {
-                $requestBrands = $commonQuery->with(
-                    [
-                        'models' => function ($query) {
-                            $query->where('active', true);
-                        }
-                    ]
-                )->get();
+                $requestBrands = $commonQuery->withCount('models')->get();
             }
 
             return response()->json($requestBrands, 200);

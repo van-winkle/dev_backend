@@ -23,7 +23,7 @@ class ModelController extends Controller
         try {
             $model = PhoneModel::withCount('phones')->with([
                 'brand'])
-                ->get();
+                -> get();
 
             return response()->json($model, 200);
         } catch (Exception $e) {
@@ -160,7 +160,7 @@ class ModelController extends Controller
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
-        
+
          */
     }
 

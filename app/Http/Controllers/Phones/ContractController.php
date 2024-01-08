@@ -20,12 +20,8 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::withCount(
-                [
-                    'plans',
-                    'phones'
-                    ]
-                    )->get();
+            $requestContract = PhoneContract::with('contact')->withCount(['plans', 'phones'])->get();
+
             return response()->json($requestContract, 200);
 
         } catch (Exception $e) {
@@ -39,7 +35,7 @@ class ContractController extends Controller
      */
     public function create()
     {
-      /*   try {
+        /*   try {
             $phoneContacts = PhoneContact::where('active', true)->get();
              // No es necesario jalar los contratos actuales para la creación de un nuevo contrato... aquí en todo caso se debe de jalar información que dependa para la creación de un nuevo contrato, por ejemplo si para crear un contrato necesito los proveedores, aquí es donde deberían de tener el listado de proveedores. También se puede hacer directamente en el formulario.
             return response()->json([
@@ -60,11 +56,11 @@ class ContractController extends Controller
     {
         try {
             $rules = [
-                'code' => ['required', 'string','max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
+                'code' => ['required', 'string', 'max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
-                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
+                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts', 'id')->where('active', true)->whereNull('deleted_at')]
             ];
 
             $messages = [
@@ -105,7 +101,6 @@ class ContractController extends Controller
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->getMessage()], 500);
@@ -122,9 +117,9 @@ class ContractController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                 [
-                 'id.required' => 'Falta :attribute.',
-                 'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute solicitado sin coincidencia.',
+                    'id.required' => 'Falta :attribute.',
+                    'id.integer' => ':attribute irreconocible.',
+                    'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
                 ['id' => 'Identificador de Contrato'],
             )->validate();
@@ -190,11 +185,11 @@ class ContractController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_contracts,id', Rule::in([$id])],
-                'code' => ['required', 'string', Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
+                'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
-                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
+                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts', 'id')->where('active', true)->whereNull('deleted_at')]
             ];
 
             $messages = [
@@ -256,13 +251,14 @@ class ContractController extends Controller
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                 [
-                 'id.required' => 'Falta el :attribute.',
-                 'id.integer' => 'El :attribute es irreconocible.',
-                 'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                    'id.required' => 'Falta el :attribute.',
+                    'id.integer' => 'El :attribute es irreconocible.',
+                    'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Contrato',])->validate();
+                ['id' => 'Identificador de Contrato',]
+            )->validate();
 
-                $contract = NULL;
+                $contract = [];
 
             DB::transaction(function () use ($validatedData, &$contract) {
                 $contract = PhoneContract::findOrFail($validatedData['id']);
@@ -291,16 +287,17 @@ class ContractController extends Controller
                     ['id' => $id],
                     ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
                     [
-                     'id.required' => 'Falta el :attribute.',
-                     'id.integer' => 'El :attribute es irreconocible.',
-                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
+                        'id.required' => 'Falta el :attribute.',
+                        'id.integer' => 'El :attribute es irreconocible.',
+                        'id.exists' => 'El :attribute enviado, sin coincidencia.',
                     ],
-                    ['id' => 'Identificador de Contrato',])->validate();
+                    ['id' => 'Identificador de Contrato',]
+                )->validate();
 
                 $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->findOrFail($validatedData['id']);
 
             } else {
-                $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->get();
+                $requestContracts = $commonQuery->with(['contact'])->withCount(['plans','phones'])->get();
             }
             return response()->json($requestContracts, 200);
 

@@ -21,8 +21,9 @@ class ModelController extends Controller
     {
         try {
             $model = PhoneModel::withCount('phones')->with([
-                'brand'])
-                -> get();
+                'brand'
+            ])
+                ->get();
 
             return response()->json($model, 200);
         } catch (Exception $e) {
@@ -119,9 +120,11 @@ class ModelController extends Controller
                 ['id' => 'Identificador de Modelo de Solicitud.'],
             )->validate();
 
-            $phoneModel = PhoneModel::with([
-                'brand',
-            ])->findOrFail($validatedData['id']);
+            $phoneModel = PhoneModel::with(
+                [
+                    'brand',
+                ]
+            )->findOrFail($validatedData['id']);
 
             return response()->json($phoneModel, 200);
         } catch (Exception $e) {
@@ -278,13 +281,17 @@ class ModelController extends Controller
                     ]
                 )->validate();
 
-                $requestPhoneModel = $commonQuery->with([
-                    'brand',
-                ])->findOrFail($validatedData['id']);
+                $requestPhoneModel = $commonQuery->with(
+                    [
+                        'brand',
+                    ]
+                )->findOrFail($validatedData['id']);
             } else {
-                $requestPhoneModel = $commonQuery->with([
-                    'brand',
-                ])->withCount('brand')->get();
+                $requestPhoneModel = $commonQuery->with(
+                    [
+                        'brand',
+                    ]
+                )->get();
             }
 
             return response()->json($requestPhoneModel, 200);

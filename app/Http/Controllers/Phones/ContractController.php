@@ -177,7 +177,7 @@ class ContractController extends Controller
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
-        
+
         */
     }
 
@@ -190,7 +190,7 @@ class ContractController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_contracts,id', Rule::in([$id])],
-                'code' => ['required', 'string',Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
+                'code' => ['required', 'string', Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable', 'boolean'],
@@ -220,9 +220,8 @@ class ContractController extends Controller
 
             $request->validate($rules, $messages, $attributes);
 
-
-
             $requestContract = PhoneContract::findOrFail($request->id);
+
             $requestContractData = [
                 'code' => $request->code,
                 'start_date' => $request->start_date,
@@ -232,7 +231,9 @@ class ContractController extends Controller
             ];
 
             $requestContract->update($requestContractData);
+
             $requestContract['status'] = 'updated';
+
             return response()->json($requestContract, 200);
 
         } catch (ValidationException $e) {
@@ -296,10 +297,10 @@ class ContractController extends Controller
                     ],
                     ['id' => 'Identificador de Contrato',])->validate();
 
-                $requestContracts = $commonQuery->with(['contact', 'plans'])->findOrFail($validatedData['id']);
+                $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->findOrFail($validatedData['id']);
 
             } else {
-                $requestContracts = $commonQuery->with(['contact', 'plans'])->get();
+                $requestContracts = $commonQuery->with(['contact', 'plans', 'phones'])->get();
             }
             return response()->json($requestContracts, 200);
 

@@ -71,7 +71,8 @@ class PhoneController extends Controller
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
 
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**
@@ -245,7 +246,8 @@ class PhoneController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**

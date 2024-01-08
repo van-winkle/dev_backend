@@ -89,7 +89,6 @@ class BrandController extends Controller
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
-
             $newBrand = PhoneBrand::create($requestBrandData);
 
             return response()->json($newBrand, 200);

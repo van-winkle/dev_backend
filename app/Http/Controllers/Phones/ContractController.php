@@ -141,8 +141,11 @@ class ContractController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id) // Este es innecesario si es identico al método show(), y por lo que veo la única modificación que encontré es que para editar el registro ¿debe de estar activo?, ¿no puedo editar registros que esten inactivos?
+    public function edit(int $id)
     {
+        // Este es innecesario si es identico al método show(), y por lo que veo la única
+        // modificación que encontré es que para editar el registro ¿debe de estar activo?,
+        // ¿no puedo editar registros que esten inactivos?
         /* try {
             $validatedData = Validator::make(
                 ['id' => $id],
@@ -167,7 +170,8 @@ class ContractController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+        */
     }
 
     /**

@@ -20,13 +20,9 @@ class ModelController extends Controller
     public function index()
     {
         try {
-            $model = PhoneModel::withCount(
-                'phones'
-            )->with(
-                [
-                    'brand'
-                ]
-            )->get();
+            $model = PhoneModel::withCount('phones')->with([
+                'brand'])
+                -> get();
 
             return response()->json($model, 200);
         } catch (Exception $e) {

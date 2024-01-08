@@ -51,6 +51,7 @@ class ContractController extends Controller
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
+      */
     }
 
     /**
@@ -58,7 +59,6 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             $rules = [
                 'code' => ['required', 'string','max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],

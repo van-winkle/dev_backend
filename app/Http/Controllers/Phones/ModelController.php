@@ -53,7 +53,8 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**
@@ -140,7 +141,8 @@ class ModelController extends Controller
      */
     public function edit(int $id)
     {
-        /*  try {
+       /*
+        try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
@@ -163,7 +165,9 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+
+         */
     }
 
     /**
@@ -285,7 +289,7 @@ class ModelController extends Controller
             } else {
                 $requestPhoneModel = $commonQuery->with([
                     'brand',
-                ])->withCount('phones')->get();
+                ])->withCount('brand')->get();
             }
 
             return response()->json($requestPhoneModel, 200);

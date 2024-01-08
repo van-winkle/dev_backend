@@ -151,7 +151,10 @@ class ContractController extends Controller
      */
     public function edit(int $id)
     {
-        try {
+        // Este es innecesario si es identico al método show(), y por lo que veo la única
+        // modificación que encontré es que para editar el registro ¿debe de estar activo?,
+        // ¿no puedo editar registros que esten inactivos?
+        /* try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
@@ -175,6 +178,7 @@ class ContractController extends Controller
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
+        */
     }
 
     /**

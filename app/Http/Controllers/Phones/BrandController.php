@@ -136,7 +136,15 @@ class BrandController extends Controller
                 ]
             )->validate();
 
-            $phoneBrand = PhoneBrand::with(['models'])->withCount(['models'])->findOrFail($validatedData['id']);
+            $phoneBrand = PhoneBrand::with(
+                [
+                    'models'
+                ]
+            )->withCount(
+                [
+                    'models'
+                ]
+            )->findOrFail($validatedData['id']);
 
             return response()->json($phoneBrand, 200);
         } catch (ValidationException $e) {

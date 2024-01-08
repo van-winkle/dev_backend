@@ -41,6 +41,10 @@ class ModelController extends Controller
      */
     public function create()
     {
+         // Esta llamada podría ser innecesaria, esta bien relacionada,
+         // pero, para llegar a crear un phone, se necesita primero
+         // la Marca y luego el Modelo, por lo que se hace hasta en
+         // el formulario con selects anidados.
         /*   try {
             $phoneBrand = PhoneBrand::where('active', true)->get();
             return response()->json([

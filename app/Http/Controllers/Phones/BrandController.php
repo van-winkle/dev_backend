@@ -56,7 +56,7 @@ class BrandController extends Controller
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
@@ -85,7 +85,7 @@ class BrandController extends Controller
 
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' && $request->active != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === 1 || $request->active === null ? true : false,
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
@@ -171,13 +171,14 @@ class BrandController extends Controller
                     Rule::in([$id])
                 ],
                 'name' => [
+                    Rule::unique('pho_phone_brands', 'name')->whereNull('deleted_at'),
                     'required',
                     'string',
                     'max:50'
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
@@ -189,6 +190,7 @@ class BrandController extends Controller
                 'string' => 'El formato de :attribute es irreconocible.',
                 'max' => 'La longitud de :attribute ha excedido la cantidad máxima.',
                 'boolean' => 'El formato de :attribute es diferente al esperado.',
+                'name.unique' => 'El nombre ya existe!',
             ];
 
             $attributes = [
@@ -204,7 +206,7 @@ class BrandController extends Controller
             $data = [
                 'name' => $request->name,
                 // 'active' => $request->active == 'true' ? true : false
-                'active' => $request->active == 'true' && $request->active   != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === 1 || $request->active === null ? true : false,
             ];
 
             $updateBrand->update($data);

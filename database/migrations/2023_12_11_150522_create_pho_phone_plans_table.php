@@ -19,10 +19,12 @@ return new class extends Migration
             $table->integer('minutes')->nullable();
             $table->integer('roaming_minutes')->nullable();
             $table->boolean('active')->default(true);
-            $table->string('type');
 
             $table->unsignedBigInteger('pho_phone_contract_id');
             $table->foreign('pho_phone_contract_id')->references('id')->on('pho_phone_contracts');
+
+            $table->unsignedBigInteger('pho_phone_type_phone_id');
+            $table->foreign('pho_phone_type_phone_id')->references('id')->on('pho_phone_type_phones');
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

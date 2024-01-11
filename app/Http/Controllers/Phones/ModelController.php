@@ -84,7 +84,7 @@ class ModelController extends Controller
 
             $requestModelData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
                 'pho_phone_brand_id' => $request->pho_phone_brand_id,
             ];
 
@@ -187,9 +187,9 @@ class ModelController extends Controller
     {
         try {
             $rules = [
-                'id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->whereNull('deleted_at') , Rule::in([$id])],
+                'id' => ['required', 'integer', Rule::exists('pho_phone_models','id')->whereNull('deleted_at') , Rule::in([$id])],
                 "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
-                'active' => ['nullable', 'boolean',],
+                'active' => ['nullable' ],
                 'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands', 'id')->where('active', true)->whereNull('deleted_at')],
 
             ];

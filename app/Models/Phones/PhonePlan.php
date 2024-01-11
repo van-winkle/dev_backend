@@ -4,6 +4,7 @@ namespace App\Models\Phones;
 
 use App\Models\Phones\Phone;
 use App\Models\Phones\PhoneContract;
+use App\Models\Phones\TypePhone;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +29,8 @@ class PhonePlan extends Model
         'roaming_minutes',
         'active',
         'type',
-        'pho_phone_contract_id',
+        'pho_phone_type_phone_id',
+        'pho_phone_contract_id'
     ];
 
     public $hidden = [
@@ -51,5 +53,9 @@ class PhonePlan extends Model
 
     public function phones (){
         return $this->hasMany(Phone::class, 'pho_phone_plan_id');
+    }
+
+    public function typePhone (){
+        return $this->belongsTo(TypePhone::class, 'pho_phone_type_phone_id');
     }
 }

@@ -23,6 +23,7 @@ class PhonePlanController extends Controller
             $requestContract = PhonePlan::with(
                 [
                     'contract',
+                    'typePhone'
                 ]
             )->withCount(
                 [
@@ -95,10 +96,18 @@ class PhonePlanController extends Controller
                     'nullable',
 
                 ],
-                'type' => [
+                'pho_phone_type_phone_id' => [
                     'required',
-                    'string',
-                    'max:250'
+                    'integer',
+                    Rule::exists(
+                        'pho_phone_type_phones',
+                        'id'
+                    )->where(
+                        'active',
+                        true
+                    )->whereNull(
+                        'deleted_at'
+                    )
                 ],
                 'pho_phone_contract_id' => [
                     'required',
@@ -133,7 +142,7 @@ class PhonePlanController extends Controller
                 'minutes' => ' Minutos de LLamada',
                 'roaming_minutes' => ' Minutos de LLamada Roaming',
                 'active' => 'el Estado del Plan',
-                'type' => 'el Tipo del Teléfono',
+                'pho_phone_type_phone_id' => 'el Tipo del Teléfono',
                 'pho_phone_contract_id' => 'el Identificador del Contrato'
             ];
 
@@ -146,8 +155,8 @@ class PhonePlanController extends Controller
                 'roaming_data' => $request->roaming_data,
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
-                'active' => $request->active == 'true' || $request->active==1||$request->active=== null ? true : false,
-                'type' => $request->type,
+                'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
+                'pho_phone_type_phone_id' => $request->pho_phone_type_phone_id,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
 
@@ -185,7 +194,8 @@ class PhonePlanController extends Controller
 
             $plan = PhonePlan::with([
                 'contract',
-                'phones'
+                'phones',
+                'typePhone'
             ])->withCount(['phones'])->findOrFail($validatedData['id']);
 
 
@@ -245,9 +255,33 @@ class PhonePlanController extends Controller
                 'roaming_data' => ['nullable', 'integer', 'min:0'],
                 'minutes' => ['nullable', 'integer', 'min:0'],
                 'roaming_minutes' => ['nullable', 'integer', 'min:0'],
-                'active' => ['nullable' ],
-                'type' => ['required', 'string', 'max:250'],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'active' => ['nullable'],
+                'pho_phone_type_phone_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'pho_phone_type_phones',
+                        'id'
+                    )->where(
+                        'active',
+                        true
+                    )->whereNull(
+                        'deleted_at'
+                    )
+                ],
+                'pho_phone_contract_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'pho_phone_contracts',
+                        'id'
+                    )->where(
+                        'active',
+                        true
+                    )->whereNull(
+                        'deleted_at'
+                    )
+                ],
             ];
 
             $messages = [
@@ -269,7 +303,7 @@ class PhonePlanController extends Controller
                 'minutes' => ' Minutos de LLamada',
                 'roaming_minutes' => ' Minutos de LLamada Roaming',
                 'active' => 'el Estado del Plan',
-                'type' => 'el Tipo del Teléfono',
+                'pho_phone_type_phone_id' => 'el Tipo del Teléfono',
                 'pho_phone_contract_id' => 'el Identificador del Contrato'
             ];
 
@@ -285,7 +319,7 @@ class PhonePlanController extends Controller
                 'minutes' => $request->minutes,
                 'roaming_minutes' => $request->roaming_minutes,
                 'active' => $request->active == 'true' ? true : false,
-                'type' => $request->type,
+                'pho_phone_type_phone_id' => $request->pho_phone_type_phone_id,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
 

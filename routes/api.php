@@ -9,6 +9,7 @@ use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentAttachesController;
+use App\Http\Controllers\Phones\TypePhoneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,15 @@ Route::prefix('phone/plans')
 });
 Route::resource('/phone/plans', PhonePlanController::class);
 /* End Plans route */
+
+/* Start TypePhones routes */
+Route::prefix('phone/typePhones')
+->controller(TypePhoneController::class)
+->group(function(){
+    Route::get('/typePhones-active/{id?}', 'activetypePhones');
+});
+
+/* End TypePhones route */
 
 /* Start incidents routes */
 

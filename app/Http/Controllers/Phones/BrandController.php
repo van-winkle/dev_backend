@@ -20,8 +20,9 @@ class BrandController extends Controller
     public function index()
     {
         try {
-            $phoneBrands = PhoneBrand::withCount('models')
-                ->get();
+            $phoneBrands = PhoneBrand::withCount(
+                'models'
+            )->get();
 
             return response()->json($phoneBrands, 200);
         } catch (Exception $e) {
@@ -56,7 +57,7 @@ class BrandController extends Controller
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
@@ -85,10 +86,9 @@ class BrandController extends Controller
 
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' && $request->active != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
-
 
             $newBrand = PhoneBrand::create($requestBrandData);
 
@@ -123,7 +123,7 @@ class BrandController extends Controller
                         'required',
                         'integer',
                         Rule::exists('pho_phone_brands', 'id')
-                        ->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
                     ],
                 ],
                 [
@@ -136,7 +136,15 @@ class BrandController extends Controller
                 ]
             )->validate();
 
-            $phoneBrand = PhoneBrand::with(['models'])->withCount(['models'])->findOrFail($validatedData['id']);
+            $phoneBrand = PhoneBrand::with(
+                [
+                    'models'
+                ]
+            )->withCount(
+                [
+                    'models'
+                ]
+            )->findOrFail($validatedData['id']);
 
             return response()->json($phoneBrand, 200);
         } catch (ValidationException $e) {
@@ -171,13 +179,15 @@ class BrandController extends Controller
                     Rule::in([$id])
                 ],
                 'name' => [
+                    Rule::unique('pho_phone_brands', 'name')->whereNull('deleted_at'),
                     'required',
                     'string',
-                    'max:50'
+                    'max:50',
+                    Rule::unique('pho_phone_brands', 'name')->ignore($request->id)->whereNull('deleted_at')
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
@@ -189,6 +199,7 @@ class BrandController extends Controller
                 'string' => 'El formato de :attribute es irreconocible.',
                 'max' => 'La longitud de :attribute ha excedido la cantidad máxima.',
                 'boolean' => 'El formato de :attribute es diferente al esperado.',
+                'name.unique' => 'El nombre ya existe!',
             ];
 
             $attributes = [
@@ -204,7 +215,7 @@ class BrandController extends Controller
             $data = [
                 'name' => $request->name,
                 // 'active' => $request->active == 'true' ? true : false
-                'active' => $request->active == 'true' && $request->active   != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
             ];
 
             $updateBrand->update($data);

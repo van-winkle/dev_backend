@@ -35,7 +35,7 @@ class ContractController extends Controller
      */
     public function create()
     {
-      /*   try {
+        try {
             $phoneContacts = PhoneContact::where('active', true)->get(); // No es necesario jalar los contratos actuales para la creación de un nuevo contrato... aquí en todo caso se debe de jalar información que dependa para la creación de un nuevo contrato, por ejemplo si para crear un contrato necesito los proveedores, aquí es donde deberían de tener el listado de proveedores. También se puede hacer directamente en el formulario.
             return response()->json([
                 $phoneContacts,
@@ -44,7 +44,7 @@ class ContractController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
     }
 
     /**
@@ -58,7 +58,7 @@ class ContractController extends Controller
                 'code' => ['required', 'string','max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-                'active' => ['nullable', 'boolean'],
+                'active' => ['nullable'],
                 'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 
@@ -68,14 +68,14 @@ class ContractController extends Controller
                 'string' => 'El formato d:attribute es irreconocible.',
                 'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
-                'boolean' => 'El formato d:attribute es diferente al esperado',
+                //'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute tiene que ser mayor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe o esta inactivo'
             ];
 
             $attributes = [
-                'code' => 'el Código del Contrato',
+                'code' => 'El Código del Contrato',
                 'start_date' => 'la Fecha de Inicio del Contrato',
                 'expiry_date' => 'la Fecha de Expiración del Contrato',
                 'active' => 'el Estado del Contrato',
@@ -89,7 +89,7 @@ class ContractController extends Controller
                 'code' => $request->code,
                 'start_date' => $request->start_date,
                 'expiry_date' => $request->expiry_date,
-                'active' => $request->active == 'true' ? true : false,
+                'active' => $request->active == 'true' || $request->active === 1 || $request->active === null ? true : false,
                 'dir_contact_id' => $request->dir_contact_id
             ];
 
@@ -181,7 +181,7 @@ class ContractController extends Controller
                 'code' => ['required', 'string', Rule::unique('pho_phone_contracts','code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-                'active' => ['nullable', 'boolean'],
+                'active' => ['nullable'],
                 'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 
@@ -191,7 +191,7 @@ class ContractController extends Controller
                 'string' => 'El formato d:attribute es irreconocible.',
                 'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
-                'boolean' => 'El formato d:attribute es diferente al esperado',
+                //'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe o esta inactivo'
@@ -214,7 +214,7 @@ class ContractController extends Controller
                 'code' => $request->code,
                 'start_date' => $request->start_date,
                 'expiry_date' => $request->expiry_date,
-                'active' => $request->active == 'true' ? true : false,
+                'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
                 'dir_contact_id' => $request->dir_contact_id
             ];
 

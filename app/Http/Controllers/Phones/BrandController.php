@@ -86,7 +86,7 @@ class BrandController extends Controller
 
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active === 'true' || $request->active === 1 || $request->active === null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
@@ -215,7 +215,7 @@ class BrandController extends Controller
             $data = [
                 'name' => $request->name,
                 // 'active' => $request->active == 'true' ? true : false
-                'active' => $request->active === 'true' || $request->active === 1 || $request->active === null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
             ];
 
             $updateBrand->update($data);

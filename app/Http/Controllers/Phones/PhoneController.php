@@ -29,16 +29,16 @@ class PhoneController extends Controller
                 'employee',
                 'plan',
                 'contract',
-                'model.brand', // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
+                'model.brand',
+                // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 'model',
+                'incidents'
             ])->withCount(['incidents'])->get();
             return response()->json($phones, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
-
     }
 
     /**
@@ -46,7 +46,7 @@ class PhoneController extends Controller
      */
     public function create()
     {
-       /*  try {
+        /*  try {
             //Getting active employees
             $admEmployees = AdminEmployee::where('active', true)->get();
 
@@ -72,7 +72,8 @@ class PhoneController extends Controller
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
 
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**
@@ -82,16 +83,16 @@ class PhoneController extends Controller
     {
         try {
             $rules = [
-                'number' => ['required','string', 'min:9', 'max:9', Rule::unique('pho_phones','number')->whereNull('deleted_at')],
+                'number' => ['required', 'string', 'min:9', 'max:9', Rule::unique('pho_phones', 'number')->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
-                'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->whereNull('deleted_at')],
-                'price' => ['required','max:9999.99','decimal:0,2'],
-                'active' => ['nullable','boolean'],
+                'imei' => ['required', 'min:9', 'max:15', Rule::unique('pho_phones', 'imei')->whereNull('deleted_at')],
+                'price' => ['required', 'max:9999.99', 'decimal:0,2'],
+                'active' => ['nullable', 'boolean'],
 
-                'adm_employee_id' => [ 'nullable', 'integer' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_plan_id' => [ 'nullable', 'intenger' , Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
-                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ]
+                'adm_employee_id' => ['nullable', 'integer', Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_plan_id' => ['nullable', 'integer', Rule::exists('pho_phone_plans', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models', 'id')->where('active', true)->whereNull('deleted_at')]
             ];
 
             $messages = [
@@ -150,7 +151,7 @@ class PhoneController extends Controller
 
             return response()->json($requestPhoneData, 200);
         } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
@@ -158,7 +159,6 @@ class PhoneController extends Controller
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
-
     }
 
     /**
@@ -200,7 +200,7 @@ class PhoneController extends Controller
      */
     public function edit(int $id)
     {
-      /*   //
+        /*   //
         try {
             //Validate id
             $validatedData = Validator::make(
@@ -247,7 +247,8 @@ class PhoneController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**
@@ -258,16 +259,16 @@ class PhoneController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phones,id',  Rule::in([$id])],
-                'number' => ['required','string',Rule::unique('pho_phones','number')->ignore($request->id)->whereNull('deleted_at')],
+                'number' => ['required', 'string', Rule::unique('pho_phones', 'number')->ignore($request->id)->whereNull('deleted_at')],
                 'type' => ['required', 'max:50'],
-                'imei' => ['required', 'min:9','max:15', Rule::unique('pho_phones','imei')->ignore($request->id)->whereNull('deleted_at')],
-                'price' => ['required','max:9999.99','decimal:2'],
-                'active' => ['nullable','boolean'],
+                'imei' => ['required', 'min:9', 'max:15', Rule::unique('pho_phones', 'imei')->ignore($request->id)->whereNull('deleted_at')],
+                'price' => ['required', 'max:9999.99', 'decimal:2'],
+                'active' => ['nullable', 'boolean'],
 
-                'adm_employee_id' => [ 'nullable', 'integer' , Rule::exists('adm_employees','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_plan_id' => [ 'nullable', 'integer', Rule::exists('pho_phone_plans','id')->where('active', true)->whereNull('deleted_at') ],
-                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts','id')->where('active', true)->whereNull('deleted_at')],
-                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models','id')->where('active', true)->whereNull('deleted_at') ],
+                'adm_employee_id' => ['nullable', 'integer', Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_plan_id' => ['nullable', 'integer', Rule::exists('pho_phone_plans', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_contract_id' => ['required', 'integer', Rule::exists('pho_phone_contracts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_model_id' => ['required', 'integer',  Rule::exists('pho_phone_models', 'id')->where('active', true)->whereNull('deleted_at')],
 
             ];
 
@@ -326,7 +327,7 @@ class PhoneController extends Controller
 
             return response()->json($requestPhoneData, 200);
         } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) .' Información enviada: ' . json_encode($request->all()));
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
@@ -357,7 +358,7 @@ class PhoneController extends Controller
 
             $phone = NULL;
 
-            DB::transaction(function() use ($validatedData, &$phone) {
+            DB::transaction(function () use ($validatedData, &$phone) {
                 $phone = Phone::findOrFail($validatedData['id']);
                 $phone->delete();
                 $phone['status'] = 'deleted';
@@ -415,7 +416,7 @@ class PhoneController extends Controller
 
             return response()->json($requestPhones, 200);
         } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() .'. Información enviada: ' . json_encode($id));
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => $e->getMessage()], 500);
         }

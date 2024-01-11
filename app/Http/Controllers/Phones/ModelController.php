@@ -22,12 +22,13 @@ class ModelController extends Controller
     {
         try {
             $model = PhoneModel::withCount('phones')->with([
-                'brand'])
+                'brand'
+            ])
                 ->get();
 
             return response()->json($model, 200);
         } catch (Exception $e) {
-            Log::error($e->getMessage() );
+            Log::error($e->getMessage());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -37,7 +38,7 @@ class ModelController extends Controller
      */
     public function create()
     {
-      /*   try {
+        /*   try {
             $phoneBrand = PhoneBrand::where('active', true)->get();
             return response()->json([
                 $phoneBrand,
@@ -45,7 +46,8 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
+         */
     }
 
     /**
@@ -55,9 +57,9 @@ class ModelController extends Controller
     {
         try {
             $rules = [
-                "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->whereNull('deleted_at')],
+                "name" => ['required', 'max:50', Rule::unique('pho_phone_models', 'name')->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean'],
-                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands', 'id')->where('active', true)->whereNull('deleted_at')],
 
             ];
             $messages = [
@@ -80,7 +82,7 @@ class ModelController extends Controller
             $requestModelData = [
                 'name' => $request->name,
                 'active' => $request->active == 'true' ? true : false,
-                'pho_phone_brand_id'=> $request->pho_phone_brand_id,
+                'pho_phone_brand_id' => $request->pho_phone_brand_id,
             ];
 
             PhoneModel::create($requestModelData);
@@ -95,7 +97,6 @@ class ModelController extends Controller
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
-
     }
 
     /**
@@ -116,9 +117,11 @@ class ModelController extends Controller
                 ['id' => 'Identificador de Modelo de Solicitud.'],
             )->validate();
 
-            $phoneModel = PhoneModel::with([
-                'brand',
-            ])->findOrFail($validatedData['id']);
+            $phoneModel = PhoneModel::with(
+                [
+                    'brand',
+                ]
+            )->findOrFail($validatedData['id']);
 
             return response()->json($phoneModel, 200);
         } catch (Exception $e) {
@@ -134,7 +137,8 @@ class ModelController extends Controller
      */
     public function edit(int $id)
     {
-       /*  try {
+        /*
+        try {
             $validatedData = Validator::make(
                 ['id' => $id],
                 ['id' => ['required', 'integer', 'exists:pho_phone_models,id']],
@@ -157,8 +161,9 @@ class ModelController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
 
+         */
     }
 
     /**
@@ -169,9 +174,9 @@ class ModelController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_brands,id', Rule::in([$id])],
-                "name" => ['required', 'max:50', Rule::unique('pho_phone_models','name')->ignore($request->id)->whereNull('deleted_at')],
+                "name" => ['required', 'max:50', Rule::unique('pho_phone_models', 'name')->ignore($request->id)->whereNull('deleted_at')],
                 'active' => ['nullable', 'boolean',],
-                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands','id')->where('active', true)->whereNull('deleted_at')],
+                'pho_phone_brand_id' => ['required', 'integer', Rule::exists('pho_phone_brands', 'id')->where('active', true)->whereNull('deleted_at')],
 
             ];
             $messages = [
@@ -181,7 +186,7 @@ class ModelController extends Controller
                 'max' => 'La longitud máxima para :attribute es de 50 caracteres',
                 'unique' => 'Ya existe un registro con el mismo nombre.',
                 'integer' => 'El formato de:attribute es irreconocible.',
-                'exists'=> ':attribute no existe o esta inactivo.'
+                'exists' => ':attribute no existe o esta inactivo.'
             ];
 
             $attributes = [
@@ -198,12 +203,11 @@ class ModelController extends Controller
             $requestModelData = [
                 'name' => $request->name,
                 'active' => $request->active == 'true' ? true : false,
-                'pho_phone_brand_id'=> $request->pho_phone_brand_id,
+                'pho_phone_brand_id' => $request->pho_phone_brand_id,
             ];
 
             $requestModel->update($requestModelData);
             return response()->json($requestModel, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
@@ -215,9 +219,9 @@ class ModelController extends Controller
         }
 
 
-    /**
-     * Remove the specified resource from storage.
-     */
+        /**
+         * Remove the specified resource from storage.
+         */
     }
 
     public function destroy(int $id)
@@ -238,7 +242,7 @@ class ModelController extends Controller
 
             $phoneModel = NULL;
 
-            DB::transaction(function() use ($validatedData, &$phoneModel) {
+            DB::transaction(function () use ($validatedData, &$phoneModel) {
                 $phoneModel = PhoneModel::findOrFail($validatedData['id']);
                 $phoneModel->delete();
                 $phoneModel['status'] = 'deleted';
@@ -275,18 +279,22 @@ class ModelController extends Controller
                     ]
                 )->validate();
 
-                $requestPhoneModel = $commonQuery->with([
-                    'brand',
-                ])->findOrFail($validatedData['id']);
+                $requestPhoneModel = $commonQuery->with(
+                    [
+                        'brand',
+                    ]
+                )->findOrFail($validatedData['id']);
             } else {
-                $requestPhoneModel = $commonQuery->with([
-                    'brand',
-                ])->withCount('phones')->get();
+                $requestPhoneModel = $commonQuery->with(
+                    [
+                        'brand',
+                    ]
+                )->get();
             }
 
             return response()->json($requestPhoneModel, 200);
         } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() .'. Información enviada: ' . json_encode($id));
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
             return response()->json(['message' => $e->getMessage()], 500);
         }

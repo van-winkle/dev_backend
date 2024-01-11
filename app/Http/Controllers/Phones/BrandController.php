@@ -179,7 +179,6 @@ class BrandController extends Controller
                     Rule::in([$id])
                 ],
                 'name' => [
-                    Rule::unique('pho_phone_brands', 'name')->whereNull('deleted_at'),
                     'required',
                     'string',
                     'max:50',

@@ -58,7 +58,7 @@ class ContractController extends Controller
                 'code' => ['required', 'string', 'max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-                'active' => ['nullable', 'boolean'],
+                'active' => ['nullable'],
                 'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 
@@ -185,7 +185,7 @@ class ContractController extends Controller
                 'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->ignore($request->id)->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-                'active' => ['nullable', 'boolean'],
+                'active' => ['nullable'],
                 'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
             ];
 

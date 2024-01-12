@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Phones;
 
-use App\Helpers\FileHelper;
 use Exception;
+use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\PhoneIncident;
 use Illuminate\Support\Facades\File;
+use App\Models\Phones\IncidentsCategory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -25,7 +26,8 @@ class PhoneIncidentController extends Controller
         try {
             $phoneIncidents = PhoneIncident::with(
                 'phone',
-                'incidentCat'
+                'incidentCat',
+                'employee'
             )->withCount(
                 'attaches'
             )->get();
@@ -41,18 +43,17 @@ class PhoneIncidentController extends Controller
      */
     public function create()
     {
-        /*   try {
+          try {
             //Getting active phones
-            $phones = Phone::where('active', true)->get();
-            $category = IncidentsCategory::where('active', true)->get();
+            $categories = IncidentsCategory::where('active', true)->get();
 
             return response()->json([
-                $phones,$category
+                'categories'=>$categories
             ], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
+        }
     }
 
     /**
@@ -64,7 +65,10 @@ class PhoneIncidentController extends Controller
             $rules = [
                 'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
+                'description' => ['required', 'string', 'max:250'],
+                'date_incident' =>['required', 'date', 'date_format:Y-m-d'],
                 'pho_phone_id' => [$request->pho_phone_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phones', 'id')->whereNull('deleted_at')],
+                'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [$request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incident_categories', 'id')->whereNull('deleted_at')],
                 'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
@@ -83,8 +87,9 @@ class PhoneIncidentController extends Controller
             $messages = [
                 'required' => 'Falta :attribute.',
                 'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
-                'percentage.max' => ':attribute no puede ser mayor a 100%',
-                'min' => ':attribute no puede ser menor a 0',
+                'percentage.max' => ':attribute tiene que ser menor a 100%',
+                'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
+                'min' => ':attribute tiene que ser mayor a 0',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'decimal' => ':attribute solo puede incluir 2 decimales',
                 'exists' => ':attribute no existe.  ',
@@ -93,7 +98,10 @@ class PhoneIncidentController extends Controller
             $attributes = [
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
+                'date_incident' => 'la Fecha de Incidencia ',
+                'description' => 'la descripcion de la Incidencia',
                 'files' => 'archivo(s)',
+                'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_id' => 'el Identificador del Teléfono',
                 'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
@@ -106,8 +114,11 @@ class PhoneIncidentController extends Controller
 
             DB::transaction(function () use ($request, &$newRequestIncident) {
                 $newRequestIncidentData = [
+                    'description' => $request->description,
                     'percentage' => $request->percentage,
                     'paymentDifference' => $request->paymentDifference,
+                    'date_incident' => $request->date_incident,
+                    'adm_employee_id' => $request->adm_employee_id,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
@@ -172,6 +183,7 @@ class PhoneIncidentController extends Controller
 
             $phoneIncident = PhoneIncident::with([
                 'incidentCat',
+                'employee',
                 'phone',
                 'attaches'
             ])->findOrFail($validatedData['id']);
@@ -230,8 +242,11 @@ class PhoneIncidentController extends Controller
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
+                'description' => ['required', 'string', 'max:250'],
                 'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
+                'date_incident' =>['required', 'date', 'date_format:Y-m-d'],
+                'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
                 'pho_phone_id' => [$request->pho_phone_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phones', 'id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [$request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incident_categories', 'id')->whereNull('deleted_at')],
             ];
@@ -240,6 +255,7 @@ class PhoneIncidentController extends Controller
                 'required' => 'Falta :attribute.',
                 'paymentDifference.max' => ':attribute no puede ser mayor a 9999.99',
                 'percentage.max' => ':attribute no puede ser mayor a 100%',
+                'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'min' => ':attribute no puede ser menor a 0',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'decimal' => ':attribute solo puede incluir 2 decimales',
@@ -250,6 +266,9 @@ class PhoneIncidentController extends Controller
                 'id' => 'el Identificador de Incidente',
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
+                'date_incident' => 'la Fecha de Incidencia ',
+                'description' => 'la descripcion de la Incidencia',
+                'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_id' => 'el Identificador del Teléfono',
                 'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
             ];
@@ -263,8 +282,11 @@ class PhoneIncidentController extends Controller
             DB::transaction(function () use ($request, &$requestIncident) {
                 $requestIncident = PhoneIncident::findOrFail($request->id);
                 $newRequestIncidentData = [
+                    'description' => $request->description,
                     'percentage' => $request->percentage,
                     'paymentDifference' => $request->paymentDifference,
+                    'date_incident' => $request->date_incident,
+                    'adm_employee_id' => $request->adm_employee_id,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 

@@ -403,7 +403,7 @@ class PhoneController extends Controller
                 ])->withCount(['incidents'])->get();
             }
 
-            return response()->json($requestPhones, 200);
+            return response()->json(['phones'=>$requestPhones], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 

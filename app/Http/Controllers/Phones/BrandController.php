@@ -311,7 +311,13 @@ class BrandController extends Controller
                     $validatedData['id']
                 );
             } else {
-                $requestBrands = $commonQuery->withCount('models')->get();
+                $requestBrands = $commonQuery->withCount('models')->with(
+                    [
+                        'models' => function ($query) {
+                            $query->where('active', true);
+                        }
+                    ]
+                )->get();
             }
 
             return response()->json($requestBrands, 200);

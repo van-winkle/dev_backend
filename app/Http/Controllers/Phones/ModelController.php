@@ -299,11 +299,7 @@ class ModelController extends Controller
                     ]
                 )->findOrFail($validatedData['id']);
             } else {
-                $requestPhoneModel = $commonQuery->with(
-                    [
-                        'brand',
-                    ]
-                )->get();
+                $requestPhoneModel = $commonQuery->get();
             }
 
             return response()->json($requestPhoneModel, 200);

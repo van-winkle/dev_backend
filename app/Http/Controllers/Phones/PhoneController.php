@@ -48,7 +48,7 @@ class PhoneController extends Controller
             //Getting active employees
             $admEmployees = AdminEmployee::where('active', true)->get();
             return response()->json([
-                'employee' => $admEmployees,
+                'employees' => $admEmployees,
             ], 200);
 
         } catch (Exception $e) {

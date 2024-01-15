@@ -315,14 +315,14 @@ class PhoneIncidentController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
+                ['id' => ['required', 'integer', 'exists:pho_phone_incidents,id']],
                 [
                     'id.required' => 'Falta el :attribute.',
                     'id.integer' => 'El :attribute es irreconocible.',
                     'id.exists' => 'El :attribute enviado, sin coincidencia.',
                 ],
                 [
-                    'id' => 'Identificador de Incidencia del Teléfono de Solicitud',
+                    'id' => 'Identificador de Incidencia del Teléfono',
                 ]
             )->validate();
 

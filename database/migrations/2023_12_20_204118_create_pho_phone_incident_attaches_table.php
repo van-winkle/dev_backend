@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('file_location')->nullable();
 
             $table->unsignedBigInteger('pho_phone_incident_id');
-            $table->foreign('pho_phone_incident_id')->references('id')->on('pho_phone_incidents');
+            $table->foreign('pho_phone_incident_id')->references('id')->on('pho_phone_incidents')->onDelete('cascade');
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

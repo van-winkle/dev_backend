@@ -173,7 +173,8 @@ class PhoneController extends Controller
                 'contract',
                 'model.brand',
                 'model',
-                'incidents'
+                'incidents',
+                'type'
             ])->withCount(['incidents'])->findOrFail($validatedData['id']);
 
             return response()->json($phone, 200);

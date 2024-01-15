@@ -25,9 +25,10 @@ class PhoneController extends Controller
             //Query to get phones list
             $phones = Phone::with([
                 'employee',
-                //'plan',
+                'plan',
+                'model.brand',
+                'type',
                 //'contract',
-                //'model.brand',
                 // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 //'model',
                 //'incidents'

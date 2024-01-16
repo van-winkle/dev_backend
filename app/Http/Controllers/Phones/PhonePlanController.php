@@ -158,6 +158,7 @@ class PhonePlanController extends Controller
             ];
 
             PhonePlan::create($requestPlantData);
+
             return response()->json($requestPlantData, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
@@ -342,6 +343,7 @@ class PhonePlanController extends Controller
             ];
 
             $requestPlan->update($requestPlanData);
+            
             return response()->json($requestPlan, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));

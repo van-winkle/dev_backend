@@ -39,7 +39,7 @@ class ContractController extends Controller
         try {
             $phoneContacts = PhoneContact::where('active', true)->get(); // No es necesario jalar los contratos actuales para la creación de un nuevo contrato... aquí en todo caso se debe de jalar información que dependa para la creación de un nuevo contrato, por ejemplo si para crear un contrato necesito los proveedores, aquí es donde deberían de tener el listado de proveedores. También se puede hacer directamente en el formulario.
             return response()->json([
-                $phoneContacts,
+               'contacts'=>$phoneContacts,
             ], 200);
 
         } catch (Exception $e) {

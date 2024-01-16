@@ -25,7 +25,7 @@ class PhoneIncidentAttachesController extends Controller
                     'incident'
                 ]
             )->get();
-            return response()->json($incidentAttaches, 200);
+            return response()->json(['attaches'=>$incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -74,7 +74,7 @@ class PhoneIncidentAttachesController extends Controller
             $incidentAttaches = IncidentsAttaches::with([
                 'incident',
             ])->findOrFail($validateData['id']);
-            return response()->json($incidentAttaches, 200);
+            return response()->json(['attaches'=>$incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 

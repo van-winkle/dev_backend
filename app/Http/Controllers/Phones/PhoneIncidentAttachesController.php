@@ -51,7 +51,7 @@ class PhoneIncidentAttachesController extends Controller
         try {
             $rules = [
                 'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
-                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+                'files' => ['required', 'filled', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
 

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
 
-            $table->unique(['name','deleted_at']);
+            $table->unique(['name','pho_phone_contract_id','deleted_at']);
         });
     }
 

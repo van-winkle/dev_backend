@@ -65,12 +65,9 @@ class PhonePlanController extends Controller
                     'required',
                     'string',
                     'max:250',
-                    Rule::unique(
-                        'pho_phone_plans',
-                        'name'
-                    )->whereNull(
-                        'deleted_at'
-                    )
+                    Rule::unique('pho_phone_plans', 'name')
+                        ->where('pho_phone_contract_id', $request->pho_phone_contract_id)
+                        ->whereNull('deleted_at')
                 ],
                 'mobile_data' => [
                     'nullable',
@@ -130,7 +127,7 @@ class PhonePlanController extends Controller
                 'min' => ':attributes ingresado debe ser mayor o igual a 0',
                 'integer' => 'El formato de :attribute es diferente al que se espera',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
-                'name.unique' => ':attribute ya existe',
+                'name.unique' => ':attribute ya existe en el contrato.',
                 'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
             ];
@@ -140,7 +137,7 @@ class PhonePlanController extends Controller
                 'mobile_data' => ' Datos Móviles',
                 'roaming_data' => ' Datos Roaming',
                 'minutes' => ' Minutos de LLamada',
-                'roaming_minutes' => ' Minutos de LLamada Roaming',
+                'roaming_minutes' => ' Minutos de Llamada Roaming',
                 'active' => 'el Estado del Plan',
                 'pho_phone_type_phone_id' => 'el Tipo del Teléfono',
                 'pho_phone_contract_id' => 'el Identificador del Contrato'
@@ -239,14 +236,47 @@ class PhonePlanController extends Controller
     public function update(Request $request, int $id)
     {
         try {
+            $requestPlan = PhonePlan::findOrFail($id);
+
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_plans,id', Rule::in([$id])],
-                'name' => ['required', 'string', Rule::unique('pho_phone_plans', 'name')->ignore($request->id)->whereNull('deleted_at')], 'max:250',
-                'mobile_data' => ['nullable', 'integer', 'min:0'],
-                'roaming_data' => ['nullable', 'integer', 'min:0'],
-                'minutes' => ['nullable', 'integer', 'min:0'],
-                'roaming_minutes' => ['nullable', 'integer', 'min:0'],
-                'active' => ['nullable'],
+                'id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_plans,id',
+                    Rule::in([$id])
+                ],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:250',
+                    Rule::unique('pho_phone_plans', 'name')
+                        ->where('pho_phone_contract_id', $request->pho_phone_contract_id)
+                        ->whereNull('deleted_at')
+                        ->ignore($request->id),
+                ],
+                'mobile_data' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'roaming_data' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'minutes' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'roaming_minutes' => [
+                    'nullable',
+                    'integer',
+                    'min:0'
+                ],
+                'active' => [
+                    'nullable'
+                ],
                 'pho_phone_type_phone_id' => [
                     'required',
                     'integer',
@@ -263,27 +293,26 @@ class PhonePlanController extends Controller
                 'pho_phone_contract_id' => [
                     'required',
                     'integer',
-                    Rule::exists(
-                        'pho_phone_contracts',
-                        'id'
-                    )->where(
-                        'active',
-                        true
-                    )->whereNull(
-                        'deleted_at'
-                    )
+                    Rule::exists('pho_phone_contracts', 'id')
+                        ->where('active', true)
+                        ->whereNull('deleted_at')
+                        ->where(function ($query) use ($requestPlan) {
+                            $query->where('id', $requestPlan->pho_phone_contract_id);
+                        })
                 ],
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'string' => 'El formato d:attribute es irreconocible.',
-                'min' => ':attributes ingresado debe ser mayor o igual a 0',
-                'integer' => 'El formato de :attribute es diferente al que se espera',
-                'boolean' => 'El formato de :attribute es diferente al esperado',
-                'name.unique' => ':attribute ya existe',
+                'string' => 'El formato de :attribute es irreconocible.',
+                'min' => ':attributes ingresado debe ser mayor o igual a 0.',
+                'integer' => 'El formato de :attribute es diferente al que se espera.',
+                'boolean' => 'El formato de :attribute es diferente al esperado.',
+                'name.unique' => ':attribute ya existe en el contrato.',
+                'id.in' => 'El contrato no se puede modificar.',
                 'exists' => ':attribute no existe o esta inactivo',
-                'max' => ':attribute excede los caracteres máximos',
+                'max' => ':attribute excede los caracteres máximos.',
+                'pho_phone_contract_id.exists' => 'El campo Contrato no puede ser modificado.',
             ];
 
             $attributes = [
@@ -291,17 +320,16 @@ class PhonePlanController extends Controller
                 'mobile_data' => ' Datos Móviles',
                 'roaming_data' => ' Datos Roaming',
                 'minutes' => ' Minutos de LLamada',
-                'roaming_minutes' => ' Minutos de LLamada Roaming',
+                'roaming_minutes' => ' Minutos de Llamada Roaming',
                 'active' => 'el Estado del Plan',
                 'pho_phone_type_phone_id' => 'el Tipo del Teléfono',
-                'pho_phone_contract_id' => 'el Identificador del Contrato'
+                'pho_phone_contract_id' => 'el contrato',
             ];
 
             $request->validate($rules, $messages, $attributes);
 
-
-
             $requestPlan = PhonePlan::findOrFail($request->id);
+
             $requestPlanData = [
                 'name' => $request->name,
                 'mobile_data' => $request->mobile_data,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Phones;
 
+use App\Helpers\FileHelper;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 
 class PhoneIncidentAttachesController extends Controller
 {
@@ -25,7 +28,7 @@ class PhoneIncidentAttachesController extends Controller
                     'incident'
                 ]
             )->get();
-            return response()->json($incidentAttaches, 200);
+            return response()->json(['attaches'=>$incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -45,6 +48,79 @@ class PhoneIncidentAttachesController extends Controller
      */
     public function store(Request $request)
     {
+        try {
+            $rules = [
+                'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
+                'files' => ['required', 'filled', function ($attribute, $value, $fail) {
+                    $maxTotalSize = 300 * 1024 * 1024;
+                    $totalSize = 0;
+
+                    foreach ($value as $idx => $file) {
+                        $totalSize += $file->getSize();
+                    }
+
+                    if ($totalSize > $maxTotalSize) {
+                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                    }
+                }],
+            ];
+
+            $messages = [
+                'required' => 'Falta :attribute.',
+                'integer' => 'El formato d:attribute es irreconocible.',
+                'exists' => ':attribute no existe.  ',
+            ];
+
+            $attributes = [
+
+                'files' => 'archivo(s)',
+                'pho_phone_incident_id' => 'el Identificador de la Categoría del Incidente',
+            ];
+
+
+
+            $request->validate($rules, $messages, $attributes);
+
+            $newRequestIncident = [];
+
+
+                if ($request->hasFile('files')) {
+
+                    $basePath = 'phones/incidents/';
+                    $fullPath = storage_path('app/public/' . $basePath);
+
+                    if (!File::exists($fullPath)) {
+                        File::makeDirectory($fullPath, 0775, true);
+                    }
+
+                    foreach ($request->file('files') as $idx => $file) {
+
+                        $newFileName = $request->pho_phone_incident_id . '-' . $file->getClientOriginalName();
+                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+                        $file->move($fullPath, $newFileNameUnique);
+                        $fileSize = File::size($fullPath . $newFileNameUnique);
+
+                        $newRequestIncident = IncidentsAttaches::create([
+                            'pho_phone_incident_id' => $request->pho_phone_incident_id,
+                            'file_name_original' => $file->getClientOriginalName(),
+                            'file_name' => $newFileNameUnique,
+                            'file_size' => $fileSize,
+                            'file_extension' => $file->getClientOriginalExtension(),
+                            'file_mimetype' => $file->getClientMimetype(),
+                            'file_location' => $basePath,
+                        ]);
+                    }
+                };
+            return response()->json($newRequestIncident, 200);
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -74,7 +150,7 @@ class PhoneIncidentAttachesController extends Controller
             $incidentAttaches = IncidentsAttaches::with([
                 'incident',
             ])->findOrFail($validateData['id']);
-            return response()->json($incidentAttaches, 200);
+            return response()->json(['attaches'=>$incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
 
@@ -177,53 +253,4 @@ class PhoneIncidentAttachesController extends Controller
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
-
-
-    // public function destroy(int $incidentId, int $attachId)
-    // {
-    //     try {
-    //         $validateData = Validator::make(
-    //             ['incidentId' => $incidentId, 'attachId' => $attachId],
-    //             [
-    //                 'incidentId' => [
-    //                     'required', 'integer', 'exists:pho_phone_incident_attaches,pho_phone_incident_id'
-    //                 ],
-    //                 'attachId' => [
-    //                     'required', 'integer', 'exists:pho_phone_incident_attaches,id'
-    //                 ],
-    //             ],
-    //             [
-    //                 'incidentId.required' => 'Falta el :attribute.',
-    //                 'incidentId.integer' => 'El :attribute es irreconocible.',
-    //                 'incidentId.exists' => 'El :attribute enviado, sin coincidencia.',
-
-    //                 'attachId.required' => 'Falta el :attribute.',
-    //                 'attachId.integer' => 'El :attribute es irreconocible.',
-    //                 'attachId.exists' => 'El :attribute enviado, sin coincidencia.',
-    //             ],
-    //             [
-    //                 'incidentId' => 'Identificador de incidencia no reconocido.',
-    //                 'attachId' => 'Identificador de archivo no reconocido.',
-    //             ]
-    //         )->validate();
-
-    //         $incidentAttaches = IncidentsAttaches::where('pho_phone_incident_id', $validateData['incidentId'])
-    //             ->findOrFail($validateData['attachId']);
-
-    //         $incidentAttaches->delete();
-    //         $incidentAttaches['Status'] = 'deleted';
-
-
-
-    //         return response()->json([$incidentAttaches, 'message' => 'Archivo eliminado exitosamente.'], 200);
-    //     } catch (ValidationException $e) {
-    //         Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($incidentId, $attachId));
-
-    //         return response()->json(['message' => 'Archivo no encontrado.'], 404);
-    //     } catch (Exception $e) {
-    //         Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($incidentId, $attachId));
-
-    //         return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-    //     }
-    // }
 }

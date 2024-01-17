@@ -57,12 +57,13 @@ class BrandController extends Controller
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
             $messages = [
                 'required' => 'El campo :attribute es requerido',
+                'string' => 'El campo :attribute se espera que sea texto.',
                 'boolean' => 'El formato de :attribute es diferente al esperado',
                 'name.unique' => 'El nombre ya existe!',
             ];
@@ -85,7 +86,7 @@ class BrandController extends Controller
 
             $requestBrandData = [
                 'name' => $request->name,
-                'active' => $request->active == 'true' && $request->active != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
                 // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
@@ -174,7 +175,7 @@ class BrandController extends Controller
                 'id' => [
                     'required',
                     'integer',
-                    'exists:pho_phone_brands,id',
+                    Rule::exists('pho_phone_brands','id')->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
                 'name' => [
@@ -185,7 +186,7 @@ class BrandController extends Controller
                 ],
                 'active' => [
                     'nullable',
-                    'boolean'
+
                 ],
             ];
 
@@ -197,6 +198,7 @@ class BrandController extends Controller
                 'string' => 'El formato de :attribute es irreconocible.',
                 'max' => 'La longitud de :attribute ha excedido la cantidad máxima.',
                 'boolean' => 'El formato de :attribute es diferente al esperado.',
+                'name.unique' => 'El nombre ya existe!',
             ];
 
             $attributes = [
@@ -212,7 +214,7 @@ class BrandController extends Controller
             $data = [
                 'name' => $request->name,
                 // 'active' => $request->active == 'true' ? true : false
-                'active' => $request->active == 'true' && $request->active   != null ? true : false,
+                'active' => $request->active === 'true' || $request->active === null ? true : false,
             ];
 
             $updateBrand->update($data);
@@ -245,7 +247,7 @@ class BrandController extends Controller
                 [
                     'id.required' => 'Falta ingresar el :attribute.',
                     'id.integer' => 'El :attribute no es reconocible',
-                    'id.exist' => 'El :attribute ingresado no coincide',
+                    'id.exists' => 'El :attribute ingresado no se encontró.',
                 ],
                 [
                     'id' => 'Identificador de la Marca',
@@ -309,7 +311,13 @@ class BrandController extends Controller
                     $validatedData['id']
                 );
             } else {
-                $requestBrands = $commonQuery->withCount('models')->get();
+                $requestBrands = $commonQuery->withCount('models')->with(
+                    [
+                        'models' => function ($query) {
+                            $query->where('active', true);
+                        }
+                    ]
+                )->get();
             }
 
             return response()->json($requestBrands, 200);

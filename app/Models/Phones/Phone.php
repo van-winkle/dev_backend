@@ -25,10 +25,10 @@ class Phone extends Model
 
     public $fillable = [
         'number',
-        'type',
         'imei',
         'price',
         'active',
+        'pho_phone_type_phone_id',
         'adm_employee_id',
         'pho_phone_plan_id',
         'pho_phone_contract_id',
@@ -48,6 +48,11 @@ class Phone extends Model
         'updated',
         'deleted',
     ];
+
+    public function type()
+    {
+        return $this->belongsTo(TypePhone::class, 'pho_phone_type_phone_id');
+    }
 
     public function employee()
     {

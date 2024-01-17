@@ -14,8 +14,13 @@ return new class extends Migration
         Schema::create('pho_phone_incidents', function (Blueprint $table) {
             $table->id();
 
+            $table->string('description');
             $table->decimal('paymentDifference', 6, 2, true);
             $table->double('percentage', 5, 2);
+            $table->date('date_incident');
+
+            $table->unsignedBigInteger('adm_employee_id');
+            $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
 
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');

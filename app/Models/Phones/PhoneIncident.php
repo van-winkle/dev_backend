@@ -2,8 +2,11 @@
 
 namespace App\Models\Phones;
 
+use App\Models\Phones\Phone;
+use App\Models\Phones\AdminEmployee;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Phones\IncidentsAttaches;
+use App\Models\Phones\IncidentsCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -20,8 +23,11 @@ class PhoneIncident extends Model
     public $incrementing = true;
 
     public $fillable = [
+        'description',
         'paymentDifference',
         'percentage',
+        'date_incident',
+        'adm_employee_id',
         'pho_phone_id',
         'pho_phone_incident_category_id'
     ];
@@ -51,6 +57,8 @@ class PhoneIncident extends Model
     public function incidentCat (){
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
-
+    public function employee (){
+        return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
+    }
 
 }

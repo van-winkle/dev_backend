@@ -177,13 +177,17 @@ class PhonePlanController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
+                ['id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
+                    ]],
                 [
                     'id.required' => 'Falta :attribute.',
                     'id.integer' => ':attribute irreconocible.',
                     'id.exists' => ':attribute solicitado sin coincidencia.',
                 ],
-                ['id' => 'Identificador de Planes'],
+                ['id' => 'Identificador de Plan'],
             )->validate();
 
             $plan = PhonePlan::with([
@@ -209,7 +213,12 @@ class PhonePlanController extends Controller
         /*  try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_plans,id']],
+                ['id' => [
+                    'required',
+                     'integer',
+                     //'exists:pho_phone_plans,id',
+                     Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
+                     ]],
                 [
                  'id.required' => 'Falta :attribute.',
                  'id.integer' => ':attribute irreconocible.',
@@ -305,15 +314,14 @@ class PhonePlanController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'string' => 'El formato de :attribute es irreconocible.',
-                'min' => ':attributes ingresado debe ser mayor o igual a 0.',
-                'integer' => 'El formato de :attribute es diferente al que se espera.',
-                'boolean' => 'El formato de :attribute es diferente al esperado.',
-                'name.unique' => ':attribute ya existe en el contrato.',
-                'id.in' => 'El contrato no se puede modificar.',
-                'exists' => ':attribute no existe o esta inactivo',
-                'max' => ':attribute excede los caracteres máximos.',
-                'pho_phone_contract_id.exists' => 'El campo Contrato no puede ser modificado.',
+                'string' => 'El formato d:attribute es irreconocible.',
+                'min' => ':attributes ingresado debe ser mayor o igual a 0',
+                'integer' => 'El formato de :attribute es diferente al que se espera',
+                'boolean' => 'El formato de :attribute es diferente al esperado',
+                'name.unique' => ':attribute ya existe',
+                'exists' => ':attribute no existe o está inactivo.',
+                'id.in' => 'El ID no coincide con el registro a modificar.',
+                'max' => ':attribute excede los caracteres máximos',
             ];
 
             $attributes = [
@@ -343,7 +351,7 @@ class PhonePlanController extends Controller
             ];
 
             $requestPlan->update($requestPlanData);
-            
+
             return response()->json($requestPlan, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));

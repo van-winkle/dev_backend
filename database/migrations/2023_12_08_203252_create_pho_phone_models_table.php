@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('active')->default(true);
+
             $table->unsignedBigInteger('pho_phone_brand_id')->nullable();
-            $table->foreign('pho_phone_brand_id')->references('id')->on('pho_phone_brands');
+            $table->foreign('pho_phone_brand_id')->references('id')->on('pho_phone_brands')->cascadeOnDelete();
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

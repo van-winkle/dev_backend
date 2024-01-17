@@ -52,7 +52,7 @@ class PhoneIncident extends Model
     }
     public function phone ()
     {
-        return $this->belongsTo(Phone::class,'pho_phone_id');
+        return $this->belongsTo(Phone::class,'pho_phone_id')->withTrashed();
     }
     public function incidentCat (){
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');

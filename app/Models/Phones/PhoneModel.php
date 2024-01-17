@@ -19,7 +19,6 @@ class PhoneModel extends Model
     public $incrementing = true;
 
 
-
     public $fillable = [
     'name',
     'active',

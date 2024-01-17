@@ -19,7 +19,7 @@ class IncidentsAttaches extends Model
 
     public $fillable = [
         'file_name_original',
-        'file_name',
+        'name',
         'file_size',
         'file_extension',
         'file_mimetype',

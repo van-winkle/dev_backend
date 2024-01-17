@@ -103,7 +103,7 @@ class PhoneIncidentAttachesController extends Controller
                     $newRequestIncident = IncidentsAttaches::create([
                         'pho_phone_incident_id' => $request->pho_phone_incident_id,
                         'file_name_original' => $file->getClientOriginalName(),
-                        'file_name' => $newFileNameUnique,
+                        'name' => $newFileNameUnique,
                         'file_size' => $fileSize,
                         'file_extension' => $file->getClientOriginalExtension(),
                         'file_mimetype' => $file->getClientMimetype(),

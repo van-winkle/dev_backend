@@ -28,7 +28,7 @@ class PhoneIncidentAttachesController extends Controller
                     'incident'
                 ]
             )->get();
-            return response()->json(['attaches'=>$incidentAttaches], 200);
+            return response()->json(['attaches' => $incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -84,33 +84,33 @@ class PhoneIncidentAttachesController extends Controller
             $newRequestIncident = [];
 
 
-                if ($request->hasFile('files')) {
+            if ($request->hasFile('files')) {
 
-                    $basePath = 'phones/incidents/';
-                    $fullPath = storage_path('app/public/' . $basePath);
+                $basePath = 'phones/incidents/';
+                $fullPath = storage_path('app/public/' . $basePath);
 
-                    if (!File::exists($fullPath)) {
-                        File::makeDirectory($fullPath, 0775, true);
-                    }
+                if (!File::exists($fullPath)) {
+                    File::makeDirectory($fullPath, 0775, true);
+                }
 
-                    foreach ($request->file('files') as $idx => $file) {
+                foreach ($request->file('files') as $idx => $file) {
 
-                        $newFileName = $request->pho_phone_incident_id . '-' . $file->getClientOriginalName();
-                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
-                        $file->move($fullPath, $newFileNameUnique);
-                        $fileSize = File::size($fullPath . $newFileNameUnique);
+                    $newFileName = $request->pho_phone_incident_id . '-' . $file->getClientOriginalName();
+                    $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+                    $file->move($fullPath, $newFileNameUnique);
+                    $fileSize = File::size($fullPath . $newFileNameUnique);
 
-                        $newRequestIncident = IncidentsAttaches::create([
-                            'pho_phone_incident_id' => $request->pho_phone_incident_id,
-                            'file_name_original' => $file->getClientOriginalName(),
-                            'file_name' => $newFileNameUnique,
-                            'file_size' => $fileSize,
-                            'file_extension' => $file->getClientOriginalExtension(),
-                            'file_mimetype' => $file->getClientMimetype(),
-                            'file_location' => $basePath,
-                        ]);
-                    }
-                };
+                    $newRequestIncident = IncidentsAttaches::create([
+                        'pho_phone_incident_id' => $request->pho_phone_incident_id,
+                        'file_name_original' => $file->getClientOriginalName(),
+                        'name' => $newFileNameUnique,
+                        'file_size' => $fileSize,
+                        'file_extension' => $file->getClientOriginalExtension(),
+                        'file_mimetype' => $file->getClientMimetype(),
+                        'file_location' => $basePath,
+                    ]);
+                }
+            };
             return response()->json($newRequestIncident, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
@@ -128,34 +128,7 @@ class PhoneIncidentAttachesController extends Controller
      */
     public function show(int $id)
     {
-        try {
-            $validateData = Validator::make(
-                ['id' => $id],
-                [
-                    'id' => [
-                        'required',
-                        'integer',
-                        'exists:pho_phone_incident_attaches,pho_phone_incident_id'
-                    ]
-                ],
-                [
-                    'id.required' => 'Falta el :attribute',
-                    'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
-                ],
-                ['id' => 'Identificador de los archivos por incidencia']
-
-            )->validate();
-
-            $incidentAttaches = IncidentsAttaches::with([
-                'incident',
-            ])->findOrFail($validateData['id']);
-            return response()->json(['attaches'=>$incidentAttaches], 200);
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
+        return FileHelper::downloadFile(IncidentsAttaches::class,$id);
     }
 
     /**
@@ -253,4 +226,5 @@ class PhoneIncidentAttachesController extends Controller
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
+
 }

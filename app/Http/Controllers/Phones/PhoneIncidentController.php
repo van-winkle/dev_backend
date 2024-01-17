@@ -127,7 +127,7 @@ class PhoneIncidentController extends Controller
 
                 if ($request->hasFile('files')) {
 
-                    $basePath = 'phones/incidents/';
+                    $basePath = 'Phones/Incidents/';
                     $fullPath = storage_path('app/public/' . $basePath);
 
                     if (!File::exists($fullPath)) {
@@ -143,7 +143,7 @@ class PhoneIncidentController extends Controller
 
                         $newRequestIncident->attaches()->create([
                             'file_name_original' => $file->getClientOriginalName(),
-                            'file_name' => $newFileNameUnique,
+                            'name' => $newFileNameUnique,
                             'file_size' => $fileSize,
                             'file_extension' => $file->getClientOriginalExtension(),
                             'file_mimetype' => $file->getClientMimetype(),

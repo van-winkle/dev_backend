@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\File;
 
 class FileHelper
 {
-    public static function fileNameUnique($path, $fileName) {
+    public static function fileNameUnique($path, $fileName)
+    {
         $count = 0;
         $originalFileName = $fileName;
 
@@ -18,9 +19,10 @@ class FileHelper
         return $fileName;
     }
 
-    public static function downloadFile($model, $id) {
+    public static function downloadFile($model, $id)
+    {
         $fileInfo = $model::findOrFail($id);
-        $filePath = storage_path('app/public/' . $fileInfo->file_location . '/' . $fileInfo->name);
+        $filePath = storage_path('app/public/' . $fileInfo->file_location . $fileInfo->name);
 
         if (File::exists($filePath)) {
             return response()->file($filePath, [
@@ -31,7 +33,8 @@ class FileHelper
         }
     }
 
-    public static function saveFile($file, $path) {
+    public static function saveFile($file, $path)
+    {
         $count = 0;
         $originalFileName = $file->getClientOriginalName();
         $fileName = $originalFileName;

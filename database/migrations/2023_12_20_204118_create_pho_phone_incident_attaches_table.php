@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pho_phone_incident_attaches', function (Blueprint $table) {
             $table->id();
             $table->string('file_name_original')->nullable();
-            $table->string('file_name')->nullable();
+            $table->string('name')->nullable();
             $table->string('file_size')->nullable();
             $table->string('file_extension')->nullable();
             $table->string('file_mimetype')->nullable();

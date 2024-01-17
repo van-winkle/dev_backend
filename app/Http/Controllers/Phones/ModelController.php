@@ -258,8 +258,12 @@ class ModelController extends Controller
 
             DB::transaction(function () use ($validatedData, &$phoneModel) {
                 $phoneModel = PhoneModel::findOrFail($validatedData['id']);
-                $phoneModel->delete();
-                $phoneModel['status'] = 'deleted';
+                if ( !$phoneModel->phones()->exists()) {
+                    $phoneModel->delete();
+                    $phoneModel['status'] = 'deleted';
+                } else {
+                    throw ValidationException::withMessages(['id' => 'El modelo tiene Teléfonos.']);
+                }
             });
 
             return response()->json($phoneModel, 200);

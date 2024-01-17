@@ -257,9 +257,14 @@ class BrandController extends Controller
             $phoneBrand = [];
 
             DB::transaction(function () use ($validatedData, &$phoneBrand) {
+
                 $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
-                $phoneBrand->delete();
-                $phoneBrand['status'] = 'deleted';
+                if ( !$phoneBrand->models()->exists()) {
+                    $phoneBrand->delete();
+                    $phoneBrand['status'] = 'deleted';
+                } else {
+                    throw ValidationException::withMessages(['id' => 'La marca tiene modelos.']);
+                }
             });
 
             return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);

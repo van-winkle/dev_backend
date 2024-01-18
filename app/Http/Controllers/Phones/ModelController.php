@@ -262,7 +262,7 @@ class ModelController extends Controller
                     $phoneModel->delete();
                     $phoneModel['status'] = 'deleted';
                 } else {
-                    throw ValidationException::withMessages(['id' => 'El modelo tiene Teléfonos.']);
+                    throw ValidationException::withMessages(['id' => 'El Modelo tiene Teléfonos.']);
                 }
             });
 

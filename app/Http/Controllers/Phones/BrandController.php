@@ -263,7 +263,7 @@ class BrandController extends Controller
                     $phoneBrand->delete();
                     $phoneBrand['status'] = 'deleted';
                 } else {
-                    throw ValidationException::withMessages(['id' => 'La marca tiene modelos.']);
+                    throw ValidationException::withMessages(['id' => 'La Marca tiene Modelos.']);
                 }
             });
 

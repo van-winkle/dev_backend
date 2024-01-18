@@ -396,7 +396,7 @@ class PhoneController extends Controller
                     'plan',
                     'contract',
                     'model.brand',
-                    'model',
+                    //'model',
                     'incidents'
                 ])->findOrFail($validatedData['id']);
             } else {

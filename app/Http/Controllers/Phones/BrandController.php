@@ -97,9 +97,8 @@ class BrandController extends Controller
 
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
-            return response()->json(['errors' => $e->errors()], 400);
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
-
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
 
             return response()->json([
@@ -175,7 +174,7 @@ class BrandController extends Controller
                 'id' => [
                     'required',
                     'integer',
-                    Rule::exists('pho_phone_brands','id')->whereNull('deleted_at'),
+                    Rule::exists('pho_phone_brands', 'id')->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
                 'name' => [
@@ -223,7 +222,7 @@ class BrandController extends Controller
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
-            return response()->json(['errors' => $e->errors()], 400);
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
 
@@ -259,7 +258,7 @@ class BrandController extends Controller
             DB::transaction(function () use ($validatedData, &$phoneBrand) {
 
                 $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
-                if ( !$phoneBrand->models()->exists()) {
+                if (!$phoneBrand->models()->exists()) {
                     $phoneBrand->delete();
                     $phoneBrand['status'] = 'deleted';
                 } else {

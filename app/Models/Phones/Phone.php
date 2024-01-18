@@ -33,6 +33,7 @@ class Phone extends Model
         'pho_phone_plan_id',
         'pho_phone_contract_id',
         'pho_phone_model_id',
+        'adm_manager_id'
     ];
 
     public $hidden = [
@@ -76,5 +77,9 @@ class Phone extends Model
     public function incidents ()
     {
         return $this->hasMany(PhoneIncident::class,'pho_phone_id');
+    }
+    public function manager()
+    {
+        return $this->belongsTo(AdminEmployee::class, 'adm_manager_id');
     }
 }

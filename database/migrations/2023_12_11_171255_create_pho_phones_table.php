@@ -31,6 +31,8 @@ return new class extends Migration
             $table->foreign('pho_phone_contract_id')->references('id')->on('pho_phone_contracts');
             $table->unsignedBigInteger('pho_phone_model_id');
             $table->foreign('pho_phone_model_id')->references('id')->on('pho_phone_models');
+            $table->unsignedBigInteger('adm_manager_id')->nullable();
+            $table->foreign('adm_manager_id')->references('id')->on('adm_employees');
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

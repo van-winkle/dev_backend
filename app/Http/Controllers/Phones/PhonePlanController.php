@@ -379,15 +379,19 @@ class PhonePlanController extends Controller
                 ['id' => 'Identificador del Plan',]
             )->validate();
 
-            $contract = NULL;
+            $phonePlan = NULL;
 
-            DB::transaction(function () use ($validatedData, &$contract) {
-                $contract = PhonePlan::findOrFail($validatedData['id']);
-                $contract->delete();
-                $contract['status'] = 'deleted';
+            DB::transaction(function () use ($validatedData, &$phonePlan) {
+                $phonePlan = PhonePlan::findOrFail($validatedData['id']);
+                if ( !$phonePlan->phones()->exists()) {
+                    $phonePlan->delete();
+                    $phonePlan['status'] = 'deleted';
+                } else {
+                    throw ValidationException::withMessages(['id' => 'El plan tiene Teléfonos.']);
+                }
             });
 
-            return response()->json($contract, 200);
+            return response()->json($phonePlan, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 

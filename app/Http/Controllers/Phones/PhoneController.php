@@ -28,6 +28,7 @@ class PhoneController extends Controller
                 'plan',
                 'model.brand',
                 'type',
+                'manager',
                 //'contract',
                 // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 //'model',

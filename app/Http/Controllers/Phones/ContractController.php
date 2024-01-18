@@ -266,8 +266,12 @@ class ContractController extends Controller
 
             DB::transaction(function () use ($validatedData, &$contract) {
                 $contract = PhoneContract::findOrFail($validatedData['id']);
-                $contract->delete();
-                $contract['status'] = 'deleted';
+                if ( !$contract->plans()->exists() && !$contract->phones()->exists()) {
+                    $contract->delete();
+                    $contract['status'] = 'deleted';
+                } else {
+                    throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);
+                }
             });
 
             return response()->json($contract, 200);

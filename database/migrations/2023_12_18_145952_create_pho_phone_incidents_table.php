@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('paymentDifference', 6, 2, true);
             $table->double('percentage', 5, 2);
             $table->date('date_incident');
+            $table->string('state')->default('En proceso');
 
             $table->unsignedBigInteger('adm_employee_id');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');

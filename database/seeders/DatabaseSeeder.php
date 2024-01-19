@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Phones\IncidentsAttaches;
 use Illuminate\Database\Seeder;
 use Database\Seeders\EmployeesSeeder;
+use SebastianBergmann\CodeCoverage\Util\Percentage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
         IncidentCategorySeeder::class,
         IncidentsSeeder::class,
         IncidentAttachesSeeder::class,
+        PercetageRulesSeeder::class,
 
         ]);
 

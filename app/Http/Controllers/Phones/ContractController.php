@@ -21,7 +21,7 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::with('contact')->withCount(['plans', 'phones'])->get();
+            $requestContract = PhoneContract::with('contact')->withCount(['plans', 'phones', 'percentages'])->get();
 
             return response()->json($requestContract, 200);
 
@@ -126,8 +126,9 @@ class ContractController extends Controller
             $contract = PhoneContract::with([
                 'plans',
                 'contact',
-                'phones'
-            ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
+                'phones',
+                'percentages'
+            ])->withCount(['plans','phones', 'percentages'])->findOrFail($validatedData['id']);
 
 
 

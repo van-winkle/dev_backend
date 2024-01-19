@@ -6,6 +6,7 @@ use App\Http\Controllers\Phones\BrandController;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
+use App\Http\Controllers\Phones\PercentageRuleController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentAttachesController;
@@ -93,4 +94,8 @@ Route::resource('/phone/incidents', PhoneIncidentController::class);
 
 /* Start Incidents Attaches routes*/
 Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
+/* End Incidents Attaches routes*/
+
+/* Start Incidents Attaches routes*/
+Route::resource('/phone/percentagesRules', PercentageRuleController::class);
 /* End Incidents Attaches routes*/

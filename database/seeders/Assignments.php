@@ -15,19 +15,19 @@ class Assignments extends Seeder
     public function run(): void
     {
         //
-        DB::table('pho_phone_assignments')->insert(
+        DB::table('adm_employee_pho_phone')->insert(
             [
                 [
-                    'adm_employee_id' => 1,
                     'pho_phone_id' => 1,
-                ],
-                [
                     'adm_employee_id' => 1,
-                    'pho_phone_id' => 2,
                 ],
                 [
-                    'adm_employee_id' => 2,
+                    'pho_phone_id' => 2,
+                    'adm_employee_id' => 1,
+                ],
+                [
                     'pho_phone_id' => 3,
+                    'adm_employee_id' => 2,
                 ],
 
             ]

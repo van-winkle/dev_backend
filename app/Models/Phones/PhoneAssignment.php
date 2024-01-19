@@ -10,7 +10,7 @@ class PhoneAssignment extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $table = 'pho_phone_assignments';
+    protected $table = 'adm_employee_pho_phone';
 
     protected $primaryKey = 'id';
 
@@ -37,7 +37,7 @@ class PhoneAssignment extends Model
         'deleted',
     ];
 
-    public function manager()
+    public function supervisor()
     {
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }

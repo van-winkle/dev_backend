@@ -33,7 +33,6 @@ class Phone extends Model
         'pho_phone_plan_id',
         'pho_phone_contract_id',
         'pho_phone_model_id',
-        'adm_manager_id'
     ];
 
     public $hidden = [
@@ -78,8 +77,9 @@ class Phone extends Model
     {
         return $this->hasMany(PhoneIncident::class,'pho_phone_id');
     }
-    public function manager()
+
+    public function phone_supervisors()
     {
-        return $this->belongsTo(AdminEmployee::class, 'adm_manager_id');
+        return $this->belongsToMany(AdminEmployee::class, 'adm_employee_pho_phone', 'pho_phone_id', 'adm_employee_id')->as('assigned_phones');
     }
 }

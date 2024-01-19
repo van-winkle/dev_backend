@@ -14,10 +14,11 @@ class PhoneAssignmentController extends Controller
     public function index()
     {
         //
-       $assignments = PhoneAssignment::with([
-            'manager',
+       /* $assignments = PhoneAssignment::with([
+            'supervisor',
             'phone',
-        ])->get();
+        ])->get(); */
+        $assignments = PhoneAssignment::all();
         return response()->json($assignments, 200);
     }
 

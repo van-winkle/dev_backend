@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pho_phone_assignments', function (Blueprint $table) {
+        Schema::create('adm_employee_pho_phone', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedBigInteger('pho_phone_id');
             $table->unsignedBigInteger('adm_employee_id');
+
+            $table->foreign('pho_phone_id')->references('id')->on('pho_phones');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
 
-            $table->unsignedBigInteger('pho_phone_id');
-            $table->foreign('pho_phone_id')->references('id')->on('pho_phones');
-
-            $table->timestamp('created_at', 0)->useCurrent();
-            $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pho_phone_assignments');
+        Schema::dropIfExists('adm_employee_pho_phone');
     }
 };

@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('adm_employee_pho_phone', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('pho_phone_id');
             $table->unsignedBigInteger('adm_employee_id');
+            $table->unsignedBigInteger('pho_phone_id');
 
-            $table->foreign('pho_phone_id')->references('id')->on('pho_phones');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
+            $table->foreign('pho_phone_id')->references('id')->on('pho_phones');
 
+            $table->timestamp('created_at', 0)->useCurrent();
+            $table->timestamp('updated_at', 0)->useCurrent();
             $table->softDeletes();
         });
     }

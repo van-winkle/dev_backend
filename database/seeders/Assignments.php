@@ -25,10 +25,6 @@ class Assignments extends Seeder
                     'pho_phone_id' => 2,
                     'adm_employee_id' => 1,
                 ],
-                [
-                    'pho_phone_id' => 3,
-                    'adm_employee_id' => 2,
-                ],
 
             ]
         );

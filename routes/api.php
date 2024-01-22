@@ -6,6 +6,7 @@ use App\Http\Controllers\Phones\BrandController;
 use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
+use App\Http\Controllers\Phones\PhoneAssignmentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\TypePhoneController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
@@ -96,6 +97,16 @@ Route::resource('/phone/incidents', PhoneIncidentController::class);
 /* Start Incidents Attaches routes*/
 Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
 /* End Incidents Attaches routes*/
+
+/* Start Assignment routes */
+Route::resource('/phone/assignments', PhoneAssignmentController::class);
+Route::prefix('phone/assignments')
+->controller(PhoneAssignmentController::class)
+->group(function(){
+    //Route::get('/assignments-active/{id?}', 'activeAssignments');
+});
+
+/* End Assignment route */
 
 /* Start Incidents Resolutions routes*/
 Route::resource('/phone/incidentResolutions', PhoneIncidentResolutionController::class);

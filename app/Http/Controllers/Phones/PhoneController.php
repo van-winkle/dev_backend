@@ -24,15 +24,20 @@ class PhoneController extends Controller
         try {
             //Query to get phones list
             $phones = Phone::with([
-                'employee',
+                'employee.phones_assigned',
+                'employee.phones_for_assignation',
+
+                //'employee',
                 'plan',
                 'model.brand',
                 'type',
+                'phone_supervisors'
                 //'contract',
                 // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 //'model',
                 //'incidents'
             ])->withCount(['incidents'])->get();
+
             return response()->json($phones, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());

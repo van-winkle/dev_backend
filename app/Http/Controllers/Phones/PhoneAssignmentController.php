@@ -24,10 +24,10 @@ class PhoneAssignmentController extends Controller
     public function index()
     {
         //
-       $assignments = PhoneAssignment::with([
-            'supervisor',
-            'phone',
-        ])->get();
+       $assignments = AdminEmployee::with([
+            'phones_for_assignation',
+        ])->whereHas('phones_for_assignation')
+        ->get();
         //$assignments = PhoneAssignment::all();
         return response()->json($assignments, 200);
     }
@@ -50,13 +50,14 @@ class PhoneAssignmentController extends Controller
             $rules = [
 
                 'adm_employee_id' => ['required', 'integer', Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at')],
-                'phones' => ['required', 'filled'],
+                'phones' => ['required', 'array'],
+                'phones.*' => ['integer', 'exists:pho_phones,id'],
 
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'filled' => 'Falta :attribute.',
+                'array' => 'El formato d:attribute es irreconocible.',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'exists' => ':attribute no existe.  ',
             ];
@@ -64,12 +65,13 @@ class PhoneAssignmentController extends Controller
             $attributes = [
 
                 'adm_employee_id' => 'el Identificador del Empleado',
-                'phones' => 'Identificador/s de Teléfono',
+                'phones' => 'Identificadores de Teléfonos',
+                'phones.*' => 'el Identificador de Teléfono',
             ];
 
             $request->validate($rules, $messages, $attributes);
 
-            $newRequestIncidentAssignment = [];
+            $newPhoneAssignment = [];
 
             if ($request->phones) {
                 
@@ -81,37 +83,22 @@ class PhoneAssignmentController extends Controller
                     } 
                 }
 
+                $newPhoneAssignment = AdminEmployee::findOrFail($request['adm_employee_id']);
                 foreach ($request->phones as $idx => $phoneId) {
-
                     //Creating the assignment
-                    $newRequestIncidentAssignment[] = PhoneAssignment::create([
+                    $newPhoneAssignment->phones_for_assignation()->attach($phoneId, ['adm_employee_id' => $request['adm_employee_id']]);
+                    /* $newPhoneAssignment[] = PhoneAssignment::create([
                         'adm_employee_id' => $request->adm_employee_id,
                         'pho_phone_id' => $phoneId,
-                    ]); 
+                    ]); */ 
+
                     
                 }
 
             };
 
-            return response()->json(['assigned_phones'=>$newRequestIncidentAssignment], 200);
-            /* $newRequestIncident = [];
+            return response()->json(['assigned_phones'=>$newPhoneAssignment], 200);
 
-            DB::transaction(function () use ($request, &$newRequestIncident) {
-
-                $newRequestIncident = AdminEmployee::findOrFail($request->adm_employee_id);
-
-                if ($request->phones) {
-                    foreach ($request->phones as $idx => $phoneId) {
-
-                        $newRequestIncident->phones_for_assignation()->create([
-                            'adm_employee_id' => $request->adm_employee_id,
-                            'pho_phone_id' => $phoneId,
-                        ]);
-                    }
-                    $newRequestIncident->load('phones_for_assignation');
-                }
-            });
-            return response()->json($newRequestIncident, 200); */
 
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
@@ -143,9 +130,62 @@ class PhoneAssignmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         //
+        try {
+            $rules = [
+
+                'adm_employee_id' => ['required', 'integer', 
+                    Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at'),
+                    Rule::in([$id])
+                ],
+                'phones' => ['required', 'array'],
+                'phones.*' => ['integer', 'exists:pho_phones,id'],
+
+            ];
+
+            $messages = [
+                'required' => 'Falta :attribute.',
+                'array' => 'El formato d:attribute es irreconocible.',
+                'integer' => 'El formato d:attribute es irreconocible.',
+                'exists' => ':attribute no existe.',
+                'adm_employee_id.in' => 'El :attribute no coincide con el registro a modificar.',
+            ];
+
+            $attributes = [
+
+                'adm_employee_id' => 'el Identificador del Empleado',
+                'phones' => 'Identificadores de Teléfonos',
+                'phones.*' => 'El Identificador de Teléfono',
+            ];
+
+            $request->validate($rules, $messages, $attributes);
+
+            $employee = [];
+
+            DB::transaction(function () use ($request, &$employee) {
+
+                $employee = AdminEmployee::findOrFail($request['adm_employee_id']);
+                if ( $employee->phones_for_assignation()->exists()) {
+                    $employee->phones_for_assignation()->sync($request['phones']);
+                } else {
+                    throw ValidationException::withMessages(['id' => 'El empleado no tiene Asignación de Teléfonos para actualizar.']);
+                }
+            });
+
+            return response()->json(['message' => 'Asignación de Teléfono a '. $employee['name'] .', actualizada con éxito.'], 200);
+
+
+        } catch (ValidationException $e) {
+            Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**

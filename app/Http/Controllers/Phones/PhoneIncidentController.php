@@ -27,7 +27,8 @@ class PhoneIncidentController extends Controller
             $phoneIncidents = PhoneIncident::with(
                 'phone',
                 'incidentCat',
-                'employee'
+                'employee',
+                'resolutions'
             )->withCount(
                 'attaches'
             )->get();

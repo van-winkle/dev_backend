@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('pho_phone_resolutions', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
             $table->string('reply');
-            $table->date('date_resolution');
 
             $table->unsignedBigInteger('pho_phone_incident_id');
             $table->foreign('pho_phone_incident_id')->references('id')->on('pho_phone_incidents');
 
 
-            $table->unsignedBigInteger('pho_phone_incident_supervisor_id');
-            $table->foreign('pho_phone_incident_supervisor_id')->references('id')->on('pho_phone_incident_supervisors');
+            $table->unsignedBigInteger('adm_employee_id');
+            $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
 
             $table->timestamp('created_at', 0)->useCurrent();
             $table->timestamp('updated_at', 0)->useCurrent();

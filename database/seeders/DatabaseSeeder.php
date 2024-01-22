@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
         IncidentCategorySeeder::class,
         IncidentsSeeder::class,
         IncidentAttachesSeeder::class,
+        IncidentsSupervisorsSeeder::class,
+        IncidentsResolutionsSeeder::class
 
         ]);
 

@@ -57,7 +57,8 @@ class PhoneContract extends Model
         return $this->hasMany(Phone::class, 'pho_phone_contract_id');
     }
 
-    public function percentages (){
+    public function percentages()
+    {
         return $this->hasMany(PercentageRules::class, 'pho_phone_contract_id');
     }
 

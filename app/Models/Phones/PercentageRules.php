@@ -20,11 +20,9 @@ class PercentageRules extends Model
     public $incrementing = true;
 
     protected $fillable = [
-        'incident_count',
         'percentage_discount',
         'pho_phone_contract_id'
     ];
-
     public $hidden = [
         'created_at',
         'updated_at',

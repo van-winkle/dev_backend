@@ -6,10 +6,11 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Models\Phones\PhoneContact;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\Phones\PhoneContact;
 use App\Models\Phones\PhoneContract;
+use App\Models\Phones\PercentageRules;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -21,7 +22,7 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::with('contact')->withCount(['plans', 'phones', 'percentages'])->get();
+            $requestContract = PhoneContract::with('contact', 'percentages')->withCount(['plans', 'phones', 'percentages'])->get();
 
             return response()->json($requestContract, 200);
 
@@ -50,6 +51,64 @@ class ContractController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *   //Rules Avaliable with this structure
+            // {"perceentagediscount": 20}
+            // $rules = [
+            //     'code' => ['required', 'string', 'max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
+            //     'start_date' => ['required', 'date', 'date_format:Y-m-d'],
+            //     'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+            //     'active' => ['nullable'],
+            //     'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts', 'id')->where('active', true)->whereNull('deleted_at')],
+            //     'percentage_rules' => ['required', 'array'],
+            //     'percentage_rules.*.percentage_discount' => ['required', 'numeric'],
+            //     'percentage_rules.*.pho_phone_contract_id' => ['integer', Rule::exists('pho_phone_contracts', 'id')],
+            // ];
+
+            // $messages = [
+            //     'required' => 'Falta :attribute.',
+            //     'string' => 'El formato de :attribute es irreconocible.',
+            //     'date' => 'El formato de :attribute es diferente al formato YY-mm-dd.',
+            //     'integer' => 'El formato de :attribute es diferente al que se espera.',
+            //     'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio.',
+            //     'code.unique' => ':attribute ya existe.',
+            //     'exists' => ':attribute no existe o está inactivo.',
+            //     'numeric' => 'El formato de :attribute es irreconocible.',
+            // ];
+
+            // $attributes = [
+            //     'code' => 'El Código del Contrato',
+            //     'start_date' => 'La Fecha de Inicio del Contrato',
+            //     'expiry_date' => 'La Fecha de Expiración del Contrato',
+            //     'active' => 'El Estado del Contrato',
+            //     'dir_contact_id' => 'El Identificador del Contacto',
+            //     'percentage_rules' => 'Reglas de Porcentaje',
+            //     'percentage_rules.*.percentage_discount' => 'Porcentaje de Descuento',
+            //     'percentage_rules.*.pho_phone_contract_id' => 'Identificador del Contrato de Teléfono',
+            // ];
+
+            // $request->validate($rules, $messages, $attributes);
+
+            // $requestContractData = [
+            //     'code' => $request->code,
+            //     'start_date' => $request->start_date,
+            //     'expiry_date' => $request->expiry_date,
+            //     'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
+            //     'dir_contact_id' => $request->dir_contact_id
+            // ];
+
+            // // Create the phone contract
+            // $requestContract = PhoneContract::create($requestContractData);
+
+            // // Iterate over the percentage rules provided and create them
+            // foreach ($request->percentage_rules as $percentageRule) {
+            //     PercentageRules::create([
+            //         'percentage_discount' => $percentageRule['percentage_discount'],
+            //         'pho_phone_contract_id' => $requestContract->id,
+            //     ]);
+            // }
+
+            // $requestContractData['status'] = 'created';
+            // return response()->json($requestContractData, 200);
      */
     public function store(Request $request)
     {
@@ -59,41 +118,54 @@ class ContractController extends Controller
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
                 'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'active' => ['nullable'],
-                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
+                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'percentage_rules' => ['required', 'array'],
+                'percentage_rules.*' => ['numeric'],
             ];
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'max' => ':attribute excede los caracteres máximos',
-                'string' => 'El formato d:attribute es irreconocible.',
-                'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
-                'integer' => 'El formato d:attribute es diferente al que se espera',
-                //'boolean' => 'El formato d:attribute es diferente al esperado',
-                'after_or_equal' => 'La Fecha ingresada en :attribute tiene que ser mayor a la Fecha de Inicio',
-                'code.unique' => ':attribute ya existe',
-                'exists' => ':attribute no existe o esta inactivo'
+                'string' => 'El formato de :attribute es irreconocible.',
+                'date' => 'El formato de :attribute es diferente al formato YY-mm-dd.',
+                'integer' => 'El formato de :attribute es diferente al que se espera.',
+                'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio.',
+                'code.unique' => ':attribute ya existe.',
+                'exists' => ':attribute no existe o está inactivo.',
+                'numeric' => 'El formato de :attribute es irreconocible.',
             ];
 
             $attributes = [
                 'code' => 'El Código del Contrato',
-                'start_date' => 'la Fecha de Inicio del Contrato',
-                'expiry_date' => 'la Fecha de Expiración del Contrato',
-                'active' => 'el Estado del Contrato',
-                'dir_contact_id' => 'el Identificador del Contacto'
+                'start_date' => 'La Fecha de Inicio del Contrato',
+                'expiry_date' => 'La Fecha de Expiración del Contrato',
+                'active' => 'El Estado del Contrato',
+                'dir_contact_id' => 'El Identificador del Contacto',
+                'percentage_rules' => 'Reglas de Porcentaje',
+                'percentage_rules.*.percentage_discount' => 'Porcentaje de Descuento',
+                'percentage_rules.*.pho_phone_contract_id' => 'Identificador del Contrato de Teléfono',
             ];
 
             $request->validate($rules, $messages, $attributes);
-
 
             $requestContractData = [
                 'code' => $request->code,
                 'start_date' => $request->start_date,
                 'expiry_date' => $request->expiry_date,
-                'active' => $request->active == 'true' || $request->active === 1 || $request->active === null ? true : false,
-                'dir_contact_id' => $request->dir_contact_id
+                'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
+                'dir_contact_id' => $request->dir_contact_id,
             ];
 
-            PhoneContract::create($requestContractData);
+            $requestContract = PhoneContract::create($requestContractData);
+
+            $percentageDiscounts = $request->input('percentage_rules');
+
+            foreach ($percentageDiscounts as $percentageDiscount) {
+                PercentageRules::create([
+                    'percentage_discount' => $percentageDiscount,
+                    'pho_phone_contract_id' => $requestContract->id,
+                ]);
+            }
+
             $requestContractData['status'] = 'created';
             return response()->json($requestContractData, 200);
 

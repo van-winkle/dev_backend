@@ -406,7 +406,10 @@ class PhoneController extends Controller
                 ])->findOrFail($validatedData['id']);
             } else {
                 $requestPhones = $commonQuery->with([
-                    'employee'
+                    'employee',
+                    'phone_supervisors',
+                    'employee.phones_assigned',
+                    'employee.phones_for_assignation',
                 ])->withCount(['incidents'])->get();
             }
 

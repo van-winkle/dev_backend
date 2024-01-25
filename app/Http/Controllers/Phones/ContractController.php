@@ -199,6 +199,7 @@ class ContractController extends Controller
                 'plans',
                 'contact',
                 'phones',
+
                 'percentages'
             ])->withCount(['plans','phones', 'percentages'])->findOrFail($validatedData['id']);
 
@@ -318,46 +319,49 @@ class ContractController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
-    {
-        try {
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
-                [
-                    'id.required' => 'Falta el :attribute.',
-                    'id.integer' => 'El :attribute es irreconocible.',
-                    'id.exists' => 'El :attribute enviado, sin coincidencia.',
-                ],
-                ['id' => 'Identificador de Contrato',]
-            )->validate();
+/**
+ * Remove the specified resource from storage.
+ */
+public function destroy(int $id)
+{
+    try {
+        $validatedData = Validator::make(
+            ['id' => $id],
+            ['id' => ['required', 'integer', 'exists:pho_phone_contracts,id']],
+            [
+                'id.required' => 'Falta el :attribute.',
+                'id.integer' => 'El :attribute es irreconocible.',
+                'id.exists' => 'El :attribute enviado, sin coincidencia.',
+            ],
+            ['id' => 'Identificador de Contrato',]
+        )->validate();
 
-                $contract = [];
+        $contract = [];
 
-            DB::transaction(function () use ($validatedData, &$contract) {
-                $contract = PhoneContract::findOrFail($validatedData['id']);
-                if ( !$contract->plans()->exists() && !$contract->phones()->exists()) {
-                    $contract->delete();
-                    $contract['status'] = 'deleted';
-                } else {
-                    throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);
-                }
-            });
+        DB::transaction(function () use ($validatedData, &$contract) {
+            $contract = PhoneContract::findOrFail($validatedData['id']);
+            if (!$contract->plans()->exists() && !$contract->phones()->exists()) {
+                $contract->percentages()->delete();
 
-            return response()->json($contract, 200);
-        } catch (ValidationException $e) {
-            Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
+               $contract->delete();
+                $contract['status'] = 'deleted';
+            } else {
+                throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);
+            }
+        });
 
-            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+        return response()->json($contract, 200);
+    } catch (ValidationException $e) {
+        Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 
-            return response()->json(['message' => $e->getMessage()], 500);
-        }
+        return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
+    } catch (Exception $e) {
+        Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
+        return response()->json(['message' => $e->getMessage()], 500);
     }
+}
+
 
     public function activeContracts(int $id = null)
     {
@@ -388,3 +392,4 @@ class ContractController extends Controller
         }
     }
 }
+

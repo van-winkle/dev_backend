@@ -50,6 +50,7 @@ Route::prefix('phone/phones')
 ->controller(PhoneController::class)
 ->group(function () {
     Route::get('/phones-active/{id?}', 'activePhones');
+    Route::get('/phones-active-assign', 'activePhonesAssign');
 });
 Route::resource('/phone/phones', PhoneController::class);
 /* End Phones routes */

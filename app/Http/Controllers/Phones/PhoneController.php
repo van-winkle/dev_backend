@@ -407,15 +407,50 @@ class PhoneController extends Controller
             } else {
                 $requestPhones = $commonQuery->with([
                     'employee',
-                    'phone_supervisors',
                     'employee.phones_assigned',
                     'employee.phones_for_assignation',
-                ])->withCount(['incidents'])->get();
+
+                    'plan',
+                    'model.brand',
+                    'type',
+                    'phone_supervisors',
+                    ])->withCount(['incidents'])->get();
             }
 
-            return response()->json(['phones'=>$requestPhones], 200);
+            return response()->json($requestPhones, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function activePhonesAssign()
+    {
+        try {
+            $requestPhones = Phone::where('active', true)->with([
+                'employee',
+                'employee.phones_assigned',
+                'employee.phones_for_assignation',
+
+                'plan',
+                'model.brand',
+                'type',
+                'phone_supervisors',
+                ])->get();
+
+            $availablePhones = [];
+            foreach ($requestPhones as $key => $phone) {
+                if (!$phone->phone_supervisors()->exists()) {
+                    $availablePhones[] = ($phone);
+                }
+            }
+            
+
+            return response()->json($availablePhones, 200);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine());
 
             return response()->json(['message' => $e->getMessage()], 500);
         }

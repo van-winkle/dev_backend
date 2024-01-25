@@ -62,7 +62,7 @@ class PhoneIncident extends Model
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
     public function resolutions (){
-        return $this->belongsTo(IncidentsResolutions::class, 'pho_phone_incident_id');
+        return $this->hasMany(IncidentsResolutions::class, 'pho_phone_incident_id');
     }
 
 }

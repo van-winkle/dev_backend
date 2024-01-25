@@ -183,6 +183,8 @@ class PhoneIncidentController extends Controller
             )->validate();
 
             $phoneIncident = PhoneIncident::with([
+                'resolutions',
+                'resolutions.employee',
                 'incidentCat',
                 'employee',
                 'phone',

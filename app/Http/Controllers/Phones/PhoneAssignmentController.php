@@ -59,7 +59,7 @@ class PhoneAssignmentController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'array' => 'El formato d:attribute es irreconocible.',
+                'array' => 'El formato de :attribute es irreconocible.',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'exists' => ':attribute no existe.  ',
             ];

@@ -344,6 +344,7 @@ public function destroy(int $id)
                 $contract->percentages()->delete();
 
                $contract->delete();
+               
                 $contract['status'] = 'deleted';
             } else {
                 throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);

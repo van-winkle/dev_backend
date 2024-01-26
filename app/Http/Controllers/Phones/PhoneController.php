@@ -24,15 +24,20 @@ class PhoneController extends Controller
         try {
             //Query to get phones list
             $phones = Phone::with([
-                'employee',
+                'employee.phones_assigned',
+                'employee.phones_for_assignation',
+
+                //'employee',
                 'plan',
                 'model.brand',
                 'type',
+                'phone_supervisors'
                 //'contract',
                 // Revisar si tienen creada la relación en el modelo Model hacia Brand, para obtener el nombre de la Marca a través de la relación con el modelo del teléfono.
                 //'model',
                 //'incidents'
             ])->withCount(['incidents'])->get();
+
             return response()->json($phones, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -401,13 +406,51 @@ class PhoneController extends Controller
                 ])->findOrFail($validatedData['id']);
             } else {
                 $requestPhones = $commonQuery->with([
-                    'employee'
-                ])->withCount(['incidents'])->get();
+                    'employee',
+                    'employee.phones_assigned',
+                    'employee.phones_for_assignation',
+
+                    'plan',
+                    'model.brand',
+                    'type',
+                    'phone_supervisors',
+                    ])->withCount(['incidents'])->get();
             }
 
-            return response()->json(['phones'=>$requestPhones], 200);
+            return response()->json($requestPhones, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function activePhonesAssign()
+    {
+        try {
+            $requestPhones = Phone::where('active', true)->with([
+                'employee',
+                'employee.phones_assigned',
+                'employee.phones_for_assignation',
+
+                'plan',
+                'model.brand',
+                'type',
+                'phone_supervisors',
+                ])->get();
+
+            $availablePhones = [];
+            foreach ($requestPhones as $key => $phone) {
+                if (!$phone->phone_supervisors()->exists()) {
+                    $availablePhones[] = ($phone);
+                }
+            }
+            
+
+            return response()->json($availablePhones, 200);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine());
 
             return response()->json(['message' => $e->getMessage()], 500);
         }

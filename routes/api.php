@@ -7,6 +7,7 @@ use App\Http\Controllers\Phones\ModelController;
 use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PercentageRuleController;
+use App\Http\Controllers\Phones\PhoneAssignmentController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\PhoneIncidentAttachesController;
@@ -50,6 +51,7 @@ Route::prefix('phone/phones')
 ->controller(PhoneController::class)
 ->group(function () {
     Route::get('/phones-active/{id?}', 'activePhones');
+    Route::get('/phones-active-assign', 'activePhonesAssign');
 });
 Route::resource('/phone/phones', PhoneController::class);
 /* End Phones routes */
@@ -99,3 +101,17 @@ Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::clas
 /* Start Incidents Attaches routes*/
 Route::resource('/phone/percentagesRules', PercentageRuleController::class);
 /* End Incidents Attaches routes*/
+
+/* Start Incidents Attaches routes*/
+Route::resource('/phone/percentagesRules', PercentageRuleController::class);
+/* End Incidents Attaches routes*/
+
+/* Start Assignment routes */
+Route::resource('/phone/assignments', PhoneAssignmentController::class);
+Route::prefix('phone/assignments')
+->controller(PhoneAssignmentController::class)
+->group(function(){
+    //Route::get('/assignments-active/{id?}', 'activeAssignments');
+});
+
+/* End Assignment route */

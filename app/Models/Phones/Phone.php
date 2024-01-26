@@ -77,4 +77,9 @@ class Phone extends Model
     {
         return $this->hasMany(PhoneIncident::class,'pho_phone_id');
     }
+
+    public function phone_supervisors()
+    {
+        return $this->belongsToMany(AdminEmployee::class, 'adm_employee_pho_phone', 'pho_phone_id', 'adm_employee_id')->as('assigned_phones');
+    }
 }

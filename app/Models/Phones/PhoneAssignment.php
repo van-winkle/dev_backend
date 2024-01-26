@@ -2,14 +2,15 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AdminEmployee extends Model
+class PhoneAssignment extends Model
 {
-    use HasFactory, SoftDeletes;
-    protected $table = 'adm_employees';
+    use HasFactory,SoftDeletes;
+
+    protected $table = 'adm_employee_pho_phone';
 
     protected $primaryKey = 'id';
 
@@ -18,8 +19,8 @@ class AdminEmployee extends Model
     public $incrementing = true;
 
     public $fillable = [
-        'name',
-        'active',
+        'adm_employee_id',
+        'pho_phone_id',
     ];
 
     public $hidden = [
@@ -36,13 +37,14 @@ class AdminEmployee extends Model
         'deleted',
     ];
 
-    public function phones_assigned ()
+    public function supervisor()
     {
-        return $this->hasMany(Phone::class,'adm_employee_id');
+        return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
-    public function phones_for_assignation()
+
+    public function phone ()
     {
-        return $this->belongsToMany(Phone::class, 'adm_employee_pho_phone', 'adm_employee_id', 'pho_phone_id')->as('phones_for_assignation');
+        return $this->belongsTo(Phone::class, 'pho_phone_id');
     }
 
 }

@@ -22,6 +22,7 @@ class IncidentsResolutions extends Model
     public $fillable = [
     'title',
     'reply',
+    'date_response',
     'pho_phone_incident_id',
     'adm_employee_id'];
 

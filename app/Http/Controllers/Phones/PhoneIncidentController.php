@@ -185,6 +185,7 @@ class PhoneIncidentController extends Controller
             $phoneIncident = PhoneIncident::with([
                 'resolutions',
                 'resolutions.employee',
+                'resolutions.attaches',
                 'incidentCat',
                 'employee',
                 'phone',

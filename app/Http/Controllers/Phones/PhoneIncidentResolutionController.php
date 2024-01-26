@@ -41,6 +41,7 @@ class PhoneIncidentResolutionController extends Controller
             $rules = [
                 'title' => ['required', 'max:255'],
                 'reply' => ['required', 'max:255'],
+                'date_response' => ['required'],
                 'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
                 'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
                 'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
@@ -82,6 +83,7 @@ class PhoneIncidentResolutionController extends Controller
                 $newRequestIncidentResolutionsData = [
                     'title' => $request->title,
                     'reply' => $request->reply,
+                    'date_response' => $request->date_response,
                     'adm_employee_id' => $request->adm_employee_id,
                     'pho_phone_incident_id' => $request->pho_phone_incident_id,
 

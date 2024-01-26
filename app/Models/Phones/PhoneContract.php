@@ -5,6 +5,7 @@ namespace App\Models\Phones;
 use App\Models\Phones\Phone;
 use App\Models\Phones\PhonePlan;
 use App\Models\Phones\PhoneContact;
+use App\Models\Phones\PercentageRules;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,6 +55,11 @@ class PhoneContract extends Model
 
     public function phones (){
         return $this->hasMany(Phone::class, 'pho_phone_contract_id');
+    }
+
+    public function percentages()
+    {
+        return $this->hasMany(PercentageRules::class, 'pho_phone_contract_id');
     }
 
 }

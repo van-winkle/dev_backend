@@ -24,9 +24,11 @@ class PhoneAssignmentController extends Controller
     public function index()
     {
         //
-       $assignments = AdminEmployee::with([
-            'phones_for_assignation',
-        ])->whereHas('phones_for_assignation')
+       $assignments = AdminEmployee::with(['phones_for_assignation',])
+        ->whereHas('phones_for_assignation')
+        ->withCount(
+            'phones_for_assignation'
+        )
         ->get();
         //$assignments = PhoneAssignment::all();
         return response()->json($assignments, 200);
@@ -57,7 +59,7 @@ class PhoneAssignmentController extends Controller
 
             $messages = [
                 'required' => 'Falta :attribute.',
-                'array' => 'El formato d:attribute es irreconocible.',
+                'array' => 'El formato de :attribute es irreconocible.',
                 'integer' => 'El formato d:attribute es irreconocible.',
                 'exists' => ':attribute no existe.  ',
             ];
@@ -74,13 +76,13 @@ class PhoneAssignmentController extends Controller
             $newPhoneAssignment = [];
 
             if ($request->phones) {
-                
+
                 foreach ($request->phones as $idx => $phoneId) {
                     //Validate if the phone isn't assigned
                     $phone = Phone::findOrFail($phoneId);
                     if ( $phone->phone_supervisors()->exists()) {
                         throw ValidationException::withMessages(['phones' => 'Se encotrarón Teléfonos ya asignados.']);
-                    } 
+                    }
                 }
 
                 $newPhoneAssignment = AdminEmployee::findOrFail($request['adm_employee_id']);
@@ -90,9 +92,9 @@ class PhoneAssignmentController extends Controller
                     /* $newPhoneAssignment[] = PhoneAssignment::create([
                         'adm_employee_id' => $request->adm_employee_id,
                         'pho_phone_id' => $phoneId,
-                    ]); */ 
+                    ]); */
 
-                    
+
                 }
 
             };
@@ -114,9 +116,58 @@ class PhoneAssignmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
         //
+        try {
+            $validatedData = Validator::make(
+                [
+                    'id' => $id
+                ],
+                [
+                    'id' => [
+                        'required',
+                        'integer',
+                        Rule::exists('adm_employees', 'id')
+                            ->whereNull('deleted_at')
+                    ],
+                ],
+                [
+                    'id.required' => 'Falta :attribute.',
+                    'id.integer' => ':attribute irreconocible.',
+                    'id.exists' => ':attribute no coincide con los registros.',
+                ],
+                [
+                    'id' => 'Identificador de Supervisor de Teléfonos'
+                ]
+            )->validate();
+
+            $phoneAssignations = AdminEmployee::with(
+                [
+                    'phones_for_assignation'
+                ]
+            )->withCount(
+                [
+                    'phones_for_assignation'
+                ]
+            )->findOrFail($validatedData['id']);
+
+            if ( $phoneAssignations->phones_for_assignation()->exists()) {
+                return response()->json($phoneAssignations, 200);
+            } else {
+                throw ValidationException::withMessages(['id' => 'La Asignación de Teléfonos no se encontó.']);
+            }
+
+
+        } catch (ValidationException $e) {
+
+            return response()->json(['errors' => $e->errors()], 400);
+        } catch (Exception $e) {
+
+            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -136,11 +187,12 @@ class PhoneAssignmentController extends Controller
         try {
             $rules = [
 
-                'adm_employee_id' => ['required', 'integer', 
+                'adm_employee_id' => ['required', 'integer',
                     Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
-                'phones' => ['required', 'array'],
+                //'phones' => ['required', 'array'],
+                'phones' => ['array'],
                 'phones.*' => ['integer', 'exists:pho_phones,id'],
 
             ];

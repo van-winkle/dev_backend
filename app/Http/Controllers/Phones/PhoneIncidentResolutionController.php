@@ -44,7 +44,7 @@ class PhoneIncidentResolutionController extends Controller
                 'date_response' => ['required'],
                 'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
                 'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
-                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+                'files' => ['nullable', 'filled'/* , function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
 
@@ -55,7 +55,7 @@ class PhoneIncidentResolutionController extends Controller
                     if ($totalSize > $maxTotalSize) {
                         $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
                     }
-                }],
+                } */],
             ];
 
             $messages = [

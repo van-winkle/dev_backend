@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Validator;
 
 class TypePhoneController extends Controller
 {
-
     public function activetypePhones(int $id = null)
     {
         try {
             $commonQuery = TypePhone::where('active', true);
+
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],
@@ -29,9 +29,13 @@ class TypePhoneController extends Controller
                     ['id' => 'Identificador del Tipo de Teléfono',]
                 )->validate();
 
-                $requestPlan = $commonQuery->with(['planes'])->findOrFail($validatedData['id']);
+                $requestPlan = $commonQuery->with(
+                    ['planes']
+                )->findOrFail($validatedData['id']);
             } else {
-                $requestPlan = $commonQuery->with(['planes'])->withCount('planes')->get();
+                $requestPlan = $commonQuery->with(
+                    ['planes']
+                )->withCount('planes')->get();
             }
             return response()->json($requestPlan, 200);
         } catch (Exception $e) {

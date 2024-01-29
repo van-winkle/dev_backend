@@ -61,7 +61,6 @@ class PercentageRuleController extends Controller
             ];
             $messages = [
                 'required' => 'Falta :attribute.',
-                // 'integer' => 'El formato de :attribute es irreconocible.',
                 'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
                 'decimal' => ':attribute solo puede tener 2 decimales',
@@ -69,28 +68,29 @@ class PercentageRuleController extends Controller
             ];
 
             $attributes = [
-                // 'incident_count'=> 'El conteo de incidente.',
-                'percentage_discount'=>'El porcentaje de descuento',
-                'pho_phone_contract_id'=>'El identificador de contrato'
+                'percentage_discount' => 'El porcentaje de descuento',
+                'pho_phone_contract_id' => 'El identificador de contrato'
             ];
 
             $request->validate($rules, $messages, $attributes);
 
-            $requestPercentageData =[
-                // 'incident_count'=>$request->incident_count,
+            $requestPercentageData = [
                 'percentage_discount' => $request->percentage_discount,
                 'pho_phone_contract_id' => $request->pho_phone_contract_id,
             ];
 
             PercentageRules::create($requestPercentageData);
+
             $requestPercentageData['status'] = 'created';
+
             return response()->json($requestPercentageData, 200);
-            
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -133,6 +133,7 @@ class PercentageRuleController extends Controller
             return response()->json($PercentageRules, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+            
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -170,7 +171,6 @@ class PercentageRuleController extends Controller
             ];
             $messages = [
                 'required' => 'Falta :attribute.',
-                // 'integer' => 'El formato de :attribute es irreconocible.',
                 'exists' => ':attribute no existe o esta inactivo',
                 'max' => ':attribute excede los caracteres máximos',
                 'decimal' => ':attribute solo puede tener 2 decimales',
@@ -178,33 +178,31 @@ class PercentageRuleController extends Controller
             ];
 
             $attributes = [
-                // 'incident_count'=> 'El conteo de incidente.',
-                'percentage_discount'=>'El porcentaje de descuento',
-                'pho_phone_contract_id'=>'El identificador de contrato'
+                'percentage_discount' => 'El porcentaje de descuento',
+                'pho_phone_contract_id' => 'El identificador de contrato'
             ];
 
             $request->validate($rules, $messages, $attributes);
 
             $requestPercentage = PercentageRules::findOrFail($request->id);
 
-            $requestPercentageData =[
-                // 'incident_count'=>$request->incident_count,
-                'percentage_discount'=>$request->percentage_discount,
-                'pho_phone_contract_id'=> $request->pho_phone_contract_id
+            $requestPercentageData = [
+                'percentage_discount' => $request->percentage_discount,
+                'pho_phone_contract_id' => $request->pho_phone_contract_id
             ];
 
             $requestPercentage->update($requestPercentageData);
 
-            $requestPercentage['status']='updated';
+            $requestPercentage['status'] = 'updated';
 
             return response()->json($requestPercentage, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
-            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
 
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }

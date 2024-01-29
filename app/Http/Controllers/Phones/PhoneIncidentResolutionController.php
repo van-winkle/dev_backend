@@ -42,15 +42,32 @@ class PhoneIncidentResolutionController extends Controller
                 'title' => ['required', 'max:255'],
                 'reply' => ['required', 'max:255'],
                 'date_response' => ['required'],
-                'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
-                'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
-                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
-                    $maxTotalSize = 300 * 1024 * 1024;
-                    $totalSize = 0;
+                'pho_phone_incident_id' => [
+                    $request->pho_phone_incident_id > 0 ?
+                        ['integer'] : 'nullable',
+                    Rule::exists(
+                        'pho_phone_incidents',
+                        'id'
+                    )->whereNull('deleted_at')
+                ],
+                'adm_employee_id' => [
+                    $request->adm_employee_id > 0 ?
+                        ['integer'] : 'nullable',
+                    Rule::exists(
+                        'adm_employees',
+                        'id'
+                    )->whereNull('deleted_at')
+                ],
+                'files' => [
+                    'nullable',
+                    'filled',
+                    function ($attribute, $value, $fail) {
+                        $maxTotalSize = 300 * 1024 * 1024;
+                        $totalSize = 0;
 
-                    foreach ($value as $idx => $file) {
-                        $totalSize += $file->getSize();
-                    }
+                        foreach ($value as $idx => $file) {
+                            $totalSize += $file->getSize();
+                        }
 
                     if ($totalSize > $maxTotalSize) {
                         $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
@@ -72,8 +89,6 @@ class PhoneIncidentResolutionController extends Controller
                 'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_incident_id' => 'el Identificador del Incidente',
             ];
-
-
 
             $request->validate($rules, $messages, $attributes);
 
@@ -106,18 +121,21 @@ class PhoneIncidentResolutionController extends Controller
                         $file->move($fullPath, $newFileNameUnique);
                         $fileSize = File::size($fullPath . $newFileNameUnique);
 
-                        $newRequestIncidentResolutions->attaches()->create([
-                            'file_name_original' => $file->getClientOriginalName(),
-                            'name' => $newFileNameUnique,
-                            'file_size' => $fileSize,
-                            'file_extension' => $file->getClientOriginalExtension(),
-                            'file_mimetype' => $file->getClientMimetype(),
-                            'file_location' => $basePath,
-                        ]);
+                        $newRequestIncidentResolutions->attaches()->create(
+                            [
+                                'file_name_original' => $file->getClientOriginalName(),
+                                'name' => $newFileNameUnique,
+                                'file_size' => $fileSize,
+                                'file_extension' => $file->getClientOriginalExtension(),
+                                'file_mimetype' => $file->getClientMimetype(),
+                                'file_location' => $basePath,
+                            ]
+                        );
                     }
                     $newRequestIncidentResolutions->load('attaches');
                 }
             });
+
             return response()->json($newRequestIncidentResolutions, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));

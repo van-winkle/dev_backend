@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\AdminEmployee;
 use App\Models\Phones\PhoneContract;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -22,6 +23,38 @@ class PhoneController extends Controller
     public function index()
     {
         try {
+            //Get the employee id from Auth
+            //$employee_id = Auth::user()->employee->id;
+            $employee_id = 1;
+
+            //Phone admins
+            $phone_admin = '22,167';
+            $phone_admin_list = explode(',',$phone_admin);
+            //Phone supervisors
+            $phone_supervisors = '22,167';
+            $phone_supervisors_list = explode(',',$phone_supervisors);
+
+            //CommonQuery
+            $commonQuery = Phone::all();
+
+            if (in_array($employee_id ,$phone_admin_list)) {
+                # All phones
+                $phones = $commonQuery->with([
+                    'employee.phones_assigned',
+                    'employee.phones_for_assignation',
+
+                    'plan',
+                    'model.brand',
+                    'type',
+                    'phone_supervisors'
+                ])->withCount(['incidents'])->get();
+            } elseif (in_array($employee_id ,$phone_supervisors_list)) {
+                # Only assigned phones
+            } else {
+                # No phones
+            }
+
+
             //Query to get phones list
             $phones = Phone::with([
                 'employee.phones_assigned',
@@ -446,7 +479,7 @@ class PhoneController extends Controller
                     $availablePhones[] = ($phone);
                 }
             }
-            
+
 
             return response()->json($availablePhones, 200);
         } catch (Exception $e) {

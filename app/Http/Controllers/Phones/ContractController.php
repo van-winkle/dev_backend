@@ -22,10 +22,18 @@ class ContractController extends Controller
     public function index()
     {
         try {
-            $requestContract = PhoneContract::with('contact', 'percentages')->withCount(['plans', 'phones', 'percentages'])->get();
+            $requestContract = PhoneContract::with(
+                'contact',
+                'percentages'
+                )->withCount(
+                    [
+                        'plans',
+                        'phones',
+                        'percentages'
+                        ]
+                        )->get();
 
             return response()->json($requestContract, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -45,6 +53,7 @@ class ContractController extends Controller
 
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -114,11 +123,30 @@ class ContractController extends Controller
     {
         try {
             $rules = [
-                'code' => ['required', 'string', 'max:250', Rule::unique('pho_phone_contracts', 'code')->whereNull('deleted_at')],
+                'code' => [
+                    'required',
+                    'string',
+                    'max:250',
+                    Rule::unique(
+                        'pho_phone_contracts',
+                        'code'
+                        )->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
-                'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+                'expiry_date' => [
+                    'required',
+                    'date',
+                    'date_format:Y-m-d',
+                    'after_or_equal:start_date'
+                ],
                 'active' => ['nullable'],
-                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts', 'id')->where('active', true)->whereNull('deleted_at')],
+                'dir_contact_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'dir_contacts',
+                        'id'
+                        )->where('active', true)
+                        ->whereNull('deleted_at')],
                 'percentage_rules' => ['required', 'array'],
                 'percentage_rules.*' => ['numeric'],
             ];
@@ -163,17 +191,20 @@ class ContractController extends Controller
                 PercentageRules::create([
                     'percentage_discount' => $percentageDiscount,
                     'pho_phone_contract_id' => $requestContract->id,
-                ]);
+                ]
+            );
             }
 
             $requestContractData['status'] = 'created';
-            return response()->json($requestContractData, 200);
 
+            return response()->json($requestContractData, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -201,14 +232,18 @@ class ContractController extends Controller
                 'phones',
 
                 'percentages'
-            ])->withCount(['plans','phones', 'percentages'])->findOrFail($validatedData['id']);
-
-
+            ])->withCount(
+                [
+                    'plans',
+                    'phones',
+                    'percentages'
+                    ]
+                    )->findOrFail($validatedData['id']);
 
             return response()->json($contract, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -259,15 +294,38 @@ class ContractController extends Controller
      */
     public function update(Request $request, int $id)
     {
-
         try {
             $rules = [
-                'id' => ['required', 'integer', 'exists:pho_phone_contracts,id', Rule::in([$id])],
-                'code' => ['required', 'string', Rule::unique('pho_phone_contracts', 'code')->ignore($request->id)->whereNull('deleted_at')],
+                'id' => [
+                    'required',
+                    'integer',
+                    'exists:pho_phone_contracts,id',
+                    Rule::in([$id])],
+                'code' => [
+                    'required',
+                    'string',
+                    Rule::unique(
+                        'pho_phone_contracts',
+                        'code'
+                        )->ignore($request->id)
+                        ->whereNull('deleted_at')],
                 'start_date' => ['required', 'date', 'date_format:Y-m-d'],
-                'expiry_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+                'expiry_date' => [
+                    'required',
+                    'date',
+                    'date_format:Y-m-d',
+                    'after_or_equal:start_date'
+                ],
                 'active' => ['nullable'],
-                'dir_contact_id' => ['required', 'integer', Rule::exists('dir_contacts','id')->where('active',true)->whereNull('deleted_at')]
+                'dir_contact_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'dir_contacts',
+                        'id'
+                        )->where('active',true)
+                        ->whereNull('deleted_at')
+                        ]
             ];
 
             $messages = [
@@ -276,7 +334,6 @@ class ContractController extends Controller
                 'string' => 'El formato d:attribute es irreconocible.',
                 'date' => 'El formato d:attribute es diferente al formato YY-mm-dd.',
                 'integer' => 'El formato d:attribute es diferente al que se espera',
-                //'boolean' => 'El formato d:attribute es diferente al esperado',
                 'after_or_equal' => 'La Fecha ingresada en :attribute es menor a la Fecha de Inicio',
                 'code.unique' => ':attribute ya existe',
                 'exists' => ':attribute no existe o está inactivo.'
@@ -308,13 +365,13 @@ class ContractController extends Controller
             $requestContract['status'] = 'updated';
 
             return response()->json($requestContract, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
-            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
 
+            return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -344,12 +401,13 @@ public function destroy(int $id)
                 $contract->percentages()->delete();
 
                $contract->delete();
-               
+
                 $contract['status'] = 'deleted';
             } else {
                 throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);
             }
-        });
+        }
+    );
 
         return response()->json($contract, 200);
     } catch (ValidationException $e) {

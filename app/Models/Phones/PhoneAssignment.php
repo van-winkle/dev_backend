@@ -46,5 +46,4 @@ class PhoneAssignment extends Model
     {
         return $this->belongsTo(Phone::class, 'pho_phone_id');
     }
-
 }

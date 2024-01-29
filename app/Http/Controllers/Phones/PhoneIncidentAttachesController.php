@@ -22,12 +22,12 @@ class PhoneIncidentAttachesController extends Controller
     public function index()
     {
         try {
-
             $incidentAttaches = IncidentsAttaches::withCount(
                 [
                     'incident'
                 ]
             )->get();
+
             return response()->json(['attaches' => $incidentAttaches], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
@@ -50,19 +50,28 @@ class PhoneIncidentAttachesController extends Controller
     {
         try {
             $rules = [
-                'pho_phone_incident_id' => [$request->pho_phone_incident_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incidents', 'id')->whereNull('deleted_at')],
-                'files' => ['required', 'filled', function ($attribute, $value, $fail) {
-                    $maxTotalSize = 300 * 1024 * 1024;
-                    $totalSize = 0;
+                'pho_phone_incident_id' => [
+                    $request->pho_phone_incident_id > 0 ?
+                        ['integer'] : 'nullable',
+                    Rule::exists(
+                        'pho_phone_incidents',
+                        'id'
+                    )->whereNull('deleted_at')
+                ],
+                'files' => [
+                    'required', 'filled', function ($attribute, $value, $fail) {
+                        $maxTotalSize = 300 * 1024 * 1024;
+                        $totalSize = 0;
 
-                    foreach ($value as $idx => $file) {
-                        $totalSize += $file->getSize();
-                    }
+                        foreach ($value as $idx => $file) {
+                            $totalSize += $file->getSize();
+                        }
 
-                    if ($totalSize > $maxTotalSize) {
-                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                        if ($totalSize > $maxTotalSize) {
+                            $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
+                        }
                     }
-                }],
+                ],
             ];
 
             $messages = [
@@ -77,16 +86,14 @@ class PhoneIncidentAttachesController extends Controller
                 'pho_phone_incident_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
-
-
             $request->validate($rules, $messages, $attributes);
 
             $newRequestIncident = [];
 
-
             if ($request->hasFile('files')) {
 
                 $basePath = 'phones/incidents/';
+
                 $fullPath = storage_path('app/public/' . $basePath);
 
                 if (!File::exists($fullPath)) {
@@ -96,21 +103,27 @@ class PhoneIncidentAttachesController extends Controller
                 foreach ($request->file('files') as $idx => $file) {
 
                     $newFileName = $request->pho_phone_incident_id . '-' . $file->getClientOriginalName();
+
                     $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+
                     $file->move($fullPath, $newFileNameUnique);
+
                     $fileSize = File::size($fullPath . $newFileNameUnique);
 
-                    $newRequestIncident = IncidentsAttaches::create([
-                        'pho_phone_incident_id' => $request->pho_phone_incident_id,
-                        'file_name_original' => $file->getClientOriginalName(),
-                        'name' => $newFileNameUnique,
-                        'file_size' => $fileSize,
-                        'file_extension' => $file->getClientOriginalExtension(),
-                        'file_mimetype' => $file->getClientMimetype(),
-                        'file_location' => $basePath,
-                    ]);
+                    $newRequestIncident = IncidentsAttaches::create(
+                        [
+                            'pho_phone_incident_id' => $request->pho_phone_incident_id,
+                            'file_name_original' => $file->getClientOriginalName(),
+                            'name' => $newFileNameUnique,
+                            'file_size' => $fileSize,
+                            'file_extension' => $file->getClientOriginalExtension(),
+                            'file_mimetype' => $file->getClientMimetype(),
+                            'file_location' => $basePath,
+                        ]
+                    );
                 }
             };
+
             return response()->json($newRequestIncident, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
@@ -128,7 +141,7 @@ class PhoneIncidentAttachesController extends Controller
      */
     public function show(int $id)
     {
-        return FileHelper::downloadFile(IncidentsAttaches::class,$id);
+        return FileHelper::downloadFile(IncidentsAttaches::class, $id);
     }
 
     /**
@@ -208,12 +221,14 @@ class PhoneIncidentAttachesController extends Controller
             )->validate();
 
             $attaches = [];
-            DB::transaction(function () use ($validateData, &$attaches) {
-                $attaches = IncidentsAttaches::findOrFail($validateData['id']);
-                $attaches->delete();
-                $attaches['status'] = 'deleted';
-            });
 
+            DB::transaction(
+                function () use ($validateData, &$attaches) {
+                    $attaches = IncidentsAttaches::findOrFail($validateData['id']);
+                    $attaches->delete();
+                    $attaches['status'] = 'deleted';
+                }
+            );
 
             return response()->json([$attaches], 200);
         } catch (ValidationException $e) {
@@ -226,5 +241,4 @@ class PhoneIncidentAttachesController extends Controller
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
-
 }

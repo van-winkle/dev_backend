@@ -79,15 +79,9 @@ class BrandController extends Controller
                 $attributes
             );
 
-            // $requestBrandData = [
-            //     'name' => $request->name,
-            //     'active' => $request->active == 'true' ? true : false
-            // ];
-
             $requestBrandData = [
                 'name' => $request->name,
                 'active' => $request->active === 'true' || $request->active === null ? true : false,
-                // 'active' => is_null($request->active) ? null : ($request->active == 'true' ? true : false)
             ];
 
             $newBrand = PhoneBrand::create($requestBrandData);
@@ -121,8 +115,10 @@ class BrandController extends Controller
                     'id' => [
                         'required',
                         'integer',
-                        Rule::exists('pho_phone_brands', 'id')
-                            ->whereNull('deleted_at')
+                        Rule::exists(
+                            'pho_phone_brands',
+                            'id'
+                            )->whereNull('deleted_at')
                     ],
                 ],
                 [
@@ -162,6 +158,7 @@ class BrandController extends Controller
      */
     public function edit(int $id)
     {
+
     }
 
     /**
@@ -174,18 +171,24 @@ class BrandController extends Controller
                 'id' => [
                     'required',
                     'integer',
-                    Rule::exists('pho_phone_brands', 'id')->whereNull('deleted_at'),
+                    Rule::exists(
+                        'pho_phone_brands',
+                        'id'
+                        )->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
                 'name' => [
                     'required',
                     'string',
                     'max:50',
-                    Rule::unique('pho_phone_brands', 'name')->ignore($request->id)->whereNull('deleted_at')
+                    Rule::unique(
+                        'pho_phone_brands',
+                        'name'
+                        )->ignore($request->id)
+                        ->whereNull('deleted_at')
                 ],
                 'active' => [
                     'nullable',
-
                 ],
             ];
 
@@ -212,7 +215,6 @@ class BrandController extends Controller
 
             $data = [
                 'name' => $request->name,
-                // 'active' => $request->active == 'true' ? true : false
                 'active' => $request->active === 'true' || $request->active === null ? true : false,
             ];
 
@@ -256,7 +258,6 @@ class BrandController extends Controller
             $phoneBrand = [];
 
             DB::transaction(function () use ($validatedData, &$phoneBrand) {
-
                 $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
                 if (!$phoneBrand->models()->exists()) {
                     $phoneBrand->delete();
@@ -264,7 +265,8 @@ class BrandController extends Controller
                 } else {
                     throw ValidationException::withMessages(['id' => 'La Marca tiene Modelos.']);
                 }
-            });
+            }
+        );
 
             return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);
         } catch (ValidationException $e) {

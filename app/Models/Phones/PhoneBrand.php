@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class PhoneBrand extends Model
 {
     use HasFactory, SoftDeletes;
-    // name the table
     protected $table = 'pho_phone_brands';
 
     protected $primaryKey= "id";
@@ -18,7 +17,7 @@ class PhoneBrand extends Model
     protected $KeyType = "int";
 
     public $incrementing = true;
-    // Table Fields
+
     public $fillable = [
         'name',
         'active',
@@ -32,8 +31,6 @@ class PhoneBrand extends Model
 
     protected $casts = [];
 
-
-
     protected static $recordEvents = [
         'created',
         'updated',
@@ -44,6 +41,4 @@ class PhoneBrand extends Model
     {
         return $this->hasMany(PhoneModel::class,'pho_phone_brand_id');
     }
-
-
 }

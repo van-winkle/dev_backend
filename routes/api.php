@@ -82,17 +82,9 @@ Route::prefix('phone/typePhones')
 ->group(function(){
     Route::get('/typePhones-active/{id?}', 'activetypePhones');
 });
-
 /* End TypePhones route */
 
 /* Start incidents routes */
-
-// Route::prefix('phone/incidents')
-// ->controller(PhoneIncidentController::class)
-// ->group(function () {
-//     Route::get('/incidents-active/{id?}', 'activeIncidents');
-// });
-
 Route::resource('/phone/incidents', PhoneIncidentController::class);
 /* End Incidents route */
 
@@ -113,9 +105,7 @@ Route::resource('/phone/assignments', PhoneAssignmentController::class);
 Route::prefix('phone/assignments')
 ->controller(PhoneAssignmentController::class)
 ->group(function(){
-    //Route::get('/assignments-active/{id?}', 'activeAssignments');
 });
-
 /* End Assignment route */
 
 /* Start Incidents Resolutions routes*/

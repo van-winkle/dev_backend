@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class AdminEmployee extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $table = 'adm_employees';
 
     protected $primaryKey = 'id';
@@ -40,9 +41,9 @@ class AdminEmployee extends Model
     {
         return $this->hasMany(Phone::class,'adm_employee_id');
     }
+    
     public function phones_for_assignation()
     {
         return $this->belongsToMany(Phone::class, 'adm_employee_pho_phone', 'adm_employee_id', 'pho_phone_id')->as('phones_for_assignation');
     }
-
 }

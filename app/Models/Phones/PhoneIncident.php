@@ -51,18 +51,21 @@ class PhoneIncident extends Model
     {
         return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
     }
+
     public function phone ()
     {
         return $this->belongsTo(Phone::class,'pho_phone_id')->withTrashed();
     }
+
     public function incidentCat (){
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
+
     public function employee (){
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
+
     public function resolutions (){
         return $this->hasMany(IncidentsResolutions::class, 'pho_phone_incident_id');
     }
-
 }

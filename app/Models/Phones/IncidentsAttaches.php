@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class IncidentsAttaches extends Model
 {
     use HasFactory, SoftDeletes;
+    
     protected $table = 'pho_phone_incident_attaches';
 
     protected $primaryKey = 'id';

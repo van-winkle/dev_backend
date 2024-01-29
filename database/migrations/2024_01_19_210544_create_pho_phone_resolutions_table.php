@@ -16,10 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('reply');
             $table->date('date_response');
-            
+
             $table->unsignedBigInteger('pho_phone_incident_id');
             $table->foreign('pho_phone_incident_id')->references('id')->on('pho_phone_incidents');
-
 
             $table->unsignedBigInteger('adm_employee_id');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');

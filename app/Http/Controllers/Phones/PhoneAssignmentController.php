@@ -6,7 +6,6 @@ use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\AdminEmployee;
 use App\Models\Phones\Phone;
-use App\Models\Phones\PhoneAssignment;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -24,13 +23,13 @@ class PhoneAssignmentController extends Controller
     public function index()
     {
         //
-       $assignments = AdminEmployee::with(['phones_for_assignation',])
-        ->whereHas('phones_for_assignation')
-        ->withCount(
-            'phones_for_assignation'
-        )
-        ->get();
-        //$assignments = PhoneAssignment::all();
+        $assignments = AdminEmployee::with(
+            [
+                'phones_for_assignation',
+            ]
+        )->whereHas('phones_for_assignation')
+            ->withCount('phones_for_assignation')
+            ->get();
         return response()->json($assignments, 200);
     }
 
@@ -47,11 +46,18 @@ class PhoneAssignmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
         try {
             $rules = [
 
-                'adm_employee_id' => ['required', 'integer', Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at')],
+                'adm_employee_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists(
+                        'adm_employees',
+                        'id'
+                    )->where('active', true)
+                        ->whereNull('deleted_at')
+                ],
                 'phones' => ['required', 'array'],
                 'phones.*' => ['integer', 'exists:pho_phones,id'],
 
@@ -78,30 +84,19 @@ class PhoneAssignmentController extends Controller
             if ($request->phones) {
 
                 foreach ($request->phones as $idx => $phoneId) {
-                    //Validate if the phone isn't assigned
                     $phone = Phone::findOrFail($phoneId);
-                    if ( $phone->phone_supervisors()->exists()) {
+                    if ($phone->phone_supervisors()->exists()) {
                         throw ValidationException::withMessages(['phones' => 'Se encotrarón Teléfonos ya asignados.']);
                     }
                 }
 
                 $newPhoneAssignment = AdminEmployee::findOrFail($request['adm_employee_id']);
                 foreach ($request->phones as $idx => $phoneId) {
-                    //Creating the assignment
                     $newPhoneAssignment->phones_for_assignation()->attach($phoneId, ['adm_employee_id' => $request['adm_employee_id']]);
-                    /* $newPhoneAssignment[] = PhoneAssignment::create([
-                        'adm_employee_id' => $request->adm_employee_id,
-                        'pho_phone_id' => $phoneId,
-                    ]); */
-
-
                 }
-
             };
 
-            return response()->json(['assigned_phones'=>$newPhoneAssignment], 200);
-
-
+            return response()->json(['assigned_phones' => $newPhoneAssignment], 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
@@ -128,8 +123,10 @@ class PhoneAssignmentController extends Controller
                     'id' => [
                         'required',
                         'integer',
-                        Rule::exists('adm_employees', 'id')
-                            ->whereNull('deleted_at')
+                        Rule::exists(
+                            'adm_employees',
+                            'id'
+                        )->whereNull('deleted_at')
                     ],
                 ],
                 [
@@ -152,13 +149,11 @@ class PhoneAssignmentController extends Controller
                 ]
             )->findOrFail($validatedData['id']);
 
-            if ( $phoneAssignations->phones_for_assignation()->exists()) {
+            if ($phoneAssignations->phones_for_assignation()->exists()) {
                 return response()->json($phoneAssignations, 200);
             } else {
                 throw ValidationException::withMessages(['id' => 'La Asignación de Teléfonos no se encontó.']);
             }
-
-
         } catch (ValidationException $e) {
 
             return response()->json(['errors' => $e->errors()], 400);
@@ -183,15 +178,18 @@ class PhoneAssignmentController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        //
         try {
             $rules = [
 
-                'adm_employee_id' => ['required', 'integer',
-                    Rule::exists('adm_employees', 'id')->where('active', true)->whereNull('deleted_at'),
+                'adm_employee_id' => [
+                    'required', 'integer',
+                    Rule::exists(
+                        'adm_employees',
+                        'id'
+                    )->where('active', true)
+                        ->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
-                //'phones' => ['required', 'array'],
                 'phones' => ['array'],
                 'phones.*' => ['integer', 'exists:pho_phones,id'],
 
@@ -216,19 +214,18 @@ class PhoneAssignmentController extends Controller
 
             $employee = [];
 
-            DB::transaction(function () use ($request, &$employee) {
-
-                $employee = AdminEmployee::findOrFail($request['adm_employee_id']);
-                if ( $employee->phones_for_assignation()->exists()) {
-                    $employee->phones_for_assignation()->sync($request['phones']);
-                } else {
-                    throw ValidationException::withMessages(['id' => 'El empleado no tiene Asignación de Teléfonos para actualizar.']);
+            DB::transaction(
+                function () use ($request, &$employee) {
+                    $employee = AdminEmployee::findOrFail($request['adm_employee_id']);
+                    if ($employee->phones_for_assignation()->exists()) {
+                        $employee->phones_for_assignation()->sync($request['phones']);
+                    } else {
+                        throw ValidationException::withMessages(['id' => 'El empleado no tiene Asignación de Teléfonos para actualizar.']);
+                    }
                 }
-            });
+            );
 
-            return response()->json(['message' => 'Asignación de Teléfono a '. $employee['name'] .', actualizada con éxito.'], 200);
-
-
+            return response()->json(['message' => 'Asignación de Teléfono a ' . $employee['name'] . ', actualizada con éxito.'], 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
@@ -265,18 +262,18 @@ class PhoneAssignmentController extends Controller
 
             $employee = [];
 
-            DB::transaction(function () use ($validatedData, &$employee) {
-
-                $employee = AdminEmployee::findOrFail($validatedData['id']);
-                if ( $employee->phones_for_assignation()->exists()) {
-                    $employee->phones_for_assignation()->detach();
-                } else {
-                    throw ValidationException::withMessages(['id' => 'El empleado no tiene Asignación de Teléfonos.']);
+            DB::transaction(
+                function () use ($validatedData, &$employee) {
+                    $employee = AdminEmployee::findOrFail($validatedData['id']);
+                    if ($employee->phones_for_assignation()->exists()) {
+                        $employee->phones_for_assignation()->detach();
+                    } else {
+                        throw ValidationException::withMessages(['id' => 'El empleado no tiene Asignación de Teléfonos.']);
+                    }
                 }
-            });
+            );
 
-            return response()->json(['message' => 'Asignación de Teléfono a '. $employee['name'] .', Eliminada con éxito.'], 200);
-
+            return response()->json(['message' => 'Asignación de Teléfono a ' . $employee['name'] . ', Eliminada con éxito.'], 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 

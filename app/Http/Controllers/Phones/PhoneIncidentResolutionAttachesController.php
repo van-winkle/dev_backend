@@ -37,7 +37,15 @@ class PhoneIncidentResolutionAttachesController extends Controller
     {
         try {
             $rules = [
-                'pho_phone_resolution_id' => [$request->pho_phone_resolution_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_resolutions', 'id')->whereNull('deleted_at')],
+                'pho_phone_resolution_id' =>
+                [
+                    $request->pho_phone_resolution_id > 0 ?
+                        ['integer'] : 'nullable',
+                    Rule::exists(
+                        'pho_phone_resolutions',
+                        'id'
+                    )->whereNull('deleted_at')
+                ],
                 'files' => ['required', 'filled', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
@@ -64,12 +72,9 @@ class PhoneIncidentResolutionAttachesController extends Controller
                 'pho_phone_resolution_id' => 'el Identificador de la Categoría del Incidente',
             ];
 
-
-
             $request->validate($rules, $messages, $attributes);
 
             $newRequestIncidentResolutions = [];
-
 
             if ($request->hasFile('files')) {
 
@@ -83,21 +88,27 @@ class PhoneIncidentResolutionAttachesController extends Controller
                 foreach ($request->file('files') as $idx => $file) {
 
                     $newFileName = $request->pho_phone_incident_id . '-' . $file->getClientOriginalName();
+
                     $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+
                     $file->move($fullPath, $newFileNameUnique);
+
                     $fileSize = File::size($fullPath . $newFileNameUnique);
 
-                    $newRequestIncidentResolutions = IncidentsResolutionsAttaches::create([
-                        'pho_phone_resolution_id' => $request->pho_phone_resolution_id,
-                        'file_name_original' => $file->getClientOriginalName(),
-                        'name' => $newFileNameUnique,
-                        'file_size' => $fileSize,
-                        'file_extension' => $file->getClientOriginalExtension(),
-                        'file_mimetype' => $file->getClientMimetype(),
-                        'file_location' => $basePath,
-                    ]);
+                    $newRequestIncidentResolutions = IncidentsResolutionsAttaches::create(
+                        [
+                            'pho_phone_resolution_id' => $request->pho_phone_resolution_id,
+                            'file_name_original' => $file->getClientOriginalName(),
+                            'name' => $newFileNameUnique,
+                            'file_size' => $fileSize,
+                            'file_extension' => $file->getClientOriginalExtension(),
+                            'file_mimetype' => $file->getClientMimetype(),
+                            'file_location' => $basePath,
+                        ]
+                    );
                 }
             };
+
             return response()->json($newRequestIncidentResolutions, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));

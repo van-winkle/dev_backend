@@ -70,6 +70,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
                 'description' => ['required', 'string', 'max:250'],
+                'resolution' => ['nullable', 'string', 'max:250'],
                 'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
                 'pho_phone_id' => [
                     $request->pho_phone_id > 0 ?
@@ -98,7 +99,7 @@ class PhoneIncidentController extends Controller
                 'files' => [
                     'nullable',
                     'filled',
-                    function ($attribute, $value, $fail) {
+                   /*  function ($attribute, $value, $fail) {
                         $maxTotalSize = 300 * 1024 * 1024;
                         $totalSize = 0;
 
@@ -109,7 +110,7 @@ class PhoneIncidentController extends Controller
                     if ($totalSize > $maxTotalSize) {
                         $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
                     }
-                }],
+                } */],
             ];
 
             $messages = [
@@ -129,6 +130,7 @@ class PhoneIncidentController extends Controller
                 'date_incident' => 'la Fecha de Incidencia ',
                 'description' => 'la descripcion de la Incidencia',
                 'files' => 'archivo(s)',
+                'resolution' => 'la Resolucion Final',
                 'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_id' => 'el Identificador del Teléfono',
                 'pho_phone_incident_category_id' => 'el Identificador de la Categoría del Incidente',
@@ -142,6 +144,7 @@ class PhoneIncidentController extends Controller
                 $newRequestIncidentData = [
                     'description' => $request->description,
                     'percentage' => $request->percentage,
+                    'resolution' => $request->resolution,
                     'paymentDifference' => $request->paymentDifference,
                     'date_incident' => $request->date_incident,
                     'adm_employee_id' => $request->adm_employee_id,
@@ -216,12 +219,13 @@ class PhoneIncidentController extends Controller
 
             $phoneIncident = PhoneIncident::with(
                 [
+                    'phone',
+                    'phone.contract.percentages',
                     'resolutions',
                     'resolutions.employee',
                     'resolutions.attaches',
                     'incidentCat',
                     'employee',
-                    'phone',
                     'attaches'
                 ]
             )->findOrFail($validatedData['id']);
@@ -276,11 +280,12 @@ class PhoneIncidentController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, int $id)
-    {/*
+    {
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
                 'description' => ['required', 'string', 'max:250'],
+                'resolution' => ['nullable', 'string', 'max:250'],
                 'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
                 'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
@@ -326,6 +331,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
                 'date_incident' => 'la Fecha de Incidencia ',
+                'resolution' => 'la Resolucion Final',
                 'description' => 'la descripcion de la Incidencia',
                 'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_id' => 'el Identificador del Teléfono',
@@ -341,6 +347,7 @@ class PhoneIncidentController extends Controller
                 $newRequestIncidentData = [
                     'description' => $request->description,
                     'percentage' => $request->percentage,
+                    'resolution' => $request->resolution,
                     'paymentDifference' => $request->paymentDifference,
                     'date_incident' => $request->date_incident,
                     'adm_employee_id' => $request->adm_employee_id,
@@ -361,7 +368,7 @@ class PhoneIncidentController extends Controller
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->getMessage()], 500);
-        } */
+        }
     }
 
     /**

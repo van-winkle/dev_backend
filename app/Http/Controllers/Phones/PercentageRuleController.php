@@ -21,7 +21,7 @@ class PercentageRuleController extends Controller
         try {
             $requestPercentages = PercentageRules::get();
 
-            return response()->json($requestPercentages, 200);
+            return response()->json(['percentages' => $requestPercentages], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -133,7 +133,7 @@ class PercentageRuleController extends Controller
             return response()->json($PercentageRules, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-            
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }

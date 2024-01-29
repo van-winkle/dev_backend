@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
             IncidentsSeeder::class,
             IncidentAttachesSeeder::class,
             Assignments::class,
-            IncidentsSupervisorsSeeder::class,
             IncidentsResolutionsSeeder::class,
             PercetageRulesSeeder::class,
 

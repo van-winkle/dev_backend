@@ -26,6 +26,7 @@ class PhoneIncident extends Model
         'description',
         'paymentDifference',
         'percentage',
+        'resolution',
         'date_incident',
         'state',
         'adm_employee_id',

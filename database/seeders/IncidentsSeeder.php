@@ -19,7 +19,8 @@ class IncidentsSeeder extends Seeder
                 [
                     'description' => 'Me robaron por boludo',
                     'paymentDifference' => 100.50,
-                    'percentage' => 15.5,
+                    'percentage' => 10,
+                    'resolution' => 'awsd',
                     'date_incident' => '2020-11-11',
                     'adm_employee_id' => 1,
                     'pho_phone_id' => 1,
@@ -28,7 +29,8 @@ class IncidentsSeeder extends Seeder
                 [
                     'description' => 'Me robaron por boludo',
                     'paymentDifference' => 75.25,
-                    'percentage' => 20.0,
+                    'percentage' => 10,
+                    'resolution' => 'awsd',
                     'date_incident' => '2020-11-11',
                     'adm_employee_id' => 2,
                     'pho_phone_id' => 2,
@@ -37,7 +39,8 @@ class IncidentsSeeder extends Seeder
                 [
                     'description' => 'Me robaron por boludo',
                     'paymentDifference' => 50.75,
-                    'percentage' => 12.5,
+                    'percentage' => 10,
+                    'resolution' => 'awsd',
                     'date_incident' => '2020-11-11',
                     'adm_employee_id' => 3,
                     'pho_phone_id' => 3,
@@ -46,7 +49,8 @@ class IncidentsSeeder extends Seeder
                 [
                     'description' => 'Me robaron por boludo',
                     'paymentDifference' => 120.0,
-                    'percentage' => 18.75,
+                    'percentage' => 10,
+                    'resolution' => 'awsd',
                     'date_incident' => '2020-11-11',
                     'adm_emplpoyee_id' => 4,
                     'pho_phone_id' => 4,
@@ -55,7 +59,8 @@ class IncidentsSeeder extends Seeder
                 [
                     'description' => 'Me robaron por boludo',
                     'paymentDifference' => 90.25,
-                    'percentage' => 22.5,
+                    'percentage' => 10,
+                    'resolution' => 'awsd',
                     'date_incident' => '2020-11-11',
                     'adm_employee_id' => 5,
                     'pho_phone_id' => 5,

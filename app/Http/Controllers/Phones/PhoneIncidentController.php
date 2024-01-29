@@ -64,14 +64,14 @@ class PhoneIncidentController extends Controller
     {
         try {
             $rules = [
-                'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
-                'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
+                'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
+                'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
                 'description' => ['required', 'string', 'max:250'],
                 'date_incident' =>['required', 'date', 'date_format:Y-m-d'],
                 'pho_phone_id' => [$request->pho_phone_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phones', 'id')->whereNull('deleted_at')],
                 'adm_employee_id' => [$request->adm_employee_id > 0 ? ['integer'] : 'nullable', Rule::exists('adm_employees', 'id')->whereNull('deleted_at')],
                 'pho_phone_incident_category_id' => [$request->pho_phone_incident_category_id > 0 ? ['integer'] : 'nullable', Rule::exists('pho_phone_incident_categories', 'id')->whereNull('deleted_at')],
-                'files' => ['nullable', 'filled', function ($attribute, $value, $fail) {
+                'files' => ['nullable', function ($attribute, $value, $fail) {
                     $maxTotalSize = 300 * 1024 * 1024;
                     $totalSize = 0;
 
@@ -242,7 +242,7 @@ class PhoneIncidentController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, int $id)
-    {
+    {/*
         try {
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
@@ -307,7 +307,7 @@ class PhoneIncidentController extends Controller
             Log::error($e->getMessage() . ' | En línea ' . $e->getFile() . '-' . $e->getLine() . '  Información enviada: ' . json_encode($request->all()));
 
             return response()->json(['message' => $e->getMessage()], 500);
-        }
+        } */
     }
 
     /**

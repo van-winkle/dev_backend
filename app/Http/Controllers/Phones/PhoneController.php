@@ -9,8 +9,10 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\General\GralConfiguration;
 use App\Models\Phones\AdminEmployee;
 use App\Models\Phones\PhoneContract;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -22,7 +24,62 @@ class PhoneController extends Controller
     public function index()
     {
         try {
-            $phones = Phone::with([
+            //Get the employee id from Auth
+            //$employee_id = Auth::user()->employee->id;
+            $employee_id = 2;
+
+            //Phone admins
+            $phone_admin = GralConfiguration::where('identifier','phone_admin')->first();
+            //$phone_admin = '22,167,3';
+            $phone_admin_list = explode(',',$phone_admin->value);
+            //Phone supervisors
+            $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
+            //$phone_supervisors = '22,67,4,1';
+            $phone_supervisors_list = explode(',',$phone_supervisors->value);
+
+
+            if (in_array($employee_id ,$phone_admin_list) ) {
+                # All phones
+                $phones = Phone::with([
+                    'employee.phones_assigned',
+                    'employee.phones_for_assignation',
+                    'plan',
+                    'model.brand',
+                    'type',
+                    'phone_supervisors'
+
+                ])->withCount(['incidents'])->get();
+            } elseif (in_array($employee_id ,$phone_supervisors_list)) {
+                # Only assigned phones
+                $phones = AdminEmployee::with(
+                    [
+                        'phones_for_assignation',
+                        'phones_for_assignation.employee',
+                        'phones_for_assignation.plan',
+                        'phones_for_assignation.model.brand',
+                        'phones_for_assignation.type',
+                    ]
+                )->withCount(
+                    [
+                        'phones_for_assignation'
+                    ]
+                )->findOrFail($employee_id);
+
+                if ($phones->phones_for_assignation()->exists()) {
+                    return response()->json($phones['phones_for_assignation'], 200);
+                } else {
+                    throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
+                }
+
+                //dd('At the 2 if');
+            } else {
+                # No phones
+                $phones = [];
+            }
+
+
+            //Query to get phones list
+            /* $phones = Phone::with([
                 'employee.phones_assigned',
                 'employee.phones_for_assignation',
                 //'employee',
@@ -33,7 +90,7 @@ class PhoneController extends Controller
                 //'contract',
                 //'model',
                 //'incidents'
-            ])->withCount(['incidents'])->get();
+            ])->withCount(['incidents'])->get(); */
 
             return response()->json($phones, 200);
         } catch (Exception $e) {
@@ -577,6 +634,7 @@ class PhoneController extends Controller
                     $availablePhones[] = ($phone);
                 }
             }
+
 
             return response()->json($availablePhones, 200);
         } catch (Exception $e) {

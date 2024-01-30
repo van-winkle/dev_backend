@@ -45,19 +45,27 @@ class PhoneIncidentController extends Controller
                     'attaches'
                 )->get();
 
+                $phoneIncidentsMy = AdminEmployee::with(
+                    [
+                        'incidents',
+                        'incidents.phone',
+                        'incidents.incidentCat',
+                        'incidents.employee',
+                        'incidents.resolutions',
+
+                    ]
+                )->findOrFail($employee_id);
+
                 $phoneIncidents = ['incidence_day'=>$incidence_day,'supervisor'=>true,'incidents'=>$phoneIncidents];
             } else{
                 $phoneIncidents = AdminEmployee::with(
                     [
                         'incidents',
                         'incidents.phone',
-                        //'incidents.phone.contract',
-                        //'incidents.phone.contract.percentages',
                         'incidents.incidentCat',
                         'incidents.employee',
                         'incidents.resolutions',
-                        //'incidents.resolutions.employee',
-                        //'incidents.resolutions.attaches'
+
                     ]
                 )->findOrFail($employee_id);
 

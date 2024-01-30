@@ -48,7 +48,7 @@ return new class extends Migration
             [
                 'name' => 'Supervisores de incientes',
                 'identifier' => 'incidence_supervisor',
-                'value' => '22,167',
+                'value' => '22,167,1',
             ]
         ]
         );

@@ -15,7 +15,7 @@ class IncidentAttachesSeeder extends Seeder
     {
         DB::table('pho_phone_incident_attaches')->insert([
             [
-                'file_name_original' => 'incident1_original',
+                'file_name_original' => 'incident1_original.jpg',
                 'name' => 'incident1',
                 'file_size' => '1024',
                 'file_extension' => 'jpg',
@@ -24,7 +24,7 @@ class IncidentAttachesSeeder extends Seeder
                 'pho_phone_incident_id' => 1,
             ],
             [
-                'file_name_original' => 'incident2_original',
+                'file_name_original' => 'incident2_original.pdf',
                 'name' => 'incident2',
                 'file_size' => '1024',
                 'file_extension' => 'jpg',
@@ -33,7 +33,7 @@ class IncidentAttachesSeeder extends Seeder
                 'pho_phone_incident_id' => 1,
             ],
             [
-                'file_name_original' => 'incident3_original',
+                'file_name_original' => 'incident3_original.pdf',
                 'name' => 'incident3',
                 'file_size' => '2048',
                 'file_extension' => 'png',
@@ -42,7 +42,7 @@ class IncidentAttachesSeeder extends Seeder
                 'pho_phone_incident_id' => 3,
             ],
             [
-                'file_name_original' => 'incident4_original',
+                'file_name_original' => 'incident4_original.pdf',
                 'name' => 'incident4',
                 'file_size' => '3072',
                 'file_extension' => 'gif',
@@ -51,7 +51,7 @@ class IncidentAttachesSeeder extends Seeder
                 'pho_phone_incident_id' => 4,
             ],
             [
-                'file_name_original' => 'incident5_original',
+                'file_name_original' => 'incident5_original.jpg',
                 'name' => 'incident5',
                 'file_size' => '4096',
                 'file_extension' => 'jpeg',

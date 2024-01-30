@@ -50,18 +50,10 @@ class PhoneIncidentResolutionController extends Controller
                         'id'
                     )->whereNull('deleted_at')
                 ],
-                'adm_employee_id' => [
-                    $request->adm_employee_id > 0 ?
-                        ['integer'] : 'nullable',
-                    Rule::exists(
-                        'adm_employees',
-                        'id'
-                    )->whereNull('deleted_at')
-                ],
                 'files' => [
                     'nullable',
                     'filled',
-                    function ($attribute, $value, $fail) {
+                    /* function ($attribute, $value, $fail) {
                         $maxTotalSize = 300 * 1024 * 1024;
                         $totalSize = 0;
 
@@ -72,7 +64,7 @@ class PhoneIncidentResolutionController extends Controller
                     if ($totalSize > $maxTotalSize) {
                         $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
                     }
-                }],
+                } */],
             ];
 
             $messages = [
@@ -86,7 +78,6 @@ class PhoneIncidentResolutionController extends Controller
                 'title' => 'el titulo de la respuesta',
                 'reply' => 'la respuesta',
                 'files' => 'archivo(s)',
-                'adm_employee_id' => 'el Identificador del Empleado',
                 'pho_phone_incident_id' => 'el Identificador del Incidente',
             ];
 
@@ -99,7 +90,7 @@ class PhoneIncidentResolutionController extends Controller
                     'title' => $request->title,
                     'reply' => $request->reply,
                     'date_response' => $request->date_response,
-                    'adm_employee_id' => $request->adm_employee_id,
+                    'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
                     'pho_phone_incident_id' => $request->pho_phone_incident_id,
 
                 ];

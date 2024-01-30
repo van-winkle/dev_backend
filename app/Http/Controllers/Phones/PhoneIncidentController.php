@@ -69,6 +69,7 @@ class PhoneIncidentController extends Controller
             $rules = [
                 'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
+                'state' => ['nullable', 'string', 'max:250'],
                 'description' => ['required', 'string', 'max:250'],
                 'resolution' => ['nullable', 'string', 'max:250'],
                 'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
@@ -285,6 +286,7 @@ class PhoneIncidentController extends Controller
             $rules = [
                 'id' => ['required', 'integer', 'exists:pho_phone_incidents,id', Rule::in([$id])],
                 'description' => ['required', 'string', 'max:250'],
+                'state' => ['nullable', 'string', 'max:250'],
                 'resolution' => ['nullable', 'string', 'max:250'],
                 'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
@@ -329,6 +331,7 @@ class PhoneIncidentController extends Controller
             $attributes = [
                 'id' => 'el Identificador de Incidente',
                 'paymentDifference' => 'la diferencia del pago',
+                'state' => 'el estado del Incidente',
                 'percentage' => 'el Porcentaje del Incidente',
                 'date_incident' => 'la Fecha de Incidencia ',
                 'resolution' => 'la Resolucion Final',
@@ -347,6 +350,7 @@ class PhoneIncidentController extends Controller
                 $newRequestIncidentData = [
                     'description' => $request->description,
                     'percentage' => $request->percentage,
+                    'state' => $request->state,
                     'resolution' => $request->resolution,
                     'paymentDifference' => $request->paymentDifference,
                     'date_incident' => $request->date_incident,

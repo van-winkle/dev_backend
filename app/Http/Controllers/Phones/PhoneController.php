@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\General\GralConfiguration;
 use App\Models\Phones\AdminEmployee;
 use App\Models\Phones\PhoneContract;
 use Illuminate\Support\Facades\Auth;
@@ -25,14 +26,16 @@ class PhoneController extends Controller
         try {
             //Get the employee id from Auth
             //$employee_id = Auth::user()->employee->id;
-            $employee_id = 3;
+            $employee_id = 2;
 
             //Phone admins
-            $phone_admin = '22,167,3';
-            $phone_admin_list = explode(',',$phone_admin);
+            $phone_admin = GralConfiguration::where('identifier','phone_admin')->first();
+            //$phone_admin = '22,167,3';
+            $phone_admin_list = explode(',',$phone_admin->value);
             //Phone supervisors
-            $phone_supervisors = '22,67,4,1';
-            $phone_supervisors_list = explode(',',$phone_supervisors);
+            $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
+            //$phone_supervisors = '22,67,4,1';
+            $phone_supervisors_list = explode(',',$phone_supervisors->value);
 
 
             if (in_array($employee_id ,$phone_admin_list) ) {

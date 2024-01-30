@@ -26,7 +26,7 @@ class PhoneController extends Controller
         try {
             //Get the employee id from Auth
             //$employee_id = Auth::user()->employee->id;
-            $employee_id = 3;
+            $employee_id = 1;
 
             //Phone admins
             $phone_admin = GralConfiguration::where('identifier','phone_admin')->first();

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations. 
+     * Run the migrations.
      */
     public function up(): void
     {
@@ -24,11 +24,34 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        GralConfiguration::create([
-            'name' => 'Minutos de Cortesía',
-            'identifier' => 'minutos_cortesia',
-            'value' => 10,
-        ]);
+        GralConfiguration::insert([
+            [
+                'name' => 'Minutos de Cortesía',
+                'identifier' => 'minutos_cortesia',
+                'value' => 10,
+            ],
+            [
+                'name' => 'Dias para aplicar incidencias',
+                'identifier' => 'incidence_day',
+                'value' => 60,
+            ],
+            [
+                'name' => 'Encargados de asignadores de Teléfonos',
+                'identifier' => 'phone_admin',
+                'value' => '22,167,1',
+            ],
+            [
+                'name' => 'Asignadores de Teléfonos',
+                'identifier' => 'phone_supervisor',
+                'value' => '22,167,2',
+            ],
+            [
+                'name' => 'Supervisores de incientes',
+                'identifier' => 'incidence_supervisor',
+                'value' => '22,167',
+            ]
+        ]
+        );
     }
 
     /**

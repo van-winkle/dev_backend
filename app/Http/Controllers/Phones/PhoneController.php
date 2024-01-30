@@ -26,17 +26,16 @@ class PhoneController extends Controller
         try {
             //Get the employee id from Auth
             //$employee_id = Auth::user()->employee->id;
-            $employee_id = 2;
+            $employee_id = 3;
 
             //Phone admins
             $phone_admin = GralConfiguration::where('identifier','phone_admin')->first();
-            //$phone_admin = '22,167,3';
             $phone_admin_list = explode(',',$phone_admin->value);
             //Phone supervisors
             $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
-            //$phone_supervisors = '22,67,4,1';
             $phone_supervisors_list = explode(',',$phone_supervisors->value);
 
+            $permissions = [];
 
             if (in_array($employee_id ,$phone_admin_list) ) {
                 # All phones
@@ -49,9 +48,13 @@ class PhoneController extends Controller
                     'phone_supervisors'
 
                 ])->withCount(['incidents'])->get();
+
+                $permissions["admin"]=true;
+                $permissions["supervisor"]=true;
+
             } elseif (in_array($employee_id ,$phone_supervisors_list)) {
                 # Only assigned phones
-                $phones = AdminEmployee::with(
+                $employee = AdminEmployee::with(
                     [
                         'phones_for_assignation',
                         'phones_for_assignation.employee',
@@ -65,16 +68,19 @@ class PhoneController extends Controller
                     ]
                 )->findOrFail($employee_id);
 
-                if ($phones->phones_for_assignation()->exists()) {
-                    return response()->json($phones['phones_for_assignation'], 200);
+                if ($employee->phones_for_assignation()->exists()) {
+                    $phones = $employee['phones_for_assignation'];
+                    $permissions["supervisor"]=true;
                 } else {
-                    throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
+                    $phones = [];
+                    //throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
                 }
 
-                //dd('At the 2 if');
             } else {
                 # No phones
                 $phones = [];
+
+                //throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
             }
 
 
@@ -92,7 +98,8 @@ class PhoneController extends Controller
                 //'incidents'
             ])->withCount(['incidents'])->get(); */
 
-            return response()->json($phones, 200);
+            return response()->json([ "phones" => $phones, "permissions" => $permissions], 200);
+
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('description');
-            $table->float('percentage');
+            $table->float('percentage')->default(0);
             $table->string('resolution');
             $table->decimal('paymentDifference', 6, 2, true);
             $table->date('date_incident');

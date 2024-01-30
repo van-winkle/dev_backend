@@ -41,9 +41,14 @@ class AdminEmployee extends Model
     {
         return $this->hasMany(Phone::class,'adm_employee_id');
     }
-    
+
     public function phones_for_assignation()
     {
         return $this->belongsToMany(Phone::class, 'adm_employee_pho_phone', 'adm_employee_id', 'pho_phone_id')->as('phones_for_assignation');
     }
+
+    public function incidents (){
+        return $this->hasMany(PhoneIncident::class,'adm_employee_id');
+    }
+
 }

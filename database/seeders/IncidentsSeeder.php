@@ -17,7 +17,7 @@ class IncidentsSeeder extends Seeder
         DB::table('pho_phone_incidents')->insert(
             [
                 [
-                    'description' => 'Me robaron por boludo',
+                    'description' => 'Me robaron por andar de bolo',
                     'paymentDifference' => 100.50,
                     'percentage' => 10,
                     'resolution' => 'awsd',
@@ -27,7 +27,7 @@ class IncidentsSeeder extends Seeder
                     'pho_phone_incident_category_id' => 1,
                 ],
                 [
-                    'description' => 'Me robaron por boludo',
+                    'description' => 'Se me perdio',
                     'paymentDifference' => 75.25,
                     'percentage' => 10,
                     'resolution' => 'awsd',
@@ -37,7 +37,7 @@ class IncidentsSeeder extends Seeder
                     'pho_phone_incident_category_id' => 2,
                 ],
                 [
-                    'description' => 'Me robaron por boludo',
+                    'description' => 'Ya estaba rompido',
                     'paymentDifference' => 50.75,
                     'percentage' => 10,
                     'resolution' => 'awsd',
@@ -57,7 +57,7 @@ class IncidentsSeeder extends Seeder
                     'pho_phone_incident_category_id' => 1,
                 ],
                 [
-                    'description' => 'Me robaron por boludo',
+                    'description' => 'No se donde lo deje',
                     'paymentDifference' => 90.25,
                     'percentage' => 10,
                     'resolution' => 'awsd',

@@ -20,6 +20,7 @@ class AdminEmployee extends Model
 
     public $fillable = [
         'name',
+        'last_name',
         'active',
     ];
 

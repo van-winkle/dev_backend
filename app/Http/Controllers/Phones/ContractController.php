@@ -148,7 +148,7 @@ class ContractController extends Controller
                         )->where('active', true)
                         ->whereNull('deleted_at')],
                 'percentage_rules' => ['required', 'array'],
-                'percentage_rules.*' => ['numeric'],
+                'percentage_rules.*' => ['numeric', 'max:100.00','decimal:0,2'],
             ];
 
             $messages = [
@@ -160,6 +160,7 @@ class ContractController extends Controller
                 'code.unique' => ':attribute ya existe.',
                 'exists' => ':attribute no existe o está inactivo.',
                 'numeric' => 'El formato de :attribute es irreconocible.',
+                'percentage_rules.*.percentage_discount.max' => 'El :attribute no puede ser mayor a 100.',
             ];
 
             $attributes = [

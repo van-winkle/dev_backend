@@ -40,21 +40,11 @@ class PhoneIncidentController extends Controller
                     'phone',
                     'incidentCat',
                     'employee',
+                    'supervisor',
                     'resolutions'
                 )->withCount(
                     'attaches'
                 )->get();
-
-                $phoneIncidentsMy = AdminEmployee::with(
-                    [
-                        'incidents',
-                        'incidents.phone',
-                        'incidents.incidentCat',
-                        'incidents.employee',
-                        'incidents.resolutions',
-
-                    ]
-                )->findOrFail($employee_id);
 
                 $phoneIncidents = ['incidence_day'=>$incidence_day,'supervisor'=>true,'incidents'=>$phoneIncidents];
             } else{
@@ -64,6 +54,7 @@ class PhoneIncidentController extends Controller
                         'incidents.phone',
                         'incidents.incidentCat',
                         'incidents.employee',
+                        'incidents.supervisor',
                         'incidents.resolutions',
 
                     ]
@@ -175,10 +166,12 @@ class PhoneIncidentController extends Controller
                 $newRequestIncidentData = [
                     'description' => $request->description,
                     'percentage' => 0,
-                   'resolution' => 'Resolucion',
+                   'resolution' => 'Sin Resolucion',
                    'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
+                    'date_resolution' =>'2024-02-02',
                     'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
+                    'pho_phone_supervisor_id'=>1,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
@@ -253,6 +246,7 @@ class PhoneIncidentController extends Controller
                     'phone',
                     'phone.contract.percentages',
                     'resolutions',
+                    'supervisor',
                     'resolutions.employee',
                     'resolutions.attaches',
                     'incidentCat',

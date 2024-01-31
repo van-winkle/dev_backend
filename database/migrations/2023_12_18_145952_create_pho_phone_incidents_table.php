@@ -19,10 +19,14 @@ return new class extends Migration
             $table->string('resolution');
             $table->decimal('paymentDifference', 6, 2, true);
             $table->date('date_incident');
+            $table->date('date_resolution');
             $table->string('state')->default('En Proceso');
 
             $table->unsignedBigInteger('adm_employee_id');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
+
+            $table->unsignedBigInteger('pho_phone_supervisor_id');
+            $table->foreign('pho_phone_supervisor_id')->references('id')->on('adm_employees');
 
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');

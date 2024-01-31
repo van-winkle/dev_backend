@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use App\Http\Controllers\Controller;
+use App\Models\General\GralConfiguration;
 use App\Models\Phones\AdminEmployee;
 use App\Models\Phones\Phone;
 use Illuminate\Validation\ValidationException;
@@ -38,7 +39,23 @@ class PhoneAssignmentController extends Controller
      */
     public function create()
     {
-        //
+        //To return the supervisor employees only
+        try {
+
+            //Phone supervisors
+            $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
+            $phone_supervisors_list = explode(',',$phone_supervisors->value);
+
+            $admEmployees = AdminEmployee::where('active', true)->whereIn('id', $phone_supervisors_list)->get();
+
+            return response()->json([
+                'employees' => $admEmployees,
+            ], 200);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -111,6 +128,10 @@ class PhoneAssignmentController extends Controller
     /**
      * Display the specified resource.
      */
+    public function showAssignation(int $id)
+    {
+
+    }
     public function show(int $id)
     {
         //
@@ -149,8 +170,31 @@ class PhoneAssignmentController extends Controller
                 ]
             )->findOrFail($validatedData['id']);
 
+            /* Added the phones available query */
+            $requestPhones = Phone::where('active', true)->with(
+                [
+                    'employee',
+                    //'employee.phones_assigned',
+                    //'employee.phones_for_assignation',
+
+                    'plan',
+                    'model.brand',
+                    'type',
+                    'phone_supervisors',
+                ]
+            )->get();
+
+            $availablePhones = [];
+
+            foreach ($requestPhones as $key => $phone) {
+                if (!$phone->phone_supervisors()->exists()) {
+                    $availablePhones[] = ($phone);
+                }
+            }
+            /* end the phones available query */
+
             if ($phoneAssignations->phones_for_assignation()->exists()) {
-                return response()->json($phoneAssignations, 200);
+                return response()->json(["assigned" =>$phoneAssignations, "available"=> $availablePhones], 200);
             } else {
                 throw ValidationException::withMessages(['id' => 'La Asignación de Teléfonos no se encontó.']);
             }

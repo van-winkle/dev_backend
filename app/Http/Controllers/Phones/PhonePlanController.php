@@ -436,7 +436,6 @@ class PhonePlanController extends Controller
                     )->withCount('phones')->get();
             }
             return response()->json($requestContracts, 200);
-            
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | ' . $e->getFile() . ' - ' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => $e->getMessage()], 500);

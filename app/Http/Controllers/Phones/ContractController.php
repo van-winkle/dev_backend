@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Phones;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Phones\PhoneContact;
@@ -445,6 +446,9 @@ class ContractController extends Controller
     {
         try {
             $commonQuery = PhoneContract::where('active', true);
+
+            $commonQuery->whereDate('expiry_date', '>=', Carbon::today());
+
             if ($id !== null) {
                 $validatedData = Validator::make(
                     ['id' => $id],

@@ -632,15 +632,9 @@ class PhoneController extends Controller
                     'type',
                     'phone_supervisors',
                 ]
-            )->get();
+            )->doesntHave('phone_supervisors')->get();
 
-            $availablePhones = [];
-
-            foreach ($requestPhones as $key => $phone) {
-                if (!$phone->phone_supervisors()->exists()) {
-                    $availablePhones[] = ($phone);
-                }
-            }
+            $availablePhones = $requestPhones;
 
 
             return response()->json($availablePhones, 200);

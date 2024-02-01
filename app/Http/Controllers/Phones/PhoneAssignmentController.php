@@ -162,7 +162,11 @@ class PhoneAssignmentController extends Controller
 
             $phoneAssignations = AdminEmployee::with(
                 [
-                    'phones_for_assignation'
+                    'phones_for_assignation',
+                    'phones_for_assignation.plan',
+                    'phones_for_assignation.model.brand',
+                    'phones_for_assignation.type',
+                    //'phones_for_assignation.employee'
                 ]
             )->withCount(
                 [
@@ -173,7 +177,7 @@ class PhoneAssignmentController extends Controller
             /* Added the phones available query */
             $requestPhones = Phone::where('active', true)->with(
                 [
-                    'employee',
+                    //'employee',
                     //'employee.phones_assigned',
                     //'employee.phones_for_assignation',
 
@@ -182,19 +186,14 @@ class PhoneAssignmentController extends Controller
                     'type',
                     'phone_supervisors',
                 ]
-            )->get();
+            )->doesntHave('phone_supervisors')->get();
 
-            $availablePhones = [];
+            $availablePhones = $requestPhones;
 
-            foreach ($requestPhones as $key => $phone) {
-                if (!$phone->phone_supervisors()->exists()) {
-                    $availablePhones[] = ($phone);
-                }
-            }
             /* end the phones available query */
 
             if ($phoneAssignations->phones_for_assignation()->exists()) {
-                return response()->json(["assigned" =>$phoneAssignations, "available"=> $availablePhones], 200);
+                return response()->json($phoneAssignations, 200);
             } else {
                 throw ValidationException::withMessages(['id' => 'La Asignación de Teléfonos no se encontó.']);
             }

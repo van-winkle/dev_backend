@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->string('description');
-            $table->float('percentage')->default(0);
-            $table->string('resolution');
+            $table->float('percentage')->nullable();
+            $table->string('resolution')->nullable();
             $table->decimal('paymentDifference', 6, 2, true);
             $table->date('date_incident');
-            $table->date('date_resolution');
+            $table->date('date_resolution')->nullable();
             $table->string('state')->default('En Proceso');
 
             $table->unsignedBigInteger('adm_employee_id');

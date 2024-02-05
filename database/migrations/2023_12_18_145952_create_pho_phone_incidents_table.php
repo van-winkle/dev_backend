@@ -15,14 +15,18 @@ return new class extends Migration
             $table->id();
 
             $table->string('description');
-            $table->float('percentage')->default(0);
-            $table->string('resolution');
+            $table->float('percentage')->nullable();
+            $table->string('resolution')->nullable();
             $table->decimal('paymentDifference', 6, 2, true);
             $table->date('date_incident');
+            $table->date('date_resolution')->nullable();
             $table->string('state')->default('En Proceso');
 
             $table->unsignedBigInteger('adm_employee_id');
             $table->foreign('adm_employee_id')->references('id')->on('adm_employees');
+
+            $table->unsignedBigInteger('pho_phone_supervisor_id');
+            $table->foreign('pho_phone_supervisor_id')->references('id')->on('adm_employees');
 
             $table->unsignedBigInteger('pho_phone_id');
             $table->foreign('pho_phone_id')->references('id')->on('pho_phones');

@@ -35,40 +35,41 @@ class PhoneIncidentController extends Controller
             $incidence_day = $incidence_day->value;
 
             if(in_array($employee_id,$incident_admin_list)){
+
+                $phoneAssigned = AdminEmployee::with(
+                    [
+                        'phones_assigned',
+
+                    ]
+                )->findOrFail($employee_id);
+
                 $phoneIncidents = PhoneIncident::with(
                     'phone',
                     'incidentCat',
                     'employee',
+                    'supervisor',
                     'resolutions'
                 )->withCount(
                     'attaches'
                 )->get();
 
-                $phoneIncidentsMy = AdminEmployee::with(
-                    [
-                        'incidents',
-                        'incidents.phone',
-                        'incidents.incidentCat',
-                        'incidents.employee',
-                        'incidents.resolutions',
 
-                    ]
-                )->findOrFail($employee_id);
-
-                $phoneIncidents = ['incidence_day'=>$incidence_day,'supervisor'=>true,'incidents'=>$phoneIncidents];
+                $phoneIncidents = ['phones_assigned'=>$phoneAssigned['phones_assigned'],'incidence_day'=>$incidence_day,'supervisor'=>true,'incidents'=>$phoneIncidents];
             } else{
                 $phoneIncidents = AdminEmployee::with(
                     [
+                        'phones_assigned',
                         'incidents',
                         'incidents.phone',
                         'incidents.incidentCat',
                         'incidents.employee',
+                        'incidents.supervisor',
                         'incidents.resolutions',
 
                     ]
                 )->findOrFail($employee_id);
 
-                $phoneIncidents = ['incidence_day'=>$incidence_day,'supervisor'=>false,'incidents'=>$phoneIncidents['incidents']];
+                $phoneIncidents = ['phones_assigned'=>$phoneIncidents['phones_assigned'],'incidence_day'=>$incidence_day,'supervisor'=>false,'incidents'=>$phoneIncidents['incidents']];
             }
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
@@ -105,12 +106,14 @@ class PhoneIncidentController extends Controller
         try {
              //$employee_id = Auth::user()->employee->id;
             $rules = [
-               'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
-               'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
-               'state' => ['nullable', 'string', 'max:250'],
                 'description' => ['required', 'string', 'max:250'],
-               'resolution' => ['nullable', 'string', 'max:250'],
-                'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
+                'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
+                'resolution' => ['nullable', 'string', 'max:250'],
+               'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
+               'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
+               'date_resolution' => ['nullable', 'date', 'date_format:Y-m-d'],
+               'state' => ['nullable', 'string', 'max:250'],
+
                 'pho_phone_id' => [
                     $request->pho_phone_id > 0 ?
                         ['integer'] : 'nullable',
@@ -159,6 +162,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
                 'date_incident' => 'la Fecha de Incidencia ',
+                'date_resolution'=> 'la Fecha de Resolucion',
                 'description' => 'la descripcion de la Incidencia',
                 'files' => 'archivo(s)',
                 'resolution' => 'la Resolucion Final',
@@ -172,11 +176,13 @@ class PhoneIncidentController extends Controller
             DB::transaction(function () use ($request, &$newRequestIncident) {
                 $newRequestIncidentData = [
                     'description' => $request->description,
-                    'percentage' => 0,
-                   'resolution' => 'Resolucion',
+                    'percentage' => $request->percentage,
+                   'resolution' => /* 'Sin Resolucion', */ $request->resolution,
                    'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
+                    'date_resolution' =>/* '2024-02-02', */$request->date_resolution,
                     'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
+                    'pho_phone_supervisor_id'=>1,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
@@ -251,6 +257,7 @@ class PhoneIncidentController extends Controller
                     'phone',
                     'phone.contract.percentages',
                     'resolutions',
+                    'supervisor',
                     'resolutions.employee',
                     'resolutions.attaches',
                     'incidentCat',
@@ -319,6 +326,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => ['required', 'max:9999.99', 'min:0', 'decimal:0,2'],
                 'percentage' => ['required', 'max:100', 'min:0', 'decimal:0,2'],
                 'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
+                'date_resolution' => ['required', 'date', 'date_format:Y-m-d'],
                 'pho_phone_id' => [
                     $request->pho_phone_id > 0 ?
                         ['integer'] : 'nullable',
@@ -354,6 +362,7 @@ class PhoneIncidentController extends Controller
                 'state' => 'el estado del Incidente',
                 'percentage' => 'el Porcentaje del Incidente',
                 'date_incident' => 'la Fecha de Incidencia ',
+                'date_resolution' => 'la Fecha de resolucion ',
                 'resolution' => 'la Resolucion Final',
                 'description' => 'la descripcion de la Incidencia',
                 'pho_phone_id' => 'el Identificador del Teléfono',
@@ -373,6 +382,7 @@ class PhoneIncidentController extends Controller
                     'resolution' => $request->resolution,
                     'paymentDifference' => $request->paymentDifference,
                     'date_incident' => $request->date_incident,
+                    'date_resolution' => $request->date_resolution,
                     'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id

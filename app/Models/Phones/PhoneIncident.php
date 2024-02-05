@@ -28,7 +28,9 @@ class PhoneIncident extends Model
         'percentage',
         'resolution',
         'date_incident',
+        'date_resolution',
         'state',
+        'pho_phone_supervisor_id',
         'adm_employee_id',
         'pho_phone_id',
         'pho_phone_incident_category_id'
@@ -65,7 +67,9 @@ class PhoneIncident extends Model
     public function employee (){
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
-
+    public function supervisor (){
+        return $this->belongsTo(AdminEmployee::class, 'pho_phone_supervisor_id');
+    }
     public function resolutions (){
         return $this->hasMany(IncidentsResolutions::class, 'pho_phone_incident_id');
     }

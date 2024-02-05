@@ -90,7 +90,7 @@ class PhoneIncidentResolutionController extends Controller
                     'title' => $request->title,
                     'reply' => $request->reply,
                     'date_response' => $request->date_response,
-                    'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
+                    'adm_employee_id' => 1, //$employee_id = Auth::user()->employee->id,
                     'pho_phone_incident_id' => $request->pho_phone_incident_id,
 
                 ];

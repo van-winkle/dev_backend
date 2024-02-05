@@ -22,16 +22,16 @@ class PhoneContractAttachesController extends Controller
      */
 
     public function index()
-{
-    try {
-        $contractAttaches = ContractAttaches::with('contract')->get();
+    {
+        try {
+            $contractAttaches = ContractAttaches::with('contract')->get();
 
-        return response()->json(['attaches' => $contractAttaches], 200);
-    } catch (Exception $e) {
-        Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
-        return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+            return response()->json(['attaches' => $contractAttaches], 200);
+        } catch (Exception $e) {
+            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
+            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
+        }
     }
-}
 
     /**
      * Show the form for creating a new resource.
@@ -139,6 +139,11 @@ class PhoneContractAttachesController extends Controller
     public function show(int $id)
     {
         return FileHelper::downloadFile(ContractAttaches::class, $id);
+    }
+
+    public function viewFile(int $id)
+    {
+        return FileHelper::viewFileInNewTab(ContractAttaches::class, $id);
     }
 
 

@@ -98,6 +98,9 @@ Route::resource('/phone/percentagesRules', PercentageRuleController::class);
 /* End Percentage Rules routes*/
 
 /* Start Contract Attaches routes*/
+Route::prefix('phone/contractAttaches')->group(function () {
+    Route::get('/viewFile/{id}', [PhoneContractAttachesController::class, 'viewFile']);
+});
 Route::resource('/phone/contractAttaches', PhoneContractAttachesController::class);
 /* End Contract Attaches routes*/
 

@@ -32,6 +32,19 @@ class FileHelper
             abort(404);
         }
     }
+    public static function viewFileInNewTab($model, $id)
+    {
+        $fileInfo = $model::findOrFail($id);
+        $filePath = storage_path('app/public/' . $fileInfo->file_location . $fileInfo->name);
+
+        if (File::exists($filePath)) {
+            return response()->file($filePath, [
+                'Content-Disposition' => 'inline; filename="' . $fileInfo->original_name . '"'
+            ]);
+        } else {
+            abort(404);
+        }
+    }
 
     public static function saveFile($file, $path)
     {
@@ -56,4 +69,5 @@ class FileHelper
             return false;
         }
     }
+
 }

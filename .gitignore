@@ -1,6 +1,7 @@
 /.phpunit.cache
 /node_modules
-/app/public/Phones/Contracts
+/storage/app/public/Phones/Contracts
+/storage/app/public/Phones/Incidents
 /public/build
 /public/hot
 /public/storage

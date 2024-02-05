@@ -8,6 +8,7 @@ use App\Http\Controllers\Phones\PhoneController;
 use App\Http\Controllers\Phones\ContractController;
 use App\Http\Controllers\Phones\PercentageRuleController;
 use App\Http\Controllers\Phones\PhoneAssignmentController;
+use App\Http\Controllers\Phones\PhoneContractAttachesController;
 use App\Http\Controllers\Phones\PhonePlanController;
 use App\Http\Controllers\Phones\TypePhoneController;
 use App\Http\Controllers\Phones\PhoneIncidentController;
@@ -92,13 +93,13 @@ Route::resource('/phone/incidents', PhoneIncidentController::class);
 Route::resource('/phone/incidentAttaches', PhoneIncidentAttachesController::class);
 /* End Incidents Attaches routes*/
 
-/* Start Incidents Attaches routes*/
+/* Start Percentage Rules routes*/
 Route::resource('/phone/percentagesRules', PercentageRuleController::class);
-/* End Incidents Attaches routes*/
+/* End Percentage Rules routes*/
 
-/* Start Incidents Attaches routes*/
-Route::resource('/phone/percentagesRules', PercentageRuleController::class);
-/* End Incidents Attaches routes*/
+/* Start Contract Attaches routes*/
+Route::resource('/phone/contractAttaches', PhoneContractAttachesController::class);
+/* End Contract Attaches routes*/
 
 /* Start Assignment routes */
 Route::resource('/phone/assignments', PhoneAssignmentController::class);

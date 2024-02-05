@@ -2,15 +2,16 @@
 
 namespace App\Models\Phones;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Phones\PhoneContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class IncidentsAttaches extends Model
+class ContractAttaches extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,SoftDeletes;
 
-    protected $table = 'pho_phone_incident_attaches';
+    protected $table = 'pho_phone_contract_attaches';
 
     protected $primaryKey = 'id';
 
@@ -25,7 +26,7 @@ class IncidentsAttaches extends Model
         'file_extension',
         'file_mimetype',
         'file_location',
-        'pho_phone_incident_id'
+        'pho_phone_contract_id'
     ];
 
     public $hidden = [
@@ -41,9 +42,9 @@ class IncidentsAttaches extends Model
         'updated',
         'deleted',
     ];
-
-    public function incident ()
+    
+    public function contract()
     {
-        return $this->belongsTo(PhoneIncident::class, 'pho_phone_incident_id');
+        return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');
     }
 }

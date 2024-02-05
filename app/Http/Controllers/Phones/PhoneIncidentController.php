@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\File;
 use App\Models\Phones\IncidentsCategory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Termwind\Components\Dd;
 
 class PhoneIncidentController extends Controller
 {
@@ -168,7 +167,6 @@ class PhoneIncidentController extends Controller
             ];
 
             $request->validate($rules, $messages, $attributes);
-
             $newRequestIncident = [];
 
             DB::transaction(function () use ($request, &$newRequestIncident) {

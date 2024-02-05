@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Phones;
 
 use Exception;
+use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,7 @@ use App\Models\Phones\PhoneContact;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Phones\PhoneContract;
+use Illuminate\Support\Facades\File;
 use App\Models\Phones\PercentageRules;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -30,6 +32,7 @@ class ContractController extends Controller
                 [
                     'plans',
                     'phones',
+                    'attaches',
                     'percentages'
                 ]
             )->get();
@@ -151,6 +154,10 @@ class ContractController extends Controller
                 ],
                 'percentage_rules' => ['required', 'array'],
                 'percentage_rules.*' => ['numeric', 'max:100.00', 'decimal:0,2'],
+                'files' => [
+                    'nullable',
+                    'filled',
+                ],
             ];
 
             $messages = [
@@ -174,34 +181,71 @@ class ContractController extends Controller
                 'percentage_rules' => 'Reglas de Porcentaje',
                 'percentage_rules.*.percentage_discount' => 'Porcentaje de Descuento',
                 'percentage_rules.*.pho_phone_contract_id' => 'Identificador del Contrato de Teléfono',
+                'files' => 'archivo(s)',
             ];
 
             $request->validate($rules, $messages, $attributes);
 
-            $requestContractData = [
-                'code' => $request->code,
-                'start_date' => $request->start_date,
-                'expiry_date' => $request->expiry_date,
-                'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
-                'dir_contact_id' => $request->dir_contact_id,
-            ];
+            $newRequestContract = [];
 
-            $requestContract = PhoneContract::create($requestContractData);
+            DB::transaction(function () use ($request, &$newRequestContract) {
+                $requestContractData = [
+                    'code' => $request->code,
+                    'start_date' => $request->start_date,
+                    'expiry_date' => $request->expiry_date,
+                    'active' => $request->active == 'true' || $request->active == 1 || $request->active === null ? true : false,
+                    'dir_contact_id' => $request->dir_contact_id,
+                ];
 
-            $percentageDiscounts = $request->input('percentage_rules');
+                $newRequestContract = PhoneContract::create($requestContractData);
 
-            foreach ($percentageDiscounts as $percentageDiscount) {
-                PercentageRules::create(
-                    [
-                        'percentage_discount' => $percentageDiscount,
-                        'pho_phone_contract_id' => $requestContract->id,
-                    ]
-                );
-            }
+                if ($request->hasFile('files')) {
 
-            $requestContractData['status'] = 'created';
+                    $basePath = 'Phones/Contracts/';
+                    $fullPath = storage_path('app/public/' . $basePath);
 
-            return response()->json($requestContractData, 200);
+                    if (!File::exists($fullPath)) {
+                        File::makeDirectory($fullPath, 0775, true);
+                    }
+
+                    foreach ($request->file('files') as $idx => $file) {
+
+                        $newFileName = $newRequestContract->id . '-' . $file->getClientOriginalName();
+
+                        $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+
+                        $file->move($fullPath, $newFileNameUnique);
+
+                        $fileSize = File::size($fullPath . $newFileNameUnique);
+
+                        $newRequestContract->attaches()->create(
+                            [
+                                'file_name_original' => $file->getClientOriginalName(),
+                                'name' => $newFileNameUnique,
+                                'file_size' => $fileSize,
+                                'file_extension' => $file->getClientOriginalExtension(),
+                                'file_mimetype' => $file->getClientMimetype(),
+                                'file_location' => $basePath,
+                            ]
+                        );
+                    }
+                    $newRequestContract->load('attaches');
+                }
+                $percentageDiscounts = $request->input('percentage_rules');
+
+                foreach ($percentageDiscounts as $percentageDiscount) {
+                    PercentageRules::create(
+                        [
+                            'percentage_discount' => $percentageDiscount,
+                            'pho_phone_contract_id' => $newRequestContract->id,
+                        ]
+                    );
+                }
+
+                $requestContractData['status'] = 'created';
+            });
+
+            return response()->json($newRequestContract, 200);
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
 
@@ -234,13 +278,13 @@ class ContractController extends Controller
                 'plans',
                 'contact',
                 'phones',
-
-                'percentages'
+                'attaches',
+                'percentages',
             ])->withCount(
                 [
                     'plans',
                     'phones',
-                    'percentages'
+                    'attaches'
                 ]
             )->findOrFail($validatedData['id']);
 
@@ -332,6 +376,10 @@ class ContractController extends Controller
                 ],
                 'percentage_rules' => ['required', 'array'],
                 'percentage_rules.*' => ['numeric', 'max:100.00', 'decimal:0,2'],
+                'files' => [
+                    'nullable',
+                    'filled',
+                ],
             ];
 
             $messages = [
@@ -356,6 +404,7 @@ class ContractController extends Controller
                 'dir_contact_id' => 'el Identificador del Contacto',
                 'percentage_rules' => 'Reglas de Porcentaje',
                 'percentage_rules.*' => 'Porcentaje de Descuento',
+                'files' => 'archivo(s)',
             ];
 
             $request->validate($rules, $messages, $attributes);
@@ -379,6 +428,34 @@ class ContractController extends Controller
                     'percentage_discount' => $percentageRule,
                     'pho_phone_contract_id' => $requestContract->id,
                 ]);
+            }
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $idx => $file) {
+                    $basePath = 'Phones/Contracts/';
+                    $fullPath = storage_path('app/public/' . $basePath);
+
+                    if (!File::exists($fullPath)) {
+                        File::makeDirectory($fullPath, 0775, true);
+                    }
+
+                    $newFileName = $requestContract->id . '-' . $file->getClientOriginalName();
+
+                    $newFileNameUnique = FileHelper::FileNameUnique($fullPath, $newFileName);
+
+                    $file->move($fullPath, $newFileNameUnique);
+
+                    $fileSize = File::size($fullPath . $newFileNameUnique);
+
+                    $requestContract->attaches()->create([
+                        'file_name_original' => $file->getClientOriginalName(),
+                        'name' => $newFileNameUnique,
+                        'file_size' => $fileSize,
+                        'file_extension' => $file->getClientOriginalExtension(),
+                        'file_mimetype' => $file->getClientMimetype(),
+                        'file_location' => $basePath,
+                    ]);
+                }
+                $requestContract->load('attaches');
             }
 
             $requestContract['status'] = 'updated';
@@ -419,9 +496,7 @@ class ContractController extends Controller
                     $contract = PhoneContract::findOrFail($validatedData['id']);
                     if (!$contract->plans()->exists() && !$contract->phones()->exists()) {
                         $contract->percentages()->delete();
-
                         $contract->delete();
-
                         $contract['status'] = 'deleted';
                     } else {
                         throw ValidationException::withMessages(['id' => 'El Contrato tiene Planes o Teléfonos.']);

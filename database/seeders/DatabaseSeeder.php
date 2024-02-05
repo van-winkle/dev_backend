@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             Assignments::class,
             IncidentsResolutionsSeeder::class,
             PercetageRulesSeeder::class,
+            ContractAttachesSeeder::class,
 
         ]);
     }

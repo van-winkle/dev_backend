@@ -37,13 +37,9 @@ class FileHelper
         $fileInfo = $model::findOrFail($id);
         $filePath = storage_path('app/public/' . $fileInfo->file_location . $fileInfo->name);
 
-        if (File::exists($filePath)) {
-            return response()->file($filePath, [
-                'Content-Disposition' => 'inline; filename="' . $fileInfo->original_name . '"'
-            ]);
-        } else {
+        return File::exists($filePath) ?
+            response()->file($filePath, ['Content-Disposition' => 'inline; filename="' . $fileInfo->original_name . '"']) :
             abort(404);
-        }
     }
 
     public static function saveFile($file, $path)
@@ -69,5 +65,4 @@ class FileHelper
             return false;
         }
     }
-
 }

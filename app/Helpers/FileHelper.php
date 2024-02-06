@@ -32,6 +32,7 @@ class FileHelper
             abort(404);
         }
     }
+    
     public static function viewFile($model, $id)
     {
         $fileInfo = $model::findOrFail($id);

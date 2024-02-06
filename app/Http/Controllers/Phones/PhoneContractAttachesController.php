@@ -132,7 +132,6 @@ class PhoneContractAttachesController extends Controller
         }
     }
 
-
     /**
      * Display the specified resource.
      */
@@ -145,7 +144,6 @@ class PhoneContractAttachesController extends Controller
     {
         return FileHelper::viewFile(ContractAttaches::class, $id);
     }
-
 
     /**
      * Show the form for editing the specified resource.

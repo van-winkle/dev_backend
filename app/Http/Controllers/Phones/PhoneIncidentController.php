@@ -45,6 +45,7 @@ class PhoneIncidentController extends Controller
 
                 $phoneIncidents = PhoneIncident::with(
                     'phone',
+                    'phone',
                     'incidentCat',
                     'employee',
                     'supervisor',
@@ -255,13 +256,18 @@ class PhoneIncidentController extends Controller
             $phoneIncident = PhoneIncident::with(
                 [
                     'phone',
+                    'phone.type',
+                    'phone.model',
+                    'phone.model.brand',
                     'phone.contract.percentages',
+                    'phone.contract.attaches',
                     'resolutions',
                     'supervisor',
                     'resolutions.employee',
                     'resolutions.attaches',
                     'incidentCat',
                     'employee',
+                    'phone.plan',
                     'attaches'
                 ]
             )->findOrFail($validatedData['id']);

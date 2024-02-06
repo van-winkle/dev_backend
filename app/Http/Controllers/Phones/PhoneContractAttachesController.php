@@ -143,7 +143,7 @@ class PhoneContractAttachesController extends Controller
 
     public function viewFile(int $id)
     {
-        return FileHelper::viewFileInNewTab(ContractAttaches::class, $id);
+        return FileHelper::viewFile(ContractAttaches::class, $id);
     }
 
 

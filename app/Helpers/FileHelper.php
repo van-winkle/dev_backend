@@ -32,7 +32,7 @@ class FileHelper
             abort(404);
         }
     }
-    public static function viewFileInNewTab($model, $id)
+    public static function viewFile($model, $id)
     {
         $fileInfo = $model::findOrFail($id);
         $filePath = storage_path('app/public/' . $fileInfo->file_location . $fileInfo->name);

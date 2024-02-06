@@ -241,6 +241,13 @@ class PhoneIncidentController extends Controller
      */
     public function show(int $id)
     {
+
+        //$employee_id = Auth::user()->employee->id;
+        $employee_id = 1;
+
+        $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
+        $incident_admin_list = explode(',',$incident_admin->value);
+
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
@@ -253,25 +260,53 @@ class PhoneIncidentController extends Controller
                 ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
+            if(in_array($employee_id,$incident_admin_list)){
             $phoneIncident = PhoneIncident::with(
                 [
+                    'attaches',
                     'phone',
                     'phone.type',
-                    'phone.model',
-                    'phone.model.brand',
+                    'phone.employee',
+                    'phone.plan',
+                    'phone.contract',
                     'phone.contract.percentages',
                     'phone.contract.attaches',
-                    'resolutions',
-                    'supervisor',
-                    'resolutions.employee',
-                    'resolutions.attaches',
+                    'phone.model',
+                    'phone.model.brand',
                     'incidentCat',
                     'employee',
-                    'phone.plan',
-                    'attaches'
+                    'supervisor',
+                    'resolutions',
+                    'resolutions.employee'
+
                 ]
             )->findOrFail($validatedData['id']);
 
+            $phoneIncident = ['supervisor'=>false,'incidents'=>$phoneIncident];
+                } else {
+                    $phoneIncident = PhoneIncident::with(
+                        [
+                    'attaches',
+                    'phone',
+                    'phone.type',
+                    'phone.employee',
+                    'phone.plan',
+                    'phone.contract',
+                    'phone.contract.percentages',
+                    'phone.contract.attaches',
+                    'phone.model',
+                    'phone.model.brand',
+                    'incidentCat',
+                    'employee',
+                    'supervisor',
+                    'resolutions',
+                    'resolutions.employee'
+
+                        ]
+                    )->findOrFail($validatedData['id']);
+
+                    $phoneIncident = ['supervisor'=>false,'incidents'=>$phoneIncident];
+                }
             return response()->json($phoneIncident, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));

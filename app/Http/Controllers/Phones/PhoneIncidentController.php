@@ -260,6 +260,7 @@ class PhoneIncidentController extends Controller
                     'phone.model',
                     'phone.model.brand',
                     'phone.contract.percentages',
+                    'phone.contract.attaches',
                     'resolutions',
                     'supervisor',
                     'resolutions.employee',

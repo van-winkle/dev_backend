@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PhoneAssignment extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'adm_employee_pho_phone';
 
@@ -42,7 +43,7 @@ class PhoneAssignment extends Model
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
 
-    public function phone ()
+    public function phone()
     {
         return $this->belongsTo(Phone::class, 'pho_phone_id');
     }

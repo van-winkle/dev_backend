@@ -9,7 +9,8 @@ use PhpParser\Node\Expr\FuncCall;
 
 class TypePhone extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phone_type_phones';
 
@@ -24,7 +25,7 @@ class TypePhone extends Model
         'active'
     ];
 
-    public $hidden =[
+    public $hidden = [
         'created_at',
         'updated_at',
         'deleted_at'
@@ -38,7 +39,8 @@ class TypePhone extends Model
         'deleted_at'
     ];
 
-    public function planes (){
+    public function planes()
+    {
         return $this->hasMany(PhonePlan::class, 'pho_phone_type_phone_id');
     }
 }

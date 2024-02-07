@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IncidentsResolutionsAttaches extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
     protected $table = 'pho_phone_resolution_attaches';
 
     protected $primaryKey = 'id';
@@ -42,8 +43,8 @@ class IncidentsResolutionsAttaches extends Model
         'deleted',
     ];
 
-    public function resolution ()
+    public function resolution()
     {
-        return $this->belongsTo(IncidentsResolutions::class,'pho_phone_resolution_id');
+        return $this->belongsTo(IncidentsResolutions::class, 'pho_phone_resolution_id');
     }
 }

@@ -20,7 +20,6 @@ class PhoneContractAttachesController extends Controller
     /**
      * Display a listing of the resource.
      */
-
     public function index()
     {
         try {
@@ -140,11 +139,6 @@ class PhoneContractAttachesController extends Controller
         return FileHelper::downloadFile(ContractAttaches::class, $id);
     }
 
-    public function viewFile(int $id)
-    {
-        return FileHelper::viewFile(ContractAttaches::class, $id);
-    }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -198,5 +192,13 @@ class PhoneContractAttachesController extends Controller
 
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * OTHER RESOURCES ABOUT [CONTRACT ATTACHES].
+     */
+    public function viewFile(int $id)
+    {
+        return FileHelper::viewFile(ContractAttaches::class, $id);
     }
 }

@@ -21,7 +21,6 @@ class PhoneIncidentResolutionController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -29,7 +28,6 @@ class PhoneIncidentResolutionController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -53,18 +51,7 @@ class PhoneIncidentResolutionController extends Controller
                 'files' => [
                     'nullable',
                     'filled',
-                    /* function ($attribute, $value, $fail) {
-                        $maxTotalSize = 300 * 1024 * 1024;
-                        $totalSize = 0;
-
-                        foreach ($value as $idx => $file) {
-                            $totalSize += $file->getSize();
-                        }
-
-                    if ($totalSize > $maxTotalSize) {
-                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
-                    }
-                } */],
+                ],
             ];
 
             $messages = [
@@ -173,7 +160,7 @@ class PhoneIncidentResolutionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+
     }
 
     /**
@@ -181,7 +168,7 @@ class PhoneIncidentResolutionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
     }
 
     /**
@@ -189,6 +176,6 @@ class PhoneIncidentResolutionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        
     }
 }

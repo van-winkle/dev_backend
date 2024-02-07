@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_resolution_attaches', function (Blueprint $table) {
             $table->id();
+            
             $table->string('file_name_original')->nullable();
             $table->string('name')->nullable();
             $table->string('file_size')->nullable();

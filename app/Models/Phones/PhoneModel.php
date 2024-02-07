@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneModel extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
     protected $table = 'pho_phone_models';
 
     public $primaryKey = 'id';
@@ -20,10 +21,10 @@ class PhoneModel extends Model
 
 
     public $fillable = [
-    'name',
-    'active',
-    'pho_phone_brand_id'
-];
+        'name',
+        'active',
+        'pho_phone_brand_id'
+    ];
 
     public $hidden = [
         'created_at',
@@ -31,7 +32,7 @@ class PhoneModel extends Model
         'deleted_at'
     ];
 
-    protected static $recordEvents= [
+    protected static $recordEvents = [
         'created',
         'updated',
         'deleted'

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_brands', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->boolean('active')->default(true);
             $table->timestamp('created_at', 0)->useCurrent();

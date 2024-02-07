@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_plans', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->integer('mobile_data')->nullable();
             $table->integer('roaming_data')->nullable();

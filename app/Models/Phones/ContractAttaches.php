@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ContractAttaches extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,
+    SoftDeletes;
 
     protected $table = 'pho_phone_contract_attaches';
 
@@ -42,7 +43,7 @@ class ContractAttaches extends Model
         'updated',
         'deleted',
     ];
-    
+
     public function contract()
     {
         return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');

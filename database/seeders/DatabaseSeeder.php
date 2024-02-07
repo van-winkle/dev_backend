@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             IncidentAttachesSeeder::class,
             Assignments::class,
             IncidentsResolutionsSeeder::class,
-            PercetageRulesSeeder::class,
+            PercentageRulesSeeder::class,
             ContractAttachesSeeder::class,
 
         ]);

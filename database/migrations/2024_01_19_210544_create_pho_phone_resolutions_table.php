@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_resolutions', function (Blueprint $table) {
             $table->id();
+            
             $table->string('title');
             $table->string('reply');
             $table->date('date_response');

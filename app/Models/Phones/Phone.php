@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Phone extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phones';
 
@@ -73,9 +74,9 @@ class Phone extends Model
     {
         return $this->belongsTo(PhoneModel::class, 'pho_phone_model_id');
     }
-    public function incidents ()
+    public function incidents()
     {
-        return $this->hasMany(PhoneIncident::class,'pho_phone_id');
+        return $this->hasMany(PhoneIncident::class, 'pho_phone_id');
     }
 
     public function phone_supervisors()

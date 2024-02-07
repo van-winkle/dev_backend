@@ -23,7 +23,6 @@ class PhoneAssignmentController extends Controller
      */
     public function index()
     {
-        //
         $assignments = AdminEmployee::with(
             [
                 'phones_for_assignation',
@@ -43,8 +42,8 @@ class PhoneAssignmentController extends Controller
         try {
 
             //Phone supervisors
-            $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
-            $phone_supervisors_list = explode(',',$phone_supervisors->value);
+            $phone_supervisors = GralConfiguration::where('identifier', 'phone_supervisor')->first();
+            $phone_supervisors_list = explode(',', $phone_supervisors->value);
 
             $admEmployees = AdminEmployee::where('active', true)->whereIn('id', $phone_supervisors_list)->get();
 
@@ -128,13 +127,8 @@ class PhoneAssignmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function showAssignation(int $id)
-    {
-
-    }
     public function show(int $id)
     {
-        //
         try {
             $validatedData = Validator::make(
                 [
@@ -213,7 +207,6 @@ class PhoneAssignmentController extends Controller
      */
     public function edit(string $id)
     {
-        //
     }
 
     /**
@@ -326,5 +319,12 @@ class PhoneAssignmentController extends Controller
 
             return response()->json(['message' => 'Error al borrar Asignación de Telefono.', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * OTHER RESOURCES ABOUT [PHONE ASSIGNMENT].
+     */
+    public function showAssignation(int $id)
+    {
     }
 }

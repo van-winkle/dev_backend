@@ -118,7 +118,7 @@ class BrandController extends Controller
                         Rule::exists(
                             'pho_phone_brands',
                             'id'
-                            )->whereNull('deleted_at')
+                        )->whereNull('deleted_at')
                     ],
                 ],
                 [
@@ -158,7 +158,6 @@ class BrandController extends Controller
      */
     public function edit(int $id)
     {
-
     }
 
     /**
@@ -174,7 +173,7 @@ class BrandController extends Controller
                     Rule::exists(
                         'pho_phone_brands',
                         'id'
-                        )->whereNull('deleted_at'),
+                    )->whereNull('deleted_at'),
                     Rule::in([$id])
                 ],
                 'name' => [
@@ -184,7 +183,7 @@ class BrandController extends Controller
                     Rule::unique(
                         'pho_phone_brands',
                         'name'
-                        )->ignore($request->id)
+                    )->ignore($request->id)
                         ->whereNull('deleted_at')
                 ],
                 'active' => [
@@ -257,16 +256,17 @@ class BrandController extends Controller
 
             $phoneBrand = [];
 
-            DB::transaction(function () use ($validatedData, &$phoneBrand) {
-                $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
-                if (!$phoneBrand->models()->exists()) {
-                    $phoneBrand->delete();
-                    $phoneBrand['status'] = 'deleted';
-                } else {
-                    throw ValidationException::withMessages(['id' => 'La Marca tiene Modelos.']);
+            DB::transaction(
+                function () use ($validatedData, &$phoneBrand) {
+                    $phoneBrand = PhoneBrand::findOrFail($validatedData['id']);
+                    if (!$phoneBrand->models()->exists()) {
+                        $phoneBrand->delete();
+                        $phoneBrand['status'] = 'deleted';
+                    } else {
+                        throw ValidationException::withMessages(['id' => 'La Marca tiene Modelos.']);
+                    }
                 }
-            }
-        );
+            );
 
             return response()->json([$phoneBrand, 'message' => 'Marca Eliminada con exito.'], 200);
         } catch (ValidationException $e) {
@@ -280,6 +280,9 @@ class BrandController extends Controller
         }
     }
 
+    /**
+     * OTHER RESOURCES ABOUT [BRANDS].
+     */
     public function brandsActive($id = null)
     {
         try {

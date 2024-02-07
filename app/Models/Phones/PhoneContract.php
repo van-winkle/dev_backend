@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneContract extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phone_contracts';
 
@@ -46,7 +47,6 @@ class PhoneContract extends Model
         'deleted'
     ];
 
-
     public function contact()
     {
         return $this->belongsTo(PhoneContact::class, 'dir_contact_id');
@@ -66,9 +66,9 @@ class PhoneContract extends Model
     {
         return $this->hasMany(PercentageRules::class, 'pho_phone_contract_id');
     }
-    public function attaches ()
+    
+    public function attaches()
     {
-        return $this->hasMany(ContractAttaches::class,'pho_phone_contract_id');
+        return $this->hasMany(ContractAttaches::class, 'pho_phone_contract_id');
     }
-
 }

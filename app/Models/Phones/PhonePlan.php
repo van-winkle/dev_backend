@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhonePlan extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phone_plans';
 
@@ -41,21 +42,24 @@ class PhonePlan extends Model
 
     protected $casts = [];
 
-    protected static $recordEvents= [
+    protected static $recordEvents = [
         'created',
         'updated',
         'deleted'
     ];
 
-    public function contract(){
+    public function contract()
+    {
         return $this->belongsTo(PhoneContract::class, 'pho_phone_contract_id');
     }
 
-    public function phones (){
+    public function phones()
+    {
         return $this->hasMany(Phone::class, 'pho_phone_plan_id');
     }
 
-    public function typePhone (){
+    public function typePhone()
+    {
         return $this->belongsTo(TypePhone::class, 'pho_phone_type_phone_id');
     }
 }

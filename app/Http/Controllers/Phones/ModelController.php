@@ -152,38 +152,6 @@ class ModelController extends Controller
      */
     public function edit(int $id)
     {
-        /*
-        try {
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('pho_phone_models', 'id')
-                        ->whereNull('deleted_at')
-                    ]],
-                [
-                 'id.required' => 'Falta :attribute.',
-                 'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute no se ha encontrado.',
-                ],
-                ['id' => 'Identificador de modelo de Solicitud.'],
-            )->validate();
-
-            $model = PhoneModel::with([ // Porque llamar a los modelos de teléfonos para crear un nuevo modelo?, en todo caso lo que se necesitan son las marcas (Brands), pero esto se puede hacer directamente desde su método en el formulario. Ya existe un método para llamar las marcas activas.
-                'brand',
-                //'phones'
-            ])->withCount(['brand'])->findOrFail($validatedData['id']);
-
-            $phoneModels = PhoneModel::where('active', true)->get();
-
-            return response()->json([$model, $phoneModels], 200);
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
-
-         */
     }
 
     /**
@@ -309,6 +277,9 @@ class ModelController extends Controller
         }
     }
 
+    /**
+     * OTHER RESOURCES ABOUT [MODEL].
+     */
     public function modelsActive($id = null)
     {
         try {

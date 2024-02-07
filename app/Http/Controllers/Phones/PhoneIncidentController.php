@@ -28,18 +28,17 @@ class PhoneIncidentController extends Controller
              //$employee_id = Auth::user()->employee->id;
              $employee_id = 1;
 
-             $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
-             $incident_admin_list = explode(',',$incident_admin->value);
+            $incident_admin = GralConfiguration::where('identifier', 'incidence_supervisor')->first();
+            $incident_admin_list = explode(',', $incident_admin->value);
 
-            $incidence_day = GralConfiguration::where('identifier','incidence_day')->first();
+            $incidence_day = GralConfiguration::where('identifier', 'incidence_day')->first();
             $incidence_day = $incidence_day->value;
 
-            if(in_array($employee_id,$incident_admin_list)){
+            if (in_array($employee_id, $incident_admin_list)) {
 
                 $phoneAssigned = AdminEmployee::with(
                     [
                         'phones_assigned',
-
                     ]
                 )->findOrFail($employee_id);
 
@@ -55,8 +54,8 @@ class PhoneIncidentController extends Controller
                 )->get();
 
 
-                $phoneIncidents = ['phones_assigned'=>$phoneAssigned['phones_assigned'],'incidence_day'=>$incidence_day,'supervisor'=>true,'incidents'=>$phoneIncidents];
-            } else{
+                $phoneIncidents = ['phones_assigned' => $phoneAssigned['phones_assigned'], 'incidence_day' => $incidence_day, 'supervisor' => true, 'incidents' => $phoneIncidents];
+            } else {
                 $phoneIncidents = AdminEmployee::with(
                     [
                         'phones_assigned',
@@ -70,7 +69,7 @@ class PhoneIncidentController extends Controller
                     ]
                 )->findOrFail($employee_id);
 
-                $phoneIncidents = ['phones_assigned'=>$phoneIncidents['phones_assigned'],'incidence_day'=>$incidence_day,'supervisor'=>false,'incidents'=>$phoneIncidents['incidents']];
+                $phoneIncidents = ['phones_assigned' => $phoneIncidents['phones_assigned'], 'incidence_day' => $incidence_day, 'supervisor' => false, 'incidents' => $phoneIncidents['incidents']];
             }
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
@@ -105,15 +104,15 @@ class PhoneIncidentController extends Controller
     public function store(Request $request)
     {
         try {
-             //$employee_id = Auth::user()->employee->id;
+            //$employee_id = Auth::user()->employee->id;
             $rules = [
                 'description' => ['required', 'string', 'max:250'],
                 'percentage' => ['nullable', 'max:100', 'min:0', 'decimal:0,2'],
                 'resolution' => ['nullable', 'string', 'max:250'],
-               'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
-               'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
-               'date_resolution' => ['nullable', 'date', 'date_format:Y-m-d'],
-               'state' => ['nullable', 'string', 'max:250'],
+                'paymentDifference' => ['nullable', 'max:9999.99', 'min:0', 'decimal:0,2'],
+                'date_incident' => ['required', 'date', 'date_format:Y-m-d'],
+                'date_resolution' => ['nullable', 'date', 'date_format:Y-m-d'],
+                'state' => ['nullable', 'string', 'max:250'],
 
                 'pho_phone_id' => [
                     $request->pho_phone_id > 0 ?
@@ -134,18 +133,7 @@ class PhoneIncidentController extends Controller
                 'files' => [
                     'nullable',
                     'filled',
-                   /*  function ($attribute, $value, $fail) {
-                        $maxTotalSize = 300 * 1024 * 1024;
-                        $totalSize = 0;
-
-                        foreach ($value as $idx => $file) {
-                            $totalSize += $file->getSize();
-                        }
-
-                    if ($totalSize > $maxTotalSize) {
-                        $fail('La suma total del tamaño de los archivos no debe exceder los ' . $maxTotalSize / 1024 / 1024 . 'MB.');
-                    }
-                } */],
+                ],
             ];
 
             $messages = [
@@ -163,7 +151,7 @@ class PhoneIncidentController extends Controller
                 'paymentDifference' => 'la diferencia del pago',
                 'percentage' => 'el Porcentaje del Incidente',
                 'date_incident' => 'la Fecha de Incidencia ',
-                'date_resolution'=> 'la Fecha de Resolucion',
+                'date_resolution' => 'la Fecha de Resolucion',
                 'description' => 'la descripcion de la Incidencia',
                 'files' => 'archivo(s)',
                 'resolution' => 'la Resolucion Final',
@@ -178,8 +166,8 @@ class PhoneIncidentController extends Controller
                 $newRequestIncidentData = [
                     'description' => $request->description,
                     'percentage' => $request->percentage,
-                   'resolution' => /* 'Sin Resolucion', */ $request->resolution,
-                   'paymentDifference' => 0,
+                    'resolution' => /* 'Sin Resolucion', */ $request->resolution,
+                    'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
                     'date_resolution' =>/* '2024-02-02', */$request->date_resolution,
                     'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
@@ -236,11 +224,18 @@ class PhoneIncidentController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
     /**
      * Display the specified resource.
      */
     public function show(int $id)
     {
+
+        $employee_id = 1;
+
+        $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
+        $incident_admin_list = explode(',',$incident_admin->value);
+
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
@@ -255,24 +250,45 @@ class PhoneIncidentController extends Controller
 
             $phoneIncident = PhoneIncident::with(
                 [
+                    'attaches',
                     'phone',
                     'phone.type',
-                    'phone.model',
-                    'phone.model.brand',
+                    'phone.employee',
+                    'phone.plan',
+                    'phone.contract',
                     'phone.contract.percentages',
                     'phone.contract.attaches',
-                    'resolutions',
-                    'supervisor',
-                    'resolutions.employee',
-                    'resolutions.attaches',
+                    'phone.model',
+                    'phone.model.brand',
                     'incidentCat',
                     'employee',
-                    'phone.plan',
-                    'attaches'
+                    'supervisor',
+                    'resolutions',
+                    'resolutions.employee'
                 ]
             )->findOrFail($validatedData['id']);
 
-            return response()->json($phoneIncident, 200);
+            $incidentNumber = PhoneIncident::where('pho_phone_id', $phoneIncident->pho_phone_id)
+                ->where('adm_employee_id', $phoneIncident->adm_employee_id)
+                ->where('id', '<', $phoneIncident->id)
+                ->count() + 1;
+
+        if(in_array($employee_id,$incident_admin_list)){
+            $response = [
+
+                'supervisor' => true,
+                'incidents' => $phoneIncident,
+                'incident_number' => $incidentNumber
+            ];} else {
+                $response = [
+
+                    'supervisor' => false,
+                    'incidents' => $phoneIncident,
+                    'incident_number' => $incidentNumber
+                ];
+            }
+
+            return response()->json($response, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -284,38 +300,6 @@ class PhoneIncidentController extends Controller
      */
     public function edit(int $id)
     {
-        /*   //
-        try {
-            //Validate id
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => ['required', 'integer', 'exists:pho_phones,id']],
-                [
-                    'id.required' => 'Falta :attribute.',
-                    'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute solicitado sin coincidencia.',
-                ],
-                ['id' => 'Identificador de Teléfono de Solicitud.'],
-            )->validate();
-
-            //Getting the phone incident to edit
-            $phoneIncident =PhoneIncident::with([
-                'phone'
-            ])->findOrFail($validatedData['id']);
-
-            //Getting active phones
-            $phones = Phone::where('active', true)->get();
-            $category = IncidentsCategory::where('active', true)->get();
-
-            return response()->json([
-                $phoneIncident,
-                $phones,
-                $category
-            ], 200);
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
     }
 
     /**

@@ -33,56 +33,56 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 /* Start Brands routes */
 Route::prefix('phone/brands')
-->controller(BrandController::class)
-->group(function () {
-    Route::get('/brands-active/{id?}', 'brandsActive');
-});
+    ->controller(BrandController::class)
+    ->group(function () {
+        Route::get('/brands-active/{id?}', 'brandsActive');
+    });
 Route::resource('/phone/brands', BrandController::class)->except('create, edit');
 /* End Brands route */
 
 /* Start Models routes */
 Route::prefix('phone/models')
-->controller(ModelController::class)
-->group(function (){
-    Route::get('/models-active/{id?}', 'modelsActive');
-});
+    ->controller(ModelController::class)
+    ->group(function () {
+        Route::get('/models-active/{id?}', 'modelsActive');
+    });
 Route::resource('phone/models', ModelController::class);
 /* End Models route */
 
 /* Start Phones routes */
 Route::prefix('phone/phones')
-->controller(PhoneController::class)
-->group(function () {
-    Route::get('/phones-active/{id?}', 'activePhones');
-    Route::get('/phones-active-assign', 'activePhonesAssign');
-});
+    ->controller(PhoneController::class)
+    ->group(function () {
+        Route::get('/phones-active/{id?}', 'activePhones');
+        Route::get('/phones-active-assign', 'activePhonesAssign');
+    });
 Route::resource('/phone/phones', PhoneController::class);
 /* End Phones routes */
 
 /* Start Contracts routes */
 Route::prefix('phone/contracts')
-->controller(ContractController::class)
-->group(function () {
-    Route::get('/contracts-active/{id?}', 'activeContracts');
-});
+    ->controller(ContractController::class)
+    ->group(function () {
+        Route::get('/contracts-active/{id?}', 'activeContracts');
+    });
 Route::resource('/phone/contracts', ContractController::class);
 /* End Contracts route */
 
 /* Start Plans routes */
 Route::prefix('phone/plans')
-->controller(PhonePlanController::class)
-->group(function () {
-    Route::get('/plans-active/{id?}', 'activePlans');
-});
+    ->controller(PhonePlanController::class)
+    ->group(function () {
+        Route::get('/plans-active/{id?}', 'activePlans');
+    });
 Route::resource('/phone/plans', PhonePlanController::class);
 /* End Plans route */
 
 /* Start TypePhones routes */
 Route::prefix('phone/typePhones')
-->controller(TypePhoneController::class)
-->group(function(){
-    Route::get('/typePhones-active/{id?}', 'activetypePhones');
-});
+    ->controller(TypePhoneController::class)
+    ->group(function () {
+        Route::get('/typePhones-active/{id?}', 'activeTypePhones');
+    });
 /* End TypePhones route */
 
 /* Start incidents routes */
@@ -107,9 +107,9 @@ Route::resource('/phone/contractAttaches', PhoneContractAttachesController::clas
 /* Start Assignment routes */
 Route::resource('/phone/assignments', PhoneAssignmentController::class);
 Route::prefix('phone/assignments')
-->controller(PhoneAssignmentController::class)
-->group(function(){
-});
+    ->controller(PhoneAssignmentController::class)
+    ->group(function () {
+    });
 /* End Assignment route */
 
 /* Start Incidents Resolutions routes*/

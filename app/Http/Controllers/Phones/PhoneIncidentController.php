@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Phones\IncidentsCategory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use PHPUnit\Framework\Constraint\Count;
 
 class PhoneIncidentController extends Controller
 {
@@ -25,8 +26,8 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-            //$employee_id = Auth::user()->employee->id;
-            $employee_id = 1;
+             //$employee_id = Auth::user()->employee->id;
+             $employee_id = 5;
 
             $incident_admin = GralConfiguration::where('identifier', 'incidence_supervisor')->first();
             $incident_admin_list = explode(',', $incident_admin->value);
@@ -39,7 +40,6 @@ class PhoneIncidentController extends Controller
                 $phoneAssigned = AdminEmployee::with(
                     [
                         'phones_assigned',
-
                     ]
                 )->findOrFail($employee_id);
 
@@ -171,9 +171,9 @@ class PhoneIncidentController extends Controller
                     'resolution' => /* 'Sin Resolucion', */ $request->resolution,
                     'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
-                    'date_resolution' =>/* '2024-02-02', */ $request->date_resolution,
-                    'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
-                    'pho_phone_supervisor_id' => 1,
+                    'date_resolution' =>/* '2024-02-02', */$request->date_resolution,
+                    'adm_employee_id' => 5, //$employee_id = Auth::user()->employee->id,
+                    'pho_phone_supervisor_id'=>1,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
@@ -232,11 +232,6 @@ class PhoneIncidentController extends Controller
      */
     public function show(int $id)
     {
-        //$employee_id = Auth::user()->employee->id;
-        $employee_id = 1;
-
-        $incident_admin = GralConfiguration::where('identifier', 'incidence_supervisor')->first();
-        $incident_admin_list = explode(',', $incident_admin->value);
 
         try {
             $validatedData = Validator::make(
@@ -250,54 +245,38 @@ class PhoneIncidentController extends Controller
                 ['id' => 'Identificador de Incidencia de Teléfono de Solicitud.'],
             )->validate();
 
-            if (in_array($employee_id, $incident_admin_list)) {
-                $phoneIncident = PhoneIncident::with(
-                    [
-                        'attaches',
-                        'phone',
-                        'phone.type',
-                        'phone.employee',
-                        'phone.plan',
-                        'phone.contract',
-                        'phone.contract.percentages',
-                        'phone.contract.attaches',
-                        'phone.model',
-                        'phone.model.brand',
-                        'incidentCat',
-                        'employee',
-                        'supervisor',
-                        'resolutions',
-                        'resolutions.employee'
+            $phoneIncident = PhoneIncident::with(
+                [
+                    'attaches',
+                    'phone',
+                    'phone.type',
+                    'phone.employee',
+                    'phone.plan',
+                    'phone.contract',
+                    'phone.contract.percentages',
+                    'phone.contract.attaches',
+                    'phone.model',
+                    'phone.model.brand',
+                    'incidentCat',
+                    'employee',
+                    'supervisor',
+                    'resolutions',
+                    'resolutions.employee'
+                ]
+            )->findOrFail($validatedData['id']);
 
-                    ]
-                )->findOrFail($validatedData['id']);
+            $incidentNumber = PhoneIncident::where('pho_phone_id', $phoneIncident->pho_phone_id)
+                                            ->where('adm_employee_id', $phoneIncident->adm_employee_id)
+                                            ->where('id', '<', $phoneIncident->id)
+                                            ->count() + 1;
 
-                $phoneIncident = ['supervisor' => false, 'incidents' => $phoneIncident];
-            } else {
-                $phoneIncident = PhoneIncident::with(
-                    [
-                        'attaches',
-                        'phone',
-                        'phone.type',
-                        'phone.employee',
-                        'phone.plan',
-                        'phone.contract',
-                        'phone.contract.percentages',
-                        'phone.contract.attaches',
-                        'phone.model',
-                        'phone.model.brand',
-                        'incidentCat',
-                        'employee',
-                        'supervisor',
-                        'resolutions',
-                        'resolutions.employee'
+            $response = [
+                'supervisor' => false,
+                'incidents' => $phoneIncident,
+                'incident_number' => $incidentNumber
+            ];
 
-                    ]
-                )->findOrFail($validatedData['id']);
-
-                $phoneIncident = ['supervisor' => false, 'incidents' => $phoneIncident];
-            }
-            return response()->json($phoneIncident, 200);
+            return response()->json($response, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);

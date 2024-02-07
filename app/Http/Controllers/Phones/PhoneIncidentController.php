@@ -27,7 +27,7 @@ class PhoneIncidentController extends Controller
     {
         try {
              //$employee_id = Auth::user()->employee->id;
-             $employee_id = 5;
+             $employee_id = 2;
 
              $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
              $incident_admin_list = explode(',',$incident_admin->value);
@@ -182,7 +182,7 @@ class PhoneIncidentController extends Controller
                    'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
                     'date_resolution' =>/* '2024-02-02', */$request->date_resolution,
-                    'adm_employee_id' => 5, //$employee_id = Auth::user()->employee->id,
+                    'adm_employee_id' => 2, //$employee_id = Auth::user()->employee->id,
                     'pho_phone_supervisor_id'=>1,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
@@ -242,6 +242,11 @@ class PhoneIncidentController extends Controller
     public function show(int $id)
     {
 
+        $employee_id = 2;
+
+        $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
+        $incident_admin_list = explode(',',$incident_admin->value);
+
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
@@ -279,11 +284,20 @@ class PhoneIncidentController extends Controller
                                             ->where('id', '<', $phoneIncident->id)
                                             ->count() + 1;
 
+        if(in_array($employee_id,$incident_admin_list)){
             $response = [
-                'supervisor' => false,
+
+                'supervisor' => true,
                 'incidents' => $phoneIncident,
                 'incident_number' => $incidentNumber
-            ];
+            ];} else {
+                $response = [
+
+                    'supervisor' => false,
+                    'incidents' => $phoneIncident,
+                    'incident_number' => $incidentNumber
+                ];
+            }
 
             return response()->json($response, 200);
         } catch (Exception $e) {

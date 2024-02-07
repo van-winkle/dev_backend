@@ -124,8 +124,11 @@ class PhoneController extends Controller
                 'imei' => [
                     'nullable',
                     'max:15',
-                    'min:0'
-
+                    'min:0',
+                    Rule::unique(
+                        'pho_phones',
+                        'imei'
+                    )->whereNull('deleted_at')
                 ],
                 'price' => [
                     'required',
@@ -184,6 +187,7 @@ class PhoneController extends Controller
             $messages = [
                 'string' => 'El formato d:attribute es irreconocible.',
                 'number.unique' => ':attribute ya existe',
+                'imei.unique' => ':attribute ya existe',
                 'number.min' => ':attribute debe ser de 8 caracteres. ',
                 'number.max' => ':attribute debe ser de 8 caracteres. ',
 
@@ -327,7 +331,11 @@ class PhoneController extends Controller
                 'imei' => [
                     'nullable',
                     'max:15',
-                    'min:0'
+                    'min:0',
+                    Rule::unique(
+                        'pho_phones',
+                        'imei'
+                    )->whereNull('deleted_at')
                 ],
                 'price' => ['required', 'max:9999.99', 'decimal:0,2'],
                 'active' => ['nullable'],
@@ -384,6 +392,7 @@ class PhoneController extends Controller
                 'required' => 'Falta :attribute.',
                 'string' => 'El formato d:attribute es irreconocible.',
                 'number.unique' => ':attribute ya existe.',
+                'imei.unique' => ':attribute ya existe.',
 
                 'min' => ':attribute ser de mínimo 0 caracteres.  ',
                 'max' => ':attribute excede los caracteres máximos',

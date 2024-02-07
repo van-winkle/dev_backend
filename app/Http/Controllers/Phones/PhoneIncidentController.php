@@ -26,7 +26,7 @@ class PhoneIncidentController extends Controller
     {
         try {
              //$employee_id = Auth::user()->employee->id;
-             $employee_id = 2;
+             $employee_id = 1;
 
             $incident_admin = GralConfiguration::where('identifier', 'incidence_supervisor')->first();
             $incident_admin_list = explode(',', $incident_admin->value);
@@ -231,7 +231,7 @@ class PhoneIncidentController extends Controller
     public function show(int $id)
     {
 
-        $employee_id = 2;
+        $employee_id = 1;
 
         $incident_admin = GralConfiguration::where('identifier','incidence_supervisor')->first();
         $incident_admin_list = explode(',',$incident_admin->value);

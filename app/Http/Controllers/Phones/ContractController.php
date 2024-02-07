@@ -301,40 +301,7 @@ class ContractController extends Controller
      */
     public function edit(int $id)
     {
-        // Este es innecesario si es identico al método show(), y por lo que veo la única
-        // modificación que encontré es que para editar el registro ¿debe de estar activo?,
-        // ¿no puedo editar registros que esten inactivos?
-        /* try {
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('pho_phone_contracts', 'id')
-                        ->whereNull('deleted_at')
-                    ]],
-                [
-                 'id.required' => 'Falta :attribute.',
-                 'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute solicitado sin coincidencia.',
-                ],
-                ['id' => 'Identificador de Contrato'],
-            )->validate();
 
-            $contract = PhoneContract::with([
-                'contact',
-                'plans',
-                'phones'
-            ])->withCount(['plans','phones'])->findOrFail($validatedData['id']);
-            $phoneContacts = PhoneContact::where('active', true)->get();
-            return response()->json([$contract, $phoneContacts], 200);
-
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
-
-        */
     }
 
     /**
@@ -516,7 +483,9 @@ class ContractController extends Controller
         }
     }
 
-
+    /**
+     * OTHER RESOURCES ABOUT [CONTRACTS].
+     */
     public function activeContracts(int $id = null)
     {
         try {

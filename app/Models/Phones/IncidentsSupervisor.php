@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IncidentsSupervisor extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
+
     protected $table = 'pho_phone_incident_supervisor';
 
     protected $primaryKey = 'id';
@@ -20,5 +22,4 @@ class IncidentsSupervisor extends Model
     public $fillable = [
         'adm_employee_id'
     ];
-
 }

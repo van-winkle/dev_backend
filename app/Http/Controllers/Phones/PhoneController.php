@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\General\GralConfiguration;
 use App\Models\Phones\AdminEmployee;
-use App\Models\Phones\PhoneContract;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;   //<-TODO GET EMPLOYEES FROM THIS
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -29,15 +28,15 @@ class PhoneController extends Controller
             $employee_id = 1;
 
             //Phone admins
-            $phone_admin = GralConfiguration::where('identifier','phone_admin')->first();
-            $phone_admin_list = explode(',',$phone_admin->value);
+            $phone_admin = GralConfiguration::where('identifier', 'phone_admin')->first();
+            $phone_admin_list = explode(',', $phone_admin->value);
             //Phone supervisors
-            $phone_supervisors = GralConfiguration::where('identifier','phone_supervisor')->first();
-            $phone_supervisors_list = explode(',',$phone_supervisors->value);
+            $phone_supervisors = GralConfiguration::where('identifier', 'phone_supervisor')->first();
+            $phone_supervisors_list = explode(',', $phone_supervisors->value);
 
             $permissions = [];
 
-            if (in_array($employee_id ,$phone_admin_list) ) {
+            if (in_array($employee_id, $phone_admin_list)) {
                 # All phones
                 $phones = Phone::with([
                     'employee.phones_assigned',
@@ -49,10 +48,9 @@ class PhoneController extends Controller
 
                 ])->withCount(['incidents'])->get();
 
-                $permissions["admin"]=true;
-                $permissions["supervisor"]=true;
-
-            } elseif (in_array($employee_id ,$phone_supervisors_list)) {
+                $permissions["admin"] = true;
+                $permissions["supervisor"] = true;
+            } elseif (in_array($employee_id, $phone_supervisors_list)) {
                 # Only assigned phones
                 $employee = AdminEmployee::with(
                     [
@@ -70,36 +68,18 @@ class PhoneController extends Controller
 
                 if ($employee->phones_for_assignation()->exists()) {
                     $phones = $employee['phones_for_assignation'];
-                    $permissions["supervisor"]=true;
+                    $permissions["supervisor"] = true;
                 } else {
                     $phones = [];
                     //throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
                 }
-
             } else {
                 # No phones
                 $phones = [];
-
                 //throw ValidationException::withMessages(['id' => 'No tiene Teléfonos asignados.']);
             }
 
-
-            //Query to get phones list
-            /* $phones = Phone::with([
-                'employee.phones_assigned',
-                'employee.phones_for_assignation',
-                //'employee',
-                'plan',
-                'model.brand',
-                'type',
-                'phone_supervisors'
-                //'contract',
-                //'model',
-                //'incidents'
-            ])->withCount(['incidents'])->get(); */
-
-            return response()->json([ "phones" => $phones, "permissions" => $permissions], 200);
-
+            return response()->json(["phones" => $phones, "permissions" => $permissions], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -316,59 +296,7 @@ class PhoneController extends Controller
      */
     public function edit(int $id)
     {
-        /*   //
-        try {
-            //Validate id
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('pho_phones','id')->whereNull('deleted_at')
-                    ]],
-                [
-                    'id.required' => 'Falta :attribute.',
-                    'id.integer' => ':attribute irreconocible.',
-                    'id.exists' => ':attribute Sin coincidencia.',
-                ],
-                ['id' => 'Identificador de Teléfono de Solicitud.'],
-            )->validate();
 
-            $phone = Phone::with([
-                'employee',
-                'plan',
-                'contract',
-                'model',
-                'incidents'
-            ])->withCount(['incidents'])->findOrFail($validatedData['id']);
-
-            //Getting active employees
-            $admEmployees = AdminEmployee::where('active', true)->get();
-
-            //Getting active plans
-            $phonePlans = PhonePlan::where('active', true)->get();
-
-            //Getting active contracts
-            $phoneContracts = PhoneContract::where('active', true)->get();
-
-            //Getting Brands and its Models
-            $phoneBrands = PhoneBrand::with([
-                'models'
-            ])->withCount('models')->where('active', true)->get();
-
-            return response()->json([
-                'phone' => $phone,
-                'employee' => $admEmployees,
-                'brand' => $phoneBrands,
-                'plans' => $phonePlans,
-                'contracts' => $phoneContracts,
-            ], 200);
-
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        }
-         */
     }
 
     /**
@@ -555,7 +483,13 @@ class PhoneController extends Controller
         }
     }
 
-
+    /**
+     * OTHER RESOURCES ABOUT = [
+     * PHONES,
+     * PHONE - ACTIVES
+     * PHONE - ASSIGNED
+     * ].
+     */
     public function activePhones(int $id = null)
     {
         try {
@@ -581,7 +515,6 @@ class PhoneController extends Controller
                         'plan',
                         'contract',
                         'model.brand',
-                        //'model',
                         'incidents'
                     ]
                 )->findOrFail($validatedData['id']);

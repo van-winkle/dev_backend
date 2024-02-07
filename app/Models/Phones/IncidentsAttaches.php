@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IncidentsAttaches extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phone_incident_attaches';
 
@@ -42,7 +43,7 @@ class IncidentsAttaches extends Model
         'deleted',
     ];
 
-    public function incident ()
+    public function incident()
     {
         return $this->belongsTo(PhoneIncident::class, 'pho_phone_incident_id');
     }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('adm_employees', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->string('last_name');
             $table->boolean('active')->default(true);

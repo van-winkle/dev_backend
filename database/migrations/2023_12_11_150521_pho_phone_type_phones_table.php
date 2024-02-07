@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_type_phones', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->boolean('active')->default(true);
 

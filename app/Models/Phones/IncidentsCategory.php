@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class IncidentsCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
     protected $table = 'pho_phone_incident_categories';
 
     protected $primaryKey = 'id';
@@ -35,5 +36,4 @@ class IncidentsCategory extends Model
         'updated',
         'deleted',
     ];
-
- }
+}

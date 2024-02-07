@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneBrand extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
+
     protected $table = 'pho_phone_brands';
 
-    protected $primaryKey= "id";
+    protected $primaryKey = "id";
 
     protected $KeyType = "int";
 
@@ -37,8 +39,8 @@ class PhoneBrand extends Model
         'deleted',
     ];
 
-    public function models ()
+    public function models()
     {
-        return $this->hasMany(PhoneModel::class,'pho_phone_brand_id');
+        return $this->hasMany(PhoneModel::class, 'pho_phone_brand_id');
     }
 }

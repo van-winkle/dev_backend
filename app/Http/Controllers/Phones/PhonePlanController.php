@@ -33,6 +33,7 @@ class PhonePlanController extends Controller
             return response()->json($requestContract, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
+
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -42,16 +43,6 @@ class PhonePlanController extends Controller
      */
     public function create()
     {
-        /*   try {
-            $phoneContracts = PhoneContract::where('active', true)->get();
-            return response()->json([
-                $phoneContracts,
-            ], 200);
-
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine());
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
     }
 
     /**
@@ -160,7 +151,6 @@ class PhonePlanController extends Controller
             PhonePlan::create($requestPlantData);
 
             return response()->json($requestPlantData, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
@@ -178,10 +168,11 @@ class PhonePlanController extends Controller
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
-                ['id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
+                [
+                    'id' => [
+                        'required',
+                        'integer',
+                        Rule::exists('pho_phone_plans', 'id')->whereNull('deleted_at')
                     ]
                 ],
                 [
@@ -198,10 +189,9 @@ class PhonePlanController extends Controller
                 'typePhone'
             ])->withCount(
                 ['phones']
-                )->findOrFail($validatedData['id']);
+            )->findOrFail($validatedData['id']);
 
             return response()->json($plan, 200);
-
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
@@ -213,34 +203,6 @@ class PhonePlanController extends Controller
      */
     public function edit(int $id)
     {
-        /*  try {
-            $validatedData = Validator::make(
-                ['id' => $id],
-                ['id' => [
-                    'required',
-                     'integer',
-                     //'exists:pho_phone_plans,id',
-                     Rule::exists('pho_phone_plans','id')->whereNull('deleted_at')
-                     ]],
-                [
-                 'id.required' => 'Falta :attribute.',
-                 'id.integer' => ':attribute irreconocible.',
-                 'id.exists' => ':attribute solicitado sin coincidencia.',
-                ],
-                ['id' => 'Identificador de Plan'],
-            )->validate();
-
-            $plan = PhonePlan::with([
-                'contract',
-                'phones'
-            ])->withCount(['contract','phones'])->findOrFail($validatedData['id']);
-            $phoneContract = PhoneContract::where('active', true)->get();
-            return response()->json([$plan, $phoneContract], 200);
-
-        } catch (Exception $e) {
-            Log::error($e->getMessage() . ' | En Línea ' . $e->getFile() . '-' . $e->getLine() . '. Información enviada: ' . json_encode($id));
-            return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
-        } */
     }
 
     /**
@@ -356,7 +318,6 @@ class PhonePlanController extends Controller
             $requestPlan->update($requestPlanData);
 
             return response()->json($requestPlan, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . ' Información enviada: ' . json_encode($request->all()));
             return response()->json(['message' => $e->validator->errors()->getMessages()], 422);
@@ -399,7 +360,6 @@ class PhonePlanController extends Controller
             });
 
             return response()->json($phonePlan, 200);
-
         } catch (ValidationException $e) {
             Log::error(json_encode($e->validator->errors()->getMessages()) . '. Información enviada: ' . json_encode($id));
 
@@ -411,6 +371,9 @@ class PhonePlanController extends Controller
         }
     }
 
+    /**
+     * OTHER RESOURCES ABOUT [PLANS].
+     */
     public function activePlans(int $id = null)
     {
         try {
@@ -429,11 +392,11 @@ class PhonePlanController extends Controller
 
                 $requestContracts = $commonQuery->with(
                     ['contract', 'phones']
-                    )->findOrFail($validatedData['id']);
+                )->findOrFail($validatedData['id']);
             } else {
                 $requestContracts = $commonQuery->with(
                     ['contract']
-                    )->withCount('phones')->get();
+                )->withCount('phones')->get();
             }
             return response()->json($requestContracts, 200);
         } catch (Exception $e) {

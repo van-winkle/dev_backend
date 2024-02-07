@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('dir_contacts', function (Blueprint $table) {
             $table->id();
+            
             $table->string('name');
             $table->boolean('active')->default(true);
 

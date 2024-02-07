@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhoneIncident extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'pho_phone_incidents';
 
@@ -50,27 +51,33 @@ class PhoneIncident extends Model
         'deleted',
     ];
 
-    public function attaches ()
+    public function attaches()
     {
-        return $this->hasMany(IncidentsAttaches::class,'pho_phone_incident_id');
+        return $this->hasMany(IncidentsAttaches::class, 'pho_phone_incident_id');
     }
 
-    public function phone ()
+    public function phone()
     {
-        return $this->belongsTo(Phone::class,'pho_phone_id')->withTrashed();
+        return $this->belongsTo(Phone::class, 'pho_phone_id')->withTrashed();
     }
 
-    public function incidentCat (){
+    public function incidentCat()
+    {
         return $this->belongsTo(IncidentsCategory::class, 'pho_phone_incident_category_id');
     }
 
-    public function employee (){
+    public function employee()
+    {
         return $this->belongsTo(AdminEmployee::class, 'adm_employee_id');
     }
-    public function supervisor (){
+
+    public function supervisor()
+    {
         return $this->belongsTo(AdminEmployee::class, 'pho_phone_supervisor_id');
     }
-    public function resolutions (){
+    
+    public function resolutions()
+    {
         return $this->hasMany(IncidentsResolutions::class, 'pho_phone_incident_id');
     }
 }

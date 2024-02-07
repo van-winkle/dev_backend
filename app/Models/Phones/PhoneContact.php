@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PhoneContact extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,
+        SoftDeletes;
 
     protected $table = 'dir_contacts';
 
@@ -38,7 +39,8 @@ class PhoneContact extends Model
         'deleted',
     ];
 
-    public function contract (){
+    public function contract()
+    {
         return $this->hasMany(PhoneContract::class, 'dir_contact_id');
     }
 }

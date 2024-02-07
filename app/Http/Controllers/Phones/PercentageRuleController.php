@@ -33,7 +33,6 @@ class PercentageRuleController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -143,7 +142,6 @@ class PercentageRuleController extends Controller
      */
     public function edit(string $id)
     {
-        //
     }
 
     /**
@@ -212,6 +210,5 @@ class PercentageRuleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
     }
 }

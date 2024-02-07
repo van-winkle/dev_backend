@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pho_phone_percentage_rules', function (Blueprint $table) {
             $table->id();
+            
             $table->decimal('percentage_discount', 5, 2);
 
             $table->unsignedBigInteger('pho_phone_contract_id');

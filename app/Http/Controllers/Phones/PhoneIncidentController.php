@@ -26,8 +26,8 @@ class PhoneIncidentController extends Controller
     public function index()
     {
         try {
-             //$employee_id = Auth::user()->employee->id;
-             $employee_id = 5;
+            //$employee_id = Auth::user()->employee->id;
+            $employee_id = 5;
 
             $incident_admin = GralConfiguration::where('identifier', 'incidence_supervisor')->first();
             $incident_admin_list = explode(',', $incident_admin->value);
@@ -75,7 +75,6 @@ class PhoneIncidentController extends Controller
             return response()->json($phoneIncidents, 200);
         } catch (Exception $e) {
             Log::error($e->getMessage() . ' | En Línea - ' . $e->getLine());
-
             return response()->json(['message' => 'Ha ocurrido un error al procesar la solicitud.', 'errors' => $e->getMessage()], 500);
         }
     }
@@ -171,9 +170,9 @@ class PhoneIncidentController extends Controller
                     'resolution' => /* 'Sin Resolucion', */ $request->resolution,
                     'paymentDifference' => 0,
                     'date_incident' => $request->date_incident,
-                    'date_resolution' =>/* '2024-02-02', */$request->date_resolution,
+                    'date_resolution' =>/* '2024-02-02', */ $request->date_resolution,
                     'adm_employee_id' => 5, //$employee_id = Auth::user()->employee->id,
-                    'pho_phone_supervisor_id'=>1,
+                    'pho_phone_supervisor_id' => 1,
                     'pho_phone_id' => $request->pho_phone_id,
                     'pho_phone_incident_category_id' => $request->pho_phone_incident_category_id
 
@@ -232,7 +231,6 @@ class PhoneIncidentController extends Controller
      */
     public function show(int $id)
     {
-
         try {
             $validatedData = Validator::make(
                 ['id' => $id],
@@ -266,9 +264,9 @@ class PhoneIncidentController extends Controller
             )->findOrFail($validatedData['id']);
 
             $incidentNumber = PhoneIncident::where('pho_phone_id', $phoneIncident->pho_phone_id)
-                                            ->where('adm_employee_id', $phoneIncident->adm_employee_id)
-                                            ->where('id', '<', $phoneIncident->id)
-                                            ->count() + 1;
+                ->where('adm_employee_id', $phoneIncident->adm_employee_id)
+                ->where('id', '<', $phoneIncident->id)
+                ->count() + 1;
 
             $response = [
                 'supervisor' => false,
@@ -288,7 +286,6 @@ class PhoneIncidentController extends Controller
      */
     public function edit(int $id)
     {
-
     }
 
     /**
